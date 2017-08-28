@@ -1,0 +1,222 @@
+---
+title: "ClusterMQ: send R function calls as cluster jobs"
+author: "Michael Schubert"
+date: "2017-08-24"
+output:
+  rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{narray Usage Examples}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+
+
+This package will allow you to send function calls as cluster jobs (using
+[LSF](https://github.com/mschubert/clustermq/wiki/LSF),
+[SGE](https://github.com/mschubert/clustermq/wiki/SGE) or
+[SLURM](https://github.com/mschubert/clustermq/wiki/SLURM))
+using a minimal interface provided by the `Q` function:
+
+
+```r
+# load the library and create a simple function
+library(clustermq)
+fx = function(x) x * 2
+
+# queue the function call 
+Q(fx, x=1:3, n_jobs=1)
+
+# list(2,4,6)
+
+# this will submit a cluster job that connects to the master via TCP
+# the master will then send the function and argument chunks to the worker
+# and the worker will return the results to the master
+# until everything is done and you get back your result
+
+# we can also use dplyr's mutate to modify data frames
+library(dplyr)
+iris %>%
+    mutate(area = Q(`*`, e1=Sepal.Length, e2=Sepal.Width, n_jobs=1))
+```
+
+Computations are done [entirely on the
+network](https://github.com/armstrtw/rzmq) and without any temporary files on
+network-mounted storage, so there is no strain on the file system apart from
+starting up R once per job. This removes the biggest bottleneck in distributed
+computing.
+
+Using this approach, we can easily do load-balancing, i.e. workers that get
+their jobs done faster will also receive more function calls to work on. This
+is especially useful if not all calls return after the same time, or one worker
+has a high load.
+
+## Installation
+
+First, we need the [ZeroMQ](https://github.com/ropensci/rzmq#installation)
+system library. Most likely, your package manager will provide this:
+
+
+```sh
+brew install zeromq # homebrew on OS-X
+sudo apt-get install libzmq3-dev # ubuntu
+sudo yum install zeromq3-devel # fedora
+```
+
+The package on CRAN should be relatively up-to-date. You can install it using:
+
+
+```r
+install.packages('clustermq')
+```
+
+Alternatively, you can get the latest version from
+[Github](https://github.com/mschubert/clustermq):
+
+
+```r
+# install.packages('devtools')
+devtools::install_github('mschubert/clustermq', ref="develop")
+```
+
+## Setting up the scheduler
+
+An HPC cluster's scheduler ensures that computing jobs are distributed to
+available worker nodes. Hence, this is what `clustermq` interfaces with in
+order to do computations. See the links below to set up the respective
+schedulers.
+
+* [LSF](https://github.com/mschubert/clustermq/wiki/LSF)
+* [SGE](https://github.com/mschubert/clustermq/wiki/SGE)
+* [SLURM](https://github.com/mschubert/clustermq/wiki/SLURM)
+* if you want another scheduler, [open an issue](https://github.com/mschubert/clustermq/issues/new)
+
+You can also use the schedulers above [from your local machine via SSH](SSH).
+
+## Examples
+
+The package is designed to distribute arbitrary function calls on HPC worker
+nodes. There are, however, a couple of caveats to observe as the R session
+running on a worker does not share your local memory.
+
+The simplest example is to a function call that is completely self-sufficient,
+and there is one argument (`x`) that we iterate through:
+
+
+```r
+fx = function(x) x * 2
+Q(fx, x=1:3, n_jobs=1)
+```
+
+```
+## $result
+## $result$`1`
+## [1] 2
+## 
+## $result$`2`
+## [1] 4
+## 
+## $result$`3`
+## [1] 6
+## 
+## 
+## $warnings
+## NULL
+```
+
+Non-iterated arguments are supported by the `const` argument:
+
+
+```r
+fx = function(x, y) x * 2 + y
+Q(fx, x=1:3, const=list(y=10), n_jobs=1)
+```
+
+```
+## $result
+## $result$`1`
+## [1] 12
+## 
+## $result$`2`
+## [1] 14
+## 
+## $result$`3`
+## [1] 16
+## 
+## 
+## $warnings
+## NULL
+```
+
+If a function relies on objects in its environment that are not passed as
+arguments, they can be exported using the `export` argument:
+
+
+```r
+fx = function(x) x * 2 + y
+#Q(fx, x=1:3, export=list(y=10), n_jobs=1)
+```
+
+Finally, if we want to use a package function we need to load it on the worker
+using a `library()` call or referencing it with `package_name::`:
+
+
+```r
+fx = function(x) {
+    library(dplyr)
+    x %>%
+        mutate(area = Q(`*`, e1=Sepal.Length, e2=Sepal.Width, n_jobs=1)) %>%
+        head()
+}
+#Q(fx, x=list(iris), n_jobs=1)
+```
+
+## Usage
+
+The following arguments are supported by `Q`:
+
+ * `fun` - The function to call. This needs to be self-sufficient (because it
+        will not have access to the `master` environment)
+ * `...` - All iterated arguments passed to the function. If there is more than
+        one, all of them need to be named
+ * `const` - A named list of non-iterated arguments passed to `fun`
+
+Behavior can further be fine-tuned using the options below:
+
+ * `fail_on_error` - Whether to stop if one of the calls returns an error
+ * `seed` - A common seed that is combined with job number for reproducible results
+ * `memory` - Amount of memory to request for the job (`bsub -M`)
+ * `n_jobs` - Number of jobs to submit for all the function calls
+ * `job_size` - Number of function calls per job. If used in combination with
+        `n_jobs` the latter will be overall limit
+ * `chunk_size` - How many calls a worker should process before reporting back
+        to the master. Default: every worker will report back 100 times total
+ * `wait_time` - How long the master should wait between checking for results
+
+## Comparison to other packages
+
+There are some packages that provide high-level parallelization of R function calls
+on a computing cluster. A thorough comparison of features and performance is available
+[on the wiki](https://github.com/mschubert/clustermq/wiki#comparison-to-other-packages).
+
+In short, use `ClusterMQ` if you want:
+
+* a one-line solution to run cluster jobs with minimal setup
+* access cluster functions from your local Rstudio
+* network storage I/O is a problem for you(r cluster)
+* your function calls or some workers are (much) slower than others
+
+Use [`batchtools`](https://github.com/mllg/batchtools) if:
+
+* you want more control over how your jobs are run
+* don't mind a few extra lines to register and schedule your jobs
+
+Use [`flowr`](https://github.com/sahilseth/flowr),
+[`remake`](https://github.com/richfitz/remake)
+or [Snakemake](https://snakemake.readthedocs.io/en/latest/) if:
+
+* you want to design and run a pipeline of different tools
+
+Don't use [`batch`](https://cran.r-project.org/package=batch)
+(last updated 2013) or [`BatchJobs`](https://github.com/tudo-r/BatchJobs)
+(issues with SQLite on network-mounted storage).
