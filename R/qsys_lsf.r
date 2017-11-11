@@ -9,17 +9,29 @@ LSF = R6::R6Class("LSF",
             super$initialize(...)
         },
 
-        submit_job = function(template=list(), log_worker=FALSE) {
-            values = super$submit_job(template=template, log_worker=log_worker)
-            job_input = infuser::infuse(LSF$template, values)
-            system("bsub", input=job_input, ignore.stdout=TRUE)
+        submit_jobs = function(n_jobs, template=list(), log_worker=FALSE) {
+            template$n_jobs = n_jobs
+            filled = fill_template(template=LSF$template, master=private$master,
+                                   values=template, log_worker=log_worker)
+
+            success = system("bsub", input=filled, ignore.stdout=TRUE)
+            if (success != 0) {
+                print(filled)
+                stop("Job submission failed with error code ", success)
+            }
         },
 
-        cleanup = function(dirty=FALSE) {
-            system(paste("bkill -g", private$job_group, "0"),
+        cleanup = function() {
+            super$cleanup()
+            dirty = self$workers_running > 0
+            system(paste("bkill", private$job_id),
                    ignore.stdout=!dirty, ignore.stderr=!dirty)
         }
     ),
+
+    private = list(
+        job_id = NULL
+    )
 )
 
 # Static method, process scheduler options and return updated object
@@ -32,12 +44,11 @@ LSF$setup = function() {
 
 # Static method, overwritten in qsys w/ user option
 LSF$template = paste(sep="\n",
-    "#BSUB-J {{ job_name }}                    # name of the job / array jobs",
+    "#BSUB-J {{ job_name }}[1-{{ n_jobs }}]    # name of the job / array jobs",
     "#BSUB-g {{ job_group | /rzmq }}           # group the job belongs to",
     "#BSUB-o {{ log_file | /dev/null }}        # stdout + stderr",
     "#BSUB-M {{ memory | 4096 }}               # Memory requirements in Mbytes",
     "#BSUB-R rusage[mem={{ memory | 4096  }}]  # Memory requirements in Mbytes",
     "",
     "ulimit -v $(( 1024 * {{ memory | 4096 }} ))",
-    "R --no-save --no-restore -e \\",
-    "    'clustermq:::worker(\"{{ job_name }}\", \"{{ master }}\", {{ memory | 4096 }})'")
+    "R --no-save --no-restore -e 'clustermq:::worker(\"{{ master }}\"')")

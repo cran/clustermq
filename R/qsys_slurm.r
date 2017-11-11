@@ -9,14 +9,21 @@ SLURM = R6::R6Class("SLURM",
             super$initialize(...)
         },
 
-        submit_job = function(template=list(), log_worker=FALSE) {
-            values = super$submit_job(template=template, log_worker=log_worker)
-            job_input = infuser::infuse(SLURM$template, values)
-            system("sbatch", input=job_input, ignore.stdout=TRUE)
+        submit_jobs = function(n_jobs, template=list(), log_worker=FALSE) {
+            template$n_jobs = n_jobs
+            filled = fill_template(template=SLURM$template, master=private$master,
+                                   values=template, log_worker=log_worker)
+
+            success = system("sbatch", input=filled, ignore.stdout=TRUE)
+            if (success != 0) {
+                print(filled)
+                stop("Job submission failed with error code ", success)
+            }
         },
 
-        cleanup = function(dirty=FALSE) {
-            if (dirty)
+        cleanup = function() {
+            super$cleanup()
+            if (self$workers_running > 0)
                 warning("Jobs may not have shut down properly")
         }
     ),
@@ -32,11 +39,12 @@ SLURM$setup = function() {
 
 # Static method, overwritten in qsys w/ user option
 SLURM$template = paste(sep="\n",
-	"#SBATCH --job-name={{ job_name }}",
-	"#SBATCH --output={{ log_file | /dev/null }}",
-	"#SBATCH --error={{ log_file | /dev/null }}",
-	"#SBATCH --mem-per-cpu={{ memory | 4096 }}",
+    "#!/bin/sh",
+    "#SBATCH --job-name={{ job_name }}",
+    "#SBATCH --output={{ log_file | /dev/null }}",
+    "#SBATCH --error={{ log_file | /dev/null }}",
+    "#SBATCH --mem-per-cpu={{ memory | 4096 }}",
+    "#SBATCH --array=1-{{ n_jobs }}",
     "",
     "ulimit -v $(( 1024 * {{ memory | 4096 }} ))",
-    "R --no-save --no-restore -e \\",
-    "    'clustermq:::worker(\"{{ job_name }}\", \"{{ master }}\", {{ memory | 4096 }})'")
+    "R --no-save --no-restore -e 'clustermq:::worker(\"{{ master }}\"')")

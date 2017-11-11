@@ -4,14 +4,14 @@
 \alias{worker}
 \title{R worker submitted as cluster job}
 \usage{
-worker(worker_id, master, memlimit)
+worker(master, timeout = 600, ...)
 }
 \arguments{
-\item{worker_id}{The ID of the worker (usually just numbered)}
-
 \item{master}{The master address (tcp://ip:port)}
 
-\item{memlimit}{Maximum memory before throwing an error}
+\item{timeout}{Time until worker shuts down without hearing from master}
+
+\item{...}{Catch-all to not break older template values (ignored)}
 }
 \description{
 Do not call this manually, the master will do that

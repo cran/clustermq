@@ -1,6 +1,6 @@
-#' LSF scheduler functions
+#' SSH scheduler functions
 #'
-#' Derives from QSys to provide LSF-specific functions
+#' Derives from QSys to provide SSH-specific functions
 SSH = R6::R6Class("SSH",
     inherit = QSys,
 
@@ -18,7 +18,7 @@ SSH = R6::R6Class("SSH",
             ctl_tunnel = sprintf("%i:localhost:%i", remote_port[1], local_port)
             job_tunnel = sprintf("%i:localhost:%i", remote_port[2], private$port)
             rcmd = sprintf("R --no-save --no-restore -e \\
-                           'clustermq:::proxy(ctl=%i, job=%i)' > %s 2>&1",
+                           'clustermq:::ssh_proxy(ctl=%i, job=%i)' > %s 2>&1",
                            remote_port[1], remote_port[2],
                            getOption("clustermq.ssh.log", default="/dev/null"))
             ssh_cmd = sprintf('ssh -f -R %s -R %s %s "%s"',
@@ -35,15 +35,16 @@ SSH = R6::R6Class("SSH",
 
             # send common data to ssh
             message("Sending common data ...")
-            rzmq::send.socket(private$proxy_socket, data=data)
+            rzmq::send.socket(private$proxy_socket, data=c(list(id="DO_SETUP"), data))
             msg = rzmq::receive.socket(private$proxy_socket)
             if (msg$id != "PROXY_READY")
                 stop("Sending failed")
 
-            private$set_common_data(redirect=msg$data_url)
+            self$set_common_data(id="DO_SETUP", redirect=msg$data_url,
+                                 token = msg$token)
         },
 
-        submit_job = function(template=list(), log_worker=FALSE) {
+        submit_jobs = function(n_jobs, template=list(), log_worker=FALSE) {
             if (is.null(private$master))
                 stop("Need to call listen_socket() first")
 
@@ -58,15 +59,17 @@ SSH = R6::R6Class("SSH",
 
             # forward the submit_job call via ssh
             call[2:length(call)] = evaluated
-            rzmq::send.socket(private$proxy_socket, data = list(id="PROXY_CMD", exec=call))
+            rzmq::send.socket(private$proxy_socket,
+                              data = list(id="PROXY_CMD", exec=call))
 
             msg = rzmq::receive.socket(private$proxy_socket)
             if (msg$id != "PROXY_CMD" || class(msg$reply) == "try-error")
                 stop(msg)
         },
 
-        cleanup = function(dirty=FALSE) {
+        cleanup = function() {
             rzmq::send.socket(private$proxy_socket, data=list(id="PROXY_STOP"))
+            super$cleanup()
         }
     ),
 

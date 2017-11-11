@@ -9,14 +9,21 @@ SGE = R6::R6Class("SGE",
             super$initialize(...)
         },
 
-        submit_job = function(template=list(), log_worker=FALSE) {
-            values = super$submit_job(template=template, log_worker=log_worker)
-            job_input = infuser::infuse(SGE$template, values)
-            system("qsub", input=job_input, ignore.stdout=TRUE)
+        submit_jobs = function(n_jobs, template=list(), log_worker=FALSE) {
+            template$n_jobs = n_jobs
+            filled = fill_template(template=SGE$template, master=private$master,
+                                   values=template, log_worker=log_worker)
+
+            success = system("qsub", input=filled, ignore.stdout=TRUE)
+            if (success != 0) {
+                print(filled)
+                stop("Job submission failed with error code ", success)
+            }
         },
 
-        cleanup = function(dirty=FALSE) {
-            if (dirty)
+        cleanup = function() {
+            super$cleanup()
+            if (self$workers_running > 0)
                 warning("Jobs may not have shut down properly")
         }
     ),
@@ -37,7 +44,7 @@ SGE$template = paste(sep="\n",
     "#$ -o {{ log_file | /dev/null }}   # output file",
     "#$ -cwd                            # use pwd as work dir",
     "#$ -V                              # use environment variable",
+    "#$ -t 1-{{ n_jobs }}               # submit jobs as array",
     "",
     "ulimit -v $(( 1024 * {{ memory | 4096 }} ))",
-    "R --no-save --no-restore -e \\",
-    "    'clustermq:::worker(\"{{ job_name }}\", \"{{ master }}\", {{ memory | 4096 }})'")
+    "R --no-save --no-restore -e 'clustermq:::worker(\"{{ master }}\"')")
