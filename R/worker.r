@@ -5,8 +5,12 @@
 #' @param master   The master address (tcp://ip:port)
 #' @param timeout  Time until worker shuts down without hearing from master
 #' @param ...      Catch-all to not break older template values (ignored)
-worker = function(master, timeout=600, ...) {
-    print(master)
+#' @param verbose  Whether to print debug messages
+worker = function(master, timeout=600, ..., verbose=TRUE) {
+    if (!verbose)
+        message = function(...) invisible(NULL)
+
+    message("Master: ", master)
     if (length(list(...)) > 0)
         warning("Arguments ignored: ", paste(names(list(...)), collapse=", "))
 
@@ -95,5 +99,6 @@ worker = function(master, timeout=600, ...) {
         calls = counter
     ))
 
-    print(run_time)
+    message(sprintf("Times: %.2fs [user], %.2fs [system], %.2fs [elapsed]",
+                    run_time[1], run_time[2], run_time[3]))
 }

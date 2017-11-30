@@ -11,22 +11,32 @@ SLURM = R6::R6Class("SLURM",
 
         submit_jobs = function(n_jobs, template=list(), log_worker=FALSE) {
             template$n_jobs = n_jobs
-            filled = fill_template(template=SLURM$template, master=private$master,
-                                   values=template, log_worker=log_worker)
+            template$master = private$master
+            private$job_id = template$job_name = paste0("cmq", self$id)
+            if (log_worker)
+                template$log_file = paste0(values$job_name, ".log")
+
+            filled = infuser::infuse(SLURM$template, template)
 
             success = system("sbatch", input=filled, ignore.stdout=TRUE)
             if (success != 0) {
                 print(filled)
                 stop("Job submission failed with error code ", success)
             }
+            private$workers_total = n_jobs
         },
 
         cleanup = function() {
             super$cleanup()
-            if (self$workers_running > 0)
-                warning("Jobs may not have shut down properly")
+            dirty = self$workers_running > 0
+            system(paste("scancel --jobname", private$job_id),
+                   ignore.stdout=!dirty, ignore.stderr=!dirty)
         }
     ),
+
+    private = list(
+        job_id = NULL
+    )
 )
 
 # Static method, process scheduler options and return updated object

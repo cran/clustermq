@@ -1,6 +1,6 @@
 Package: clustermq
 Title: Evaluate Function Calls on HPC Schedulers (LSF, SGE, SLURM)
-Version: 0.8.1
+Version: 0.8.2
 Author: Michael Schubert <mschu.dev@gmail.com>
 Maintainer: Michael Schubert <mschu.dev@gmail.com>
 Description: Evaluate arbitrary function calls using workers on HPC schedulers
@@ -17,6 +17,6 @@ Suggests: dplyr, knitr, parallel, testthat, tools
 VignetteBuilder: knitr
 RoxygenNote: 6.0.1
 NeedsCompilation: no
-Packaged: 2017-11-26 20:51:55 UTC; mschu
+Packaged: 2017-11-30 09:58:35 UTC; mschu
 Repository: CRAN
-Date/Publication: 2017-11-27 09:56:30 UTC
+Date/Publication: 2017-11-30 11:42:14 UTC

@@ -11,20 +11,25 @@ LSF = R6::R6Class("LSF",
 
         submit_jobs = function(n_jobs, template=list(), log_worker=FALSE) {
             template$n_jobs = n_jobs
-            filled = fill_template(template=LSF$template, master=private$master,
-                                   values=template, log_worker=log_worker)
+            template$master = private$master
+            private$job_id = template$job_name = paste0("cmq", self$id)
+            if (log_worker)
+                template$log_file = paste0(values$job_name, ".log")
+
+            filled = infuser::infuse(LSF$template, template)
 
             success = system("bsub", input=filled, ignore.stdout=TRUE)
             if (success != 0) {
                 print(filled)
                 stop("Job submission failed with error code ", success)
             }
+            private$workers_total = n_jobs
         },
 
         cleanup = function() {
             super$cleanup()
             dirty = self$workers_running > 0
-            system(paste("bkill", private$job_id),
+            system(paste("bkill -J", private$job_id),
                    ignore.stdout=!dirty, ignore.stderr=!dirty)
         }
     ),
@@ -45,7 +50,6 @@ LSF$setup = function() {
 # Static method, overwritten in qsys w/ user option
 LSF$template = paste(sep="\n",
     "#BSUB-J {{ job_name }}[1-{{ n_jobs }}]    # name of the job / array jobs",
-    "#BSUB-g {{ job_group | /rzmq }}           # group the job belongs to",
     "#BSUB-o {{ log_file | /dev/null }}        # stdout + stderr",
     "#BSUB-M {{ memory | 4096 }}               # Memory requirements in Mbytes",
     "#BSUB-R rusage[mem={{ memory | 4096  }}]  # Memory requirements in Mbytes",
