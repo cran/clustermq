@@ -2,6 +2,7 @@ context("proxy")
 
 test_that("control flow between proxy and master", {
     skip_on_os("windows")
+    skip_on_cran()
 
     # prerequesites
     context = rzmq::init.context()
@@ -11,6 +12,7 @@ test_that("control flow between proxy and master", {
     common_data = list(id="DO_SETUP", fun = function(x) x*2,
             const=list(), export=list(), seed=1)
     p = parallel::mcparallel(ssh_proxy(port, port, 'multicore'))
+    on.exit(tools::pskill(p$pid, tools::SIGKILL))
 
     # startup
     msg = recv(p, socket)
@@ -25,7 +27,7 @@ test_that("control flow between proxy and master", {
     token = msg$token
 
     # command execution
-    cmd = methods::Quote(Sys.getpid())
+    cmd = quote(Sys.getpid())
     send(socket, list(id="PROXY_CMD", exec=cmd))
     msg = recv(p, socket)
     expect_equal(msg$id, "PROXY_CMD")
@@ -48,4 +50,5 @@ test_that("control flow between proxy and master", {
 
     collect = clean_collect(p)
     expect_equal(as.integer(names(collect)), p$pid)
+    on.exit(NULL)
 })

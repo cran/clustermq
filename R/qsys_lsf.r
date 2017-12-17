@@ -27,14 +27,21 @@ LSF = R6::R6Class("LSF",
         },
 
         cleanup = function() {
-            super$cleanup()
-            dirty = self$workers_running > 0
-            system(paste("bkill -J", private$job_id),
-                   ignore.stdout=!dirty, ignore.stderr=!dirty)
+            success = super$cleanup()
+            self$finalize(success)
+        },
+
+        finalize = function(clean=FALSE) {
+            if (!private$is_cleaned_up) {
+                system(paste("bkill -J", private$job_id),
+                       ignore.stdout=clean, ignore.stderr=clean)
+                private$is_cleaned_up = TRUE
+            }
         }
     ),
 
     private = list(
+        is_cleaned_up = FALSE,
         job_id = NULL
     )
 )
