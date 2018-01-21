@@ -4,7 +4,6 @@ context = rzmq::init.context()
 socket = rzmq::init.socket(context, "ZMQ_REP")
 port = try(bind_avail(socket, 55000:57000, n_tries=10))
 master = paste("tcp://localhost", port, sep=":")
-Sys.sleep(0.5)
 
 start_worker = function() {
     skip_on_os("windows")
@@ -23,7 +22,7 @@ start_worker = function() {
 
 send_common = function(fun=function(x) x) {
     send(socket, list(id="DO_SETUP", fun=fun, const=list(),
-         export=list(), common_seed=1, token="token"))
+         export=list(), rettype="list", common_seed=1, token="token"))
     msg = recv(p, socket)
     testthat::expect_equal(msg$id, "WORKER_READY")
 }

@@ -14,7 +14,7 @@ SLURM = R6::R6Class("SLURM",
             template$master = private$master
             private$job_id = template$job_name = paste0("cmq", self$id)
             if (log_worker)
-                template$log_file = paste0(values$job_name, ".log")
+                template$log_file = paste0(template$job_name, ".log")
 
             filled = infuser::infuse(SLURM$template, template)
 
@@ -34,7 +34,7 @@ SLURM = R6::R6Class("SLURM",
         finalize = function(clean=FALSE) {
             if (!private$is_cleaned_up) {
                 system(paste("scancel --jobname", private$job_id),
-                       ignore.stdout=success, ignore.stderr=success)
+                       ignore.stdout=clean, ignore.stderr=clean)
                 private$is_cleaned_up = TRUE
             }
         }
