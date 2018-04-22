@@ -12,7 +12,7 @@
 
 <meta name="author" content="Michael Schubert" />
 
-<meta name="date" content="2018-01-21" />
+<meta name="date" content="2018-04-22" />
 
 <title>ClusterMQ: send R function calls as cluster jobs</title>
 
@@ -280,7 +280,7 @@ code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61
 
 <h1 class="title toc-ignore">ClusterMQ: send R function calls as cluster jobs</h1>
 <h4 class="author"><em>Michael Schubert</em></h4>
-<h4 class="date"><em>2018-01-21</em></h4>
+<h4 class="date"><em>2018-04-22</em></h4>
 
 
 
@@ -290,20 +290,20 @@ img {
     margin: 2em 2em 2em 2em !important;
 }
 </style>
-<section id="quick-start" class="level2">
+<div id="quick-start" class="section level2">
 <h2>Quick start</h2>
-<p>This package will allow you to send function calls as cluster jobs (using <a href="https://github.com/mschubert/clustermq/wiki/LSF">LSF</a>, <a href="https://github.com/mschubert/clustermq/wiki/SGE">SGE</a> or <a href="https://github.com/mschubert/clustermq/wiki/SLURM">SLURM</a>) using a minimal interface provided by the <code>Q</code> function:</p>
+<p>This package will allow you to send function calls as jobs on a computing cluster with a minimal interface provided by the <code>Q</code> function:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="co"># load the library and create a simple function</span></a>
 <a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw">library</span>(clustermq)</a>
 <a class="sourceLine" id="cb1-3" data-line-number="3">fx =<span class="st"> </span><span class="cf">function</span>(x) x <span class="op">*</span><span class="st"> </span><span class="dv">2</span></a>
 <a class="sourceLine" id="cb1-4" data-line-number="4"></a>
-<a class="sourceLine" id="cb1-5" data-line-number="5"><span class="co"># queue the function call </span></a>
+<a class="sourceLine" id="cb1-5" data-line-number="5"><span class="co"># queue the function call on your scheduler</span></a>
 <a class="sourceLine" id="cb1-6" data-line-number="6"><span class="kw">Q</span>(fx, <span class="dt">x=</span><span class="dv">1</span><span class="op">:</span><span class="dv">3</span>, <span class="dt">n_jobs=</span><span class="dv">1</span>)</a>
 <a class="sourceLine" id="cb1-7" data-line-number="7"><span class="co"># list(2,4,6)</span></a></code></pre></div>
-<p>Computations are done <a href="https://github.com/armstrtw/rzmq">entirely on the network</a> and without any temporary files on network-mounted storage, so there is no strain on the file system apart from starting up R once per job. This way, we can also send around data and results around a lot quicker.</p>
+<p>Computations are done <a href="https://github.com/armstrtw/rzmq">entirely on the network</a> and without any temporary files on network-mounted storage, so there is no strain on the file system apart from starting up R once per job. This way, we can also send data and results around a lot quicker.</p>
 <p>All calculations are load-balanced, i.e. workers that get their jobs done faster will also receive more function calls to work on. This is especially useful if not all calls return after the same time, or one worker has a high load.</p>
-</section>
-<section id="installation" class="level2">
+</div>
+<div id="installation" class="section level2">
 <h2>Installation</h2>
 <p>First, we need the <a href="https://github.com/ropensci/rzmq#installation">ZeroMQ</a> system library. Most likely, your package manager will provide this:</p>
 <div class="sourceCode" id="cb2"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="co"># You can skip this step on Windows and OS-X, the rzmq binary has it</span></a>
@@ -313,35 +313,35 @@ img {
 <a class="sourceLine" id="cb2-5" data-line-number="5"><span class="fu">sudo</span> apt-get install libzmq3-dev <span class="co"># Ubuntu</span></a>
 <a class="sourceLine" id="cb2-6" data-line-number="6"><span class="fu">sudo</span> yum install zeromq3-devel <span class="co"># Fedora</span></a>
 <a class="sourceLine" id="cb2-7" data-line-number="7"><span class="ex">pacman</span> -S zeromq <span class="co"># Archlinux</span></a></code></pre></div>
-<p>Then install the <code>clustermq</code> package in R (which automatically installs the rzmq package as well) from CRAN:</p>
+<p>Then install the <code>clustermq</code> package in R (which automatically installs the <code>rzmq</code> package as well) from CRAN:</p>
 <div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="kw">install.packages</span>(<span class="st">'clustermq'</span>)</a></code></pre></div>
-<p>Alternatively you can use <code>devtools</code> to install directly from <a href="https://github.com/mschubert/clustermq">Github</a>:</p>
+<p>Alternatively you can use <code>devtools</code> to install directly from Github:</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="co"># install.packages('devtools')</span></a>
 <a class="sourceLine" id="cb4-2" data-line-number="2">devtools<span class="op">::</span><span class="kw">install_github</span>(<span class="st">'mschubert/clustermq'</span>)</a>
 <a class="sourceLine" id="cb4-3" data-line-number="3"><span class="co"># devtools::install_github('mschubert/clustermq', ref=&quot;develop&quot;) # dev version</span></a></code></pre></div>
-<p>You should be good to go by trying one of the examples!</p>
-<p>However, some schedulers will need explicit setup.</p>
-</section>
-<section id="setting-up-the-scheduler-explicitly" class="level2">
+<p>You should be good to go!</p>
+<p>By default, <code>clustermq</code> will look for <code>sbatch</code> (SLURM), <code>bsub</code> (LSF), or <code>qsub</code> (SGE) in your <code>$PATH</code> and use the scheduler that is available. If the examples don’t run out of the box, you might need to set your scheduler explicitly.</p>
+</div>
+<div id="setting-up-the-scheduler-explicitly" class="section level2">
 <h2>Setting up the scheduler explicitly</h2>
-<p>An HPC cluster’s scheduler ensures that computing jobs are distributed to available worker nodes. Hence, this is what <code>clustermq</code> interfaces with in order to do computations.</p>
-<p>By default, <code>clustermq</code> will look for <code>sbatch</code> (SLURM), <code>bsub</code> (LSF), or <code>qsub</code> (SGE) in your <code>$PATH</code> and use the scheduler that is available.</p>
-<p>If you need specific options, see the links below to set up the respective schedulers.</p>
+<p>An HPC cluster’s scheduler ensures that computing jobs are distributed to available worker nodes. Hence, this is what clustermq interfaces with in order to do computations.</p>
+<p>We currently support the <a href="https://github.com/mschubert/clustermq/wiki#setting-up-the-scheduler">following schedulers</a>:</p>
 <ul>
-<li><a href="https://github.com/mschubert/clustermq/wiki/LSF">LSF</a></li>
-<li><a href="https://github.com/mschubert/clustermq/wiki/SGE">SGE</a></li>
-<li><a href="https://github.com/mschubert/clustermq/wiki/SLURM">SLURM</a></li>
-<li>if you want another scheduler, <a href="https://github.com/mschubert/clustermq/issues/new">open an issue</a></li>
+<li><a href="https://github.com/mschubert/clustermq/wiki/LSF">LSF</a> - <em>should work without setup</em></li>
+<li><a href="https://github.com/mschubert/clustermq/wiki/SGE">SGE</a> - <em>should work without setup</em></li>
+<li><a href="https://github.com/mschubert/clustermq/wiki/SLURM">SLURM</a> - <em>should work without setup</em></li>
+<li><a href="https://github.com/mschubert/clustermq/wiki/PBS">PBS</a>/<a href="https://github.com/mschubert/clustermq/wiki/Torque">Torque</a> - <em>needs SGE scheduler option and custom template</em></li>
 </ul>
-<p>You can also use the schedulers above <a href="SSH">from your local machine via SSH</a>.</p>
-</section>
-<section id="examples" class="level2">
+<p>You can also access each of these schedulers from your local machine via the <a href="https://github.com/mschubert/clustermq/wiki/SSH">SSH connector</a>. Results will be returned to your local session.</p>
+<p>If you need specific <a href="https://github.com/mschubert/clustermq/wiki/Environments">computing environments or containers</a>, you can activate them via the scheduler template.</p>
+</div>
+<div id="examples" class="section level2">
 <h2>Examples</h2>
 <p>The package is designed to distribute arbitrary function calls on HPC worker nodes. There are, however, a couple of caveats to observe as the R session running on a worker does not share your local memory.</p>
 <p>The simplest example is to a function call that is completely self-sufficient, and there is one argument (<code>x</code>) that we iterate through:</p>
 <div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1">fx =<span class="st"> </span><span class="cf">function</span>(x) x <span class="op">*</span><span class="st"> </span><span class="dv">2</span></a>
 <a class="sourceLine" id="cb5-2" data-line-number="2"><span class="kw">Q</span>(fx, <span class="dt">x=</span><span class="dv">1</span><span class="op">:</span><span class="dv">3</span>, <span class="dt">n_jobs=</span><span class="dv">1</span>)</a></code></pre></div>
-<pre><code>## Submitting 1 worker jobs (ID: 6430) ...</code></pre>
+<pre><code>## Submitting 1 worker jobs (ID: 6222) ...</code></pre>
 <pre><code>## [[1]]
 ## [1] 2
 ## 
@@ -382,7 +382,7 @@ img {
 <a class="sourceLine" id="cb14-5" data-line-number="5"><span class="st">        </span><span class="kw">head</span>()</a>
 <a class="sourceLine" id="cb14-6" data-line-number="6">}</a>
 <a class="sourceLine" id="cb14-7" data-line-number="7"><span class="kw">Q</span>(fx, <span class="dt">x=</span><span class="kw">list</span>(iris), <span class="dt">n_jobs=</span><span class="dv">1</span>)</a></code></pre></div>
-<pre><code>## Submitting 1 worker jobs (ID: 6776) ...</code></pre>
+<pre><code>## Submitting 1 worker jobs (ID: 7140) ...</code></pre>
 <pre><code>## 
 ## Attaching package: 'dplyr'</code></pre>
 <pre><code>## The following objects are masked from 'package:stats':
@@ -399,8 +399,8 @@ img {
 ## 4          4.6         3.1          1.5         0.2  setosa 14.26
 ## 5          5.0         3.6          1.4         0.2  setosa 18.00
 ## 6          5.4         3.9          1.7         0.4  setosa 21.06</code></pre>
-</section>
-<section id="usage" class="level2">
+</div>
+<div id="usage" class="section level2">
 <h2>Usage</h2>
 <p>The following arguments are supported by <code>Q</code>:</p>
 <ul>
@@ -420,8 +420,8 @@ img {
 <li><code>wait_time</code> - How long the master should wait between checking for results</li>
 </ul>
 <p>The full documentation is available by typing <code>?Q</code>.</p>
-</section>
-<section id="comparison-to-other-packages" class="level2">
+</div>
+<div id="comparison-to-other-packages" class="section level2">
 <h2>Comparison to other packages</h2>
 <p>There are some packages that provide high-level parallelization of R function calls on a computing cluster. A thorough comparison of features and performance is available <a href="https://github.com/mschubert/clustermq/wiki#comparison-to-other-packages">on the wiki</a>.</p>
 <p>Briefly, we compare how long it takes different HPC scheduler tools to submit, run and collect function calls of negligible processing time (multiplying a numeric value by 2). This serves to quantify the maximum throughput we can reach with <code>BatchJobs</code>, <code>batchtools</code> and <code>clustermq</code>.</p>
@@ -436,15 +436,15 @@ img {
 <p>Use <a href="https://github.com/mllg/batchtools"><code>batchtools</code></a> if:</p>
 <ul>
 <li>want to use a mature and well-tested package</li>
-<li>want more control over how your jobs are run</li>
-<li>don’t mind a few extra lines to register and schedule your jobs</li>
+<li>don’t mind that arguments to every call are written to/read from disc</li>
+<li>don’t mind there’s no load-balancing at run-time</li>
 </ul>
-<p>Use <a href="https://github.com/sahilseth/flowr"><code>flowr</code></a>, <a href="https://github.com/richfitz/remake"><code>remake</code></a> or <a href="https://snakemake.readthedocs.io/en/latest/">Snakemake</a> if:</p>
+<p>Use <a href="https://snakemake.readthedocs.io/en/latest/">Snakemake</a> (or <a href="https://github.com/sahilseth/flowr"><code>flowr</code></a>, <a href="https://github.com/richfitz/remake"><code>remake</code></a>, <a href="https://github.com/ropensci/drake"><code>drake</code></a>) if:</p>
 <ul>
 <li>you want to design and run a pipeline of different tools</li>
 </ul>
 <p>Don’t use <a href="https://cran.r-project.org/package=batch"><code>batch</code></a> (last updated 2013) or <a href="https://github.com/tudo-r/BatchJobs"><code>BatchJobs</code></a> (issues with SQLite on network-mounted storage).</p>
-</section>
+</div>
 
 
 

@@ -24,18 +24,15 @@ library(clustermq)
 
 ## Quick start
 
-This package will allow you to send function calls as cluster jobs (using
-[LSF](https://github.com/mschubert/clustermq/wiki/LSF),
-[SGE](https://github.com/mschubert/clustermq/wiki/SGE) or
-[SLURM](https://github.com/mschubert/clustermq/wiki/SLURM))
-using a minimal interface provided by the `Q` function:
+This package will allow you to send function calls as jobs on a computing
+cluster with a minimal interface provided by the `Q` function:
 
 ```{r eval=FALSE}
 # load the library and create a simple function
 library(clustermq)
 fx = function(x) x * 2
 
-# queue the function call 
+# queue the function call on your scheduler
 Q(fx, x=1:3, n_jobs=1)
 # list(2,4,6)
 ```
@@ -43,8 +40,8 @@ Q(fx, x=1:3, n_jobs=1)
 Computations are done [entirely on the
 network](https://github.com/armstrtw/rzmq) and without any temporary files on
 network-mounted storage, so there is no strain on the file system apart from
-starting up R once per job. This way, we can also send around data and results
-around a lot quicker.
+starting up R once per job. This way, we can also send data and results around
+a lot quicker.
 
 All calculations are load-balanced, i.e. workers that get their jobs done
 faster will also receive more function calls to work on. This is especially
@@ -67,14 +64,13 @@ pacman -S zeromq # Archlinux
 ```
 
 Then install the `clustermq` package in R (which automatically installs the
-rzmq package as well) from CRAN:
+`rzmq` package as well) from CRAN:
 
 ```{r eval=FALSE}
 install.packages('clustermq')
 ```
 
-Alternatively you can use `devtools` to install directly from
-[Github](https://github.com/mschubert/clustermq):
+Alternatively you can use `devtools` to install directly from Github:
 
 ```{r eval=FALSE}
 # install.packages('devtools')
@@ -82,28 +78,33 @@ devtools::install_github('mschubert/clustermq')
 # devtools::install_github('mschubert/clustermq', ref="develop") # dev version
 ```
 
-You should be good to go by trying one of the examples!
+You should be good to go!
 
-However, some schedulers will need explicit setup.
+By default, `clustermq` will look for `sbatch` (SLURM), `bsub` (LSF), or `qsub`
+(SGE) in your `$PATH` and use the scheduler that is available. If the examples
+don't run out of the box, you might need to set your scheduler explicitly.
 
 ## Setting up the scheduler explicitly
 
 An HPC cluster's scheduler ensures that computing jobs are distributed to
-available worker nodes. Hence, this is what `clustermq` interfaces with in
-order to do computations.
+available worker nodes. Hence, this is what clustermq interfaces with in order
+to do computations.
 
-By default, `clustermq` will look for `sbatch` (SLURM), `bsub` (LSF), or `qsub`
-(SGE) in your `$PATH` and use the scheduler that is available.
+We currently support the [following
+schedulers](https://github.com/mschubert/clustermq/wiki#setting-up-the-scheduler):
 
-If you need specific options, see the links below to set up the respective
-schedulers.
+* [LSF](https://github.com/mschubert/clustermq/wiki/LSF) - *should work without setup*
+* [SGE](https://github.com/mschubert/clustermq/wiki/SGE) - *should work without setup*
+* [SLURM](https://github.com/mschubert/clustermq/wiki/SLURM) - *should work without setup*
+* [PBS](https://github.com/mschubert/clustermq/wiki/PBS)/[Torque](https://github.com/mschubert/clustermq/wiki/Torque) - *needs SGE scheduler option and custom template*
 
-* [LSF](https://github.com/mschubert/clustermq/wiki/LSF)
-* [SGE](https://github.com/mschubert/clustermq/wiki/SGE)
-* [SLURM](https://github.com/mschubert/clustermq/wiki/SLURM)
-* if you want another scheduler, [open an issue](https://github.com/mschubert/clustermq/issues/new)
+You can also access each of these schedulers from your local machine via the
+[SSH connector](https://github.com/mschubert/clustermq/wiki/SSH). Results will
+be returned to your local session.
 
-You can also use the schedulers above [from your local machine via SSH](SSH).
+If you need specific [computing environments or
+containers](https://github.com/mschubert/clustermq/wiki/Environments), you can
+activate them via the scheduler template.
 
 ## Examples
 
@@ -200,12 +201,13 @@ In short, use `ClusterMQ` if you want:
 Use [`batchtools`](https://github.com/mllg/batchtools) if:
 
 * want to use a mature and well-tested package
-* want more control over how your jobs are run
-* don't mind a few extra lines to register and schedule your jobs
+* don't mind that arguments to every call are written to/read from disc
+* don't mind there's no load-balancing at run-time
 
-Use [`flowr`](https://github.com/sahilseth/flowr),
-[`remake`](https://github.com/richfitz/remake)
-or [Snakemake](https://snakemake.readthedocs.io/en/latest/) if:
+Use [Snakemake](https://snakemake.readthedocs.io/en/latest/) (or
+[`flowr`](https://github.com/sahilseth/flowr),
+[`remake`](https://github.com/richfitz/remake),
+[`drake`](https://github.com/ropensci/drake)) if:
 
 * you want to design and run a pipeline of different tools
 

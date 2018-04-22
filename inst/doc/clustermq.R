@@ -7,7 +7,7 @@ library(clustermq)
 #  library(clustermq)
 #  fx = function(x) x * 2
 #  
-#  # queue the function call
+#  # queue the function call on your scheduler
 #  Q(fx, x=1:3, n_jobs=1)
 #  # list(2,4,6)
 

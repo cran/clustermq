@@ -25,18 +25,19 @@ worker = function(master, timeout=600, ..., verbose=TRUE) {
                       pkgver=utils::packageVersion("clustermq")))
 	message("WORKER_UP to: ", master)
 
+    fmt = "%i in %.2fs [user], %.2fs [system], %.2fs [elapsed]"
     start_time = proc.time()
     counter = 0
     common_data = NA
     token = NA
 
     while(TRUE) {
-        tt = proc.time()
         events = rzmq::poll.socket(list(socket), list("read"), timeout=timeout)
         if (events[[1]]$read) {
+            tic = proc.time()
             msg = rzmq::receive.socket(socket)
-            message(sprintf("received after %.3fs: %s",
-                            (proc.time()-tt)[[3]], msg$id))
+            delta = proc.time() - tic
+            message(sprintf("> %s (%.3fs wait)", msg$id, delta[3]))
         } else
             stop("Timeout reached, terminating")
 
@@ -64,18 +65,31 @@ worker = function(master, timeout=600, ..., verbose=TRUE) {
                 }
             },
             "DO_CHUNK" = {
-                if (identical(token, msg$token)) {
-                    result = do.call(work_chunk, c(list(df=msg$chunk), common_data))
-                    message(sprintf("completed %i in %s: ",
-                                    length(result$result),
-                                    paste(proc.time() - tt, collapse=":")),
-                                    paste(rownames(msg$chunk), collapse=", "))
+                if (!identical(token, msg$token)) {
+                    msg = paste("mismatch chunk & common data", token, msg$token)
+                    rzmq::send.socket(socket, send.more=TRUE,
+                        data=list(id="WORKER_ERROR", msg=msg))
+                    message("WORKER_ERROR: ", msg)
+                    break
+                }
+
+                tic = proc.time()
+                result = tryCatch(
+                    do.call(work_chunk, c(list(df=msg$chunk), common_data)),
+                    error = function(e) e)
+                delta = proc.time() - tic
+
+                if ("error" %in% class(result)) {
+                    rzmq::send.socket(socket, send.more=TRUE,
+                        data=list(id="WORKER_ERROR", msg=conditionMessage(result)))
+                    message("WORKER_ERROR: ", conditionMessage(result))
+                    break
+                } else {
+                    message("completed ", sprintf(fmt, length(result$result),
+                        delta[1], delta[2], delta[3]))
                     send_data = c(list(id="WORKER_READY", token=token), result)
                     rzmq::send.socket(socket, send_data)
-                    counter = counter + length(result)
-                } else {
-                    msg = paste("mismatch chunk & common data", token, msg$token)
-                    rzmq::send.socket(socket, data=list(id="WORKER_ERROR", msg=msg))
+                    counter = counter + length(result$result)
                 }
             },
             "WORKER_WAIT" = {
@@ -95,10 +109,9 @@ worker = function(master, timeout=600, ..., verbose=TRUE) {
     rzmq::send.socket(socket, data = list(
         id = "WORKER_DONE",
         time = run_time,
-        mem = sum(gc()[,6]),
+        mem = 200 + sum(gc()[,6]),
         calls = counter
     ))
 
-    message(sprintf("Times: %.2fs [user], %.2fs [system], %.2fs [elapsed]",
-                    run_time[1], run_time[2], run_time[3]))
+    message("\nTotal: ", sprintf(fmt, counter, run_time[1], run_time[2], run_time[3]))
 }

@@ -18,9 +18,10 @@
 #'                       defaults to 1/sqrt(number_of_functon_calls)
 #' @param chunk_size     Number of function calls to chunk together
 #'                       defaults to 100 chunks per worker or max. 500 kb per chunk
+#' @param timeout         Maximum time in seconds to wait for worker (default: Inf)
 #' @return               A list of whatever `fun` returned
 master = function(qsys, iter, rettype="list", fail_on_error=TRUE,
-                  wait_time=NA, chunk_size=NA) {
+                  wait_time=NA, chunk_size=NA, timeout=Inf) {
     # prepare empty variables for managing results
     n_calls = nrow(iter)
     job_result = rep(vec_lookup[[rettype]], n_calls)
@@ -33,17 +34,21 @@ master = function(qsys, iter, rettype="list", fail_on_error=TRUE,
     pkgver = utils::packageVersion("clustermq")
     pkg_warn = TRUE
 
+    if (!qsys$reusable)
+        on.exit(qsys$cleanup())
+
     message("Running ", format(n_calls, big.mark=",", scientific=FALSE),
             " calculations (", chunk_size, " calls/chunk) ...")
-    pb = utils::txtProgressBar(min=0, max=n_calls, style=3)
+    pb = progress::progress_bar$new(total = n_calls,
+                                    format = "[:bar] :percent eta: :eta")
 
     # main event loop
     while((!shutdown && submit_index[1] <= n_calls) || qsys$workers_running > 0) {
         # wait for results only longer if we don't have all data yet
         if ((!shutdown && submit_index[1] <= n_calls) || jobs_running > 0)
-            msg = qsys$receive_data()
+            msg = qsys$receive_data(timeout=timeout)
         else {
-            msg = qsys$receive_data(timeout=10)
+            msg = qsys$receive_data(timeout=min(10, timeout))
             if (is.null(msg)) {
                 warning(sprintf("%i/%i workers did not shut down properly",
                         qsys$workers_running, qsys$workers), immediate.=TRUE)
@@ -66,7 +71,7 @@ master = function(qsys, iter, rettype="list", fail_on_error=TRUE,
                     call_id = names(msg$result)
                     jobs_running = jobs_running - length(call_id)
                     job_result[as.integer(call_id)] = msg$result
-                    utils::setTxtProgressBar(pb, submit_index[1] - jobs_running - 1)
+                    pb$tick(length(msg$result))
 
                     n_warnings = n_warnings + length(msg$warnings)
                     n_errors = n_errors + length(msg$errors)
@@ -106,14 +111,12 @@ master = function(qsys, iter, rettype="list", fail_on_error=TRUE,
                 qsys$disconnect_worker(msg)
             },
             "WORKER_ERROR" = {
-                stop("\nWorker error: ", msg$msg)
+                stop("\nWORKER_ERROR: ", msg$msg)
             }
         )
 
         Sys.sleep(wait_time)
     }
-
-    close(pb)
 
     summarize_result(job_result, n_errors, n_warnings, cond_msgs,
                      min(submit_index)-1, fail_on_error)

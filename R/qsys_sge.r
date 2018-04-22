@@ -10,6 +10,7 @@ SGE = R6::R6Class("SGE",
         },
 
         submit_jobs = function(n_jobs, template=list(), log_worker=FALSE) {
+            template = utils::modifyList(SGE$defaults, template)
             template$n_jobs = n_jobs
             template$master = private$master
             private$job_id = template$job_name = paste0("cmq", self$id)
@@ -49,8 +50,20 @@ SGE = R6::R6Class("SGE",
 # Static method, process scheduler options and return updated object
 SGE$setup = function() {
     user_template = getOption("clustermq.template.sge")
+    if (!is.null(user_template)) {
+        warning("scheduler-specific templates are deprecated; use clustermq.template instead")
+        SGE$template = readChar(user_template, file.info(user_template)$size)
+    }
+    user_template = getOption("clustermq.template")
     if (!is.null(user_template))
         SGE$template = readChar(user_template, file.info(user_template)$size)
+
+    user_defaults = getOption("clustermq.defaults")
+    if (!is.null(user_defaults))
+        SGE$defaults = user_defaults
+    else
+        SGE$defaults = list()
+
     SGE
 }
 

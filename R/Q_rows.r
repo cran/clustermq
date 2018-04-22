@@ -6,7 +6,7 @@
 Q_rows = function(df, fun, const=list(), export=list(), seed=128965,
         memory=NULL, template=list(), n_jobs=NULL, job_size=NULL,
         rettype="list", fail_on_error=TRUE, workers=NULL,
-        log_worker=FALSE, wait_time=NA, chunk_size=NA) {
+        log_worker=FALSE, wait_time=NA, chunk_size=NA, timeout=Inf) {
 
     # check if call args make sense
     if (!is.null(memory))
@@ -41,9 +41,6 @@ Q_rows = function(df, fun, const=list(), export=list(), seed=128965,
         do.call(qsys$set_common_data, data)
     }
 
-    if (!qsys$reusable)
-        on.exit(qsys$cleanup())
-
     # use heuristic for wait and chunk size
     if (is.na(wait_time))
         wait_time = min(0.03, ifelse(n_calls < 1e5, 1/sqrt(n_calls), 0))
@@ -57,11 +54,11 @@ Q_rows = function(df, fun, const=list(), export=list(), seed=128965,
     if (n_jobs == 0 || qsys_id == "LOCAL") {
         list2env(export, envir=environment(fun))
         re = work_chunk(df=df, fun=fun, const_args=const, rettype=rettype,
-                        common_seed=seed)
+                        common_seed=seed, progress=TRUE)
         summarize_result(re$result, length(re$errors), length(re$warnings),
                          c(re$errors, re$warnings), fail_on_error=fail_on_error)
     } else {
         master(qsys=qsys, iter=df, rettype=rettype, fail_on_error=fail_on_error,
-               wait_time=wait_time, chunk_size=chunk_size)
+               wait_time=wait_time, chunk_size=chunk_size, timeout=timeout)
     }
 }
