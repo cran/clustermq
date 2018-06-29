@@ -1,4 +1,4 @@
-cf5391bfd631010308fcdd488d957e6d *DESCRIPTION
+d390500954df47996df0b47b013774b1 *DESCRIPTION
 3b83ef96387f14655fc854ddc3c6bd57 *LICENSE
 5a9213165ae9725c56275b03258cd08d *NAMESPACE
 9bd48c2edf509eb138b9e980a57f8e7d *R/Q.r
@@ -23,10 +23,10 @@ f6a99dccc2ec98124a748821b6b00320 *R/qsys_pbs.r
 4fb84af5ccdc18cd8b294bda61bac28c *R/worker.r
 5ad9a1ddf679810b415e2532179b6c54 *R/workers.r
 28a05600264d7aeca0f8cd1938716957 *R/zzz.r
-c94ff985f7bfa3fa03369be6cc2d40b2 *build/vignette.rds
+3f96c731413676645d0c07929d1f109d *build/vignette.rds
 b4b8f12f59aa59c1a28d3b978d42000a *inst/doc/clustermq.R
 6f6feb3333ea680604f80ecdbfd682b5 *inst/doc/clustermq.Rmd
-4c87d15c559e0803dbf23c3af62b9292 *inst/doc/clustermq.html
+669b5331621283ea8b4ec344043ffd46 *inst/doc/clustermq.html
 d8accf51d48a1fb3a5b0ad84608e501c *man/DO_CHUNK.Rd
 403a21b5b7be77ef1b06e65401e6a1bf *man/DO_SETUP.Rd
 5f782e1bfef4856e2579b9f46136a1a7 *man/LOCAL.Rd
@@ -66,7 +66,7 @@ e76fb6cff3f9c1137e166375ae04cbda *man/workers.Rd
 0245b0d713028b3b6d37a1b37d60e13c *tests/testthat.R
 c16f9a8c7b5bccd2231bd7dd861d62c4 *tests/testthat/helper-util.r
 62065494d67f849f5c91a90fbe4dfca5 *tests/testthat/test-1-check_args.r
-f8ded5fa0d02524d40804963f5858d53 *tests/testthat/test-2-work_chunk.r
+3599e9fb951953347c68a6a24dc19a1a *tests/testthat/test-2-work_chunk.r
 3d8eb3bea26f2037ec9382d3fc81cc15 *tests/testthat/test-3-worker.r
 dca86c28360643fa5ec102e10e06428e *tests/testthat/test-4-qsys.r
 d93cf97b3d558cbb04c7fae1eba7c013 *tests/testthat/test-5-qsys_impl.r
