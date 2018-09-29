@@ -4,25 +4,17 @@ send = function(sock, data) {
 
 recv = function(p, sock, timeout=3L) {
     event = rzmq::poll.socket(list(sock), list("read"), timeout=timeout)
-    if (event[[1]]$read)
+    if (is.null(event[[1]]))
+        return(recv(p, sock, timeout=timeout))
+    else if (event[[1]]$read)
         rzmq::receive.socket(sock)
     else
-        clean_collect(p)
-}
-
-clean_collect = function(p, timeout=5L) {
-    re = parallel::mccollect(p, wait=FALSE, timeout=timeout)
-
-    if (is.null(re)) {
-        # if timeout is reached without results
-        tools::pskill(p$pid)
-        stop("Unclean worker shutdown")
-    }
-
-    invisible(re)
+        stop("Timeout reached")
 }
 
 has_connectivity = function(host, protocol="tcp") {
+    if (length(host) == 0 || nchar(host) == 0)
+        return(FALSE)
     context = rzmq::init.context()
     server = rzmq::init.socket(context, "ZMQ_REP")
     port = try(bind_avail(server, 55000:57000, n_tries=10))

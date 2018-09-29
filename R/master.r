@@ -14,14 +14,12 @@
 #' @param iter           Objects to be iterated in each function call
 #' @param rettype        Return type of function
 #' @param fail_on_error  If an error occurs on the workers, continue or fail?
-#' @param wait_time      Time to wait between messages; set 0 for short calls
-#'                       defaults to 1/sqrt(number_of_functon_calls)
 #' @param chunk_size     Number of function calls to chunk together
 #'                       defaults to 100 chunks per worker or max. 500 kb per chunk
 #' @param timeout         Maximum time in seconds to wait for worker (default: Inf)
 #' @return               A list of whatever `fun` returned
 master = function(qsys, iter, rettype="list", fail_on_error=TRUE,
-                  wait_time=NA, chunk_size=NA, timeout=Inf) {
+                  chunk_size=NA, timeout=Inf) {
     # prepare empty variables for managing results
     n_calls = nrow(iter)
     job_result = rep(vec_lookup[[rettype]], n_calls)
@@ -31,92 +29,61 @@ master = function(qsys, iter, rettype="list", fail_on_error=TRUE,
     n_errors = 0
     n_warnings = 0
     shutdown = FALSE
-    pkgver = utils::packageVersion("clustermq")
-    pkg_warn = TRUE
 
-    if (!qsys$reusable)
-        on.exit(qsys$cleanup())
+    on.exit(qsys$finalize())
 
     message("Running ", format(n_calls, big.mark=",", scientific=FALSE),
             " calculations (", chunk_size, " calls/chunk) ...")
     pb = progress::progress_bar$new(total = n_calls,
-                                    format = "[:bar] :percent eta: :eta")
+            format = "[:bar] :percent (:wup/:wtot wrk) eta: :eta")
 
     # main event loop
-    while((!shutdown && submit_index[1] <= n_calls) || qsys$workers_running > 0) {
-        # wait for results only longer if we don't have all data yet
-        if ((!shutdown && submit_index[1] <= n_calls) || jobs_running > 0)
-            msg = qsys$receive_data(timeout=timeout)
-        else {
-            msg = qsys$receive_data(timeout=min(10, timeout))
-            if (is.null(msg)) {
-                warning(sprintf("%i/%i workers did not shut down properly",
-                        qsys$workers_running, qsys$workers), immediate.=TRUE)
-                break
-            }
+    while((!shutdown && submit_index[1] <= n_calls) || jobs_running > 0) {
+        msg = qsys$receive_data(timeout=timeout)
+        pb$tick(length(msg$result),
+                tokens=list(wtot=qsys$workers, wup=qsys$workers_running))
+
+        # process the result data if we got some
+        if (!is.null(msg$result)) {
+            call_id = names(msg$result)
+            jobs_running = jobs_running - length(call_id)
+            job_result[as.integer(call_id)] = msg$result
+
+            n_warnings = n_warnings + length(msg$warnings)
+            n_errors = n_errors + length(msg$errors)
+            if (n_errors > 0 && fail_on_error == TRUE)
+                shutdown = TRUE
+            new_msgs = c(msg$errors, msg$warnings)
+            if (length(new_msgs > 0) && length(cond_msgs) < 50)
+                cond_msgs = c(cond_msgs, new_msgs[order(names(new_msgs))])
         }
 
-        switch(msg$id,
-            "WORKER_UP" = {
-                if (msg$pkgver != pkgver && pkg_warn) {
-                    warning("\nVersion mismatch: master has ", pkgver,
-                            ", worker ", msg$pkgver, immediate.=TRUE)
-                    pkg_warn = FALSE
-                }
-                qsys$send_common_data()
-            },
-            "WORKER_READY" = {
-                # process the result data if we got some
-                if (!is.null(msg$result)) {
-                    call_id = names(msg$result)
-                    jobs_running = jobs_running - length(call_id)
-                    job_result[as.integer(call_id)] = msg$result
-                    pb$tick(length(msg$result))
+        if (!shutdown && msg$token != qsys$data_token) {
+            qsys$send_common_data()
 
-                    n_warnings = n_warnings + length(msg$warnings)
-                    n_errors = n_errors + length(msg$errors)
-                    if (n_errors > 0 && fail_on_error == TRUE)
-                        shutdown = TRUE
-                    new_msgs = c(msg$errors, msg$warnings)
-                    if (length(new_msgs > 0) && length(cond_msgs) < 50)
-                        cond_msgs = c(cond_msgs, new_msgs[order(names(new_msgs))])
-                }
+        } else if (!shutdown && submit_index[1] <= n_calls) {
+            # if we have work, send it to the worker
+            submit_index = submit_index[submit_index <= n_calls]
+            qsys$send_job_data(chunk = chunk(iter, submit_index))
+            jobs_running = jobs_running + length(submit_index)
+            submit_index = submit_index + chunk_size
 
-                if (!shutdown && msg$token != qsys$data_token) {
-                    qsys$send_common_data()
-
-                } else if (!shutdown && submit_index[1] <= n_calls) {
-                    # if we have work, send it to the worker
-                    submit_index = submit_index[submit_index <= n_calls]
-                    qsys$send_job_data(chunk = chunk(iter, submit_index))
-                    jobs_running = jobs_running + length(submit_index)
-                    submit_index = submit_index + chunk_size
-
-                    # adapt chunk size towards end of processing
-                    cs = ceiling((n_calls - submit_index[1]) / qsys$workers_running)
-                    if (cs < chunk_size) {
-                        chunk_size = max(cs, 1)
-                        submit_index = submit_index[1:chunk_size]
-                    }
-
-                } else if (!shutdown && qsys$reusable) {
-                    qsys$send_wait()
-                    if (jobs_running == 0)
-                        break
-
-                } else # or else shut it down
-                    qsys$send_shutdown_worker()
-            },
-            "WORKER_DONE" = {
-                qsys$disconnect_worker(msg)
-            },
-            "WORKER_ERROR" = {
-                stop("\nWORKER_ERROR: ", msg$msg)
+            # adapt chunk size towards end of processing
+            cs = ceiling((n_calls - submit_index[1]) / qsys$workers_running)
+            if (cs < chunk_size) {
+                chunk_size = max(cs, 1)
+                submit_index = submit_index[1:chunk_size]
             }
-        )
 
-        Sys.sleep(wait_time)
+        } else if (!shutdown && qsys$reusable) {
+            qsys$send_wait()
+
+        } else # or else shut it down
+            qsys$send_shutdown_worker()
     }
+
+    if (qsys$reusable || qsys$cleanup())
+        on.exit(NULL)
 
     summarize_result(job_result, n_errors, n_warnings, cond_msgs,
                      min(submit_index)-1, fail_on_error)

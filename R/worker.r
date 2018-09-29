@@ -42,12 +42,18 @@ worker = function(master, timeout=600, ..., verbose=TRUE) {
             stop("Timeout reached, terminating")
 
         switch(msg$id,
+            "DO_CALL" = {
+                result = try(eval(msg$expr, envir=msg$env))
+                message("eval'd: ", msg$expr)
+                rzmq::send.socket(socket, data=list(id="WORKER_READY",
+                    token=token, ref=msg$ref, result=result))
+            },
             "DO_SETUP" = {
                 if (!is.null(msg$redirect)) {
                     data_socket = rzmq::init.socket(zmq_context, "ZMQ_REQ")
                     rzmq::connect.socket(data_socket, msg$redirect)
-                    rzmq::send.socket(data_socket, data=list(id="WORKER_UP"))
-                    message("WORKER_UP to redirect: ", msg$redirect)
+                    rzmq::send.socket(data_socket, data=list(id="WORKER_READY"))
+                    message("WORKER_READY to redirect: ", msg$redirect)
                     msg = rzmq::receive.socket(data_socket)
                 }
                 need = c("id", "fun", "const", "export", "rettype", "common_seed", "token")
@@ -109,7 +115,7 @@ worker = function(master, timeout=600, ..., verbose=TRUE) {
     rzmq::send.socket(socket, data = list(
         id = "WORKER_DONE",
         time = run_time,
-        mem = 200 + sum(gc()[,6]),
+        mem = sum(gc()[,6]),
         calls = counter
     ))
 

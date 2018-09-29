@@ -8,21 +8,22 @@
 #' @param qsys_id     Character string of QSys class to use
 #' @return            An instance of the QSys class
 #' @export
-workers = function(n_jobs, data=NULL, reuse=TRUE, template=list(),
-                   log_worker=FALSE, qsys_id=qsys_default) {
+workers = function(n_jobs, data=NULL, reuse=TRUE, template=list(), log_worker=FALSE,
+                   qsys_id=getOption("clustermq.scheduler", qsys_default)) {
     if (n_jobs == 0)
-        return(get("LOCAL", envir=parent.env(environment())))
+        return(get("LOCAL", envir=parent.env(environment()))$new())
 
+    gc() # be sure to clean up old rzmq handles (zeromq/libzmq/issues/1108)
     qsys = get(toupper(qsys_id), envir=parent.env(environment()))
-    if ("setup" %in% ls(qsys))
-        qsys = qsys$setup()
-
     qsys = qsys$new(data=data, reuse=reuse)
-    on.exit(qsys$cleanup)
 
+    if (log_worker && is.null(template$log_file)) {
+		warning("'log_worker' is deprecated, use template(log_file=...) instead")
+        template$log_file = paste0("cmq", qsys$id, ".log")
+	}
+
+    template$n_jobs = n_jobs
     message("Submitting ", n_jobs, " worker jobs (ID: ", qsys$id, ") ...")
-    qsys$submit_jobs(n_jobs, template=template, log_worker=log_worker)
-
-    on.exit()
+    do.call(qsys$submit_jobs, template)
     qsys
 }

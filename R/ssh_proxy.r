@@ -20,7 +20,7 @@ ssh_proxy = function(ctl, job, qsys_id=qsys_default) {
     # set up local network forward to master (or SSH tunnel)
     fwd_in = rzmq::init.socket(context, "ZMQ_XREP")
     net_port = bind_avail(fwd_in, 8000:9999)
-    net_fwd = sprintf("tcp://%s:%i", Sys.info()[['nodename']], net_port)
+    net_fwd = sprintf("tcp://%s:%i", host(), net_port)
     message("forwarding local network from: ", net_fwd)
 
     # connect to master
@@ -45,8 +45,7 @@ ssh_proxy = function(ctl, job, qsys_id=qsys_default) {
 
     while(TRUE) {
         events = rzmq::poll.socket(list(fwd_in, fwd_out, ctl_socket, qsys$sock),
-                                   rep(list("read"), 4),
-                                   timeout=-1L)
+                                   rep(list("read"), 4), timeout=-1L)
 
         # forwarding messages between workers and master
         if (events[[1]]$read)
@@ -65,6 +64,8 @@ ssh_proxy = function(ctl, job, qsys_id=qsys_default) {
                                       data = list(id="PROXY_CMD", reply=reply))
                 },
                 "PROXY_STOP" = {
+                    if (msg$finalize)
+                        qsys$finalize()
                     break
                 }
             )
@@ -72,10 +73,10 @@ ssh_proxy = function(ctl, job, qsys_id=qsys_default) {
 
         # socket connecting ssh_proxy to workers
         if (events[[4]]$read) {
-            msg = qsys$receive_data()
+            msg = qsys$receive_data(with_checks=FALSE)
             message("received: ", msg)
             switch(msg$id,
-                "WORKER_UP" = {
+                "WORKER_READY" = {
                     qsys$send_common_data()
                 }
             )

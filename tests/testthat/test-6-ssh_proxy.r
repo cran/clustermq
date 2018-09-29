@@ -3,9 +3,9 @@ context("proxy")
 has_localhost = has_connectivity("localhost")
 
 test_that("control flow between proxy and master", {
+    options(clustermq.ssh.host = "localhost")
     skip_if_not(has_localhost)
     skip_on_os("windows")
-    skip_on_cran()
 
     # prerequesites
     context = rzmq::init.context()
@@ -39,7 +39,7 @@ test_that("control flow between proxy and master", {
     worker = rzmq::init.socket(context, "ZMQ_REQ")
     rzmq::connect.socket(worker, proxy)
 
-    send(worker, list(id="WORKER_UP"))
+    send(worker, list(id="WORKER_READY"))
     msg = recv(p, worker)
     testthat::expect_equal(msg$id, "DO_SETUP")
     testthat::expect_equal(msg$token, token)
@@ -48,7 +48,7 @@ test_that("control flow between proxy and master", {
     # shutdown
     msg = list(id = "PROXY_STOP")
     send(socket, msg)
-    collect = clean_collect(p)
+    collect = suppressWarnings(parallel::mccollect(p))
     expect_equal(as.integer(names(collect)), p$pid)
     on.exit(NULL)
 })

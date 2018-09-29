@@ -12,10 +12,11 @@ LOCAL = R6::R6Class("LOCAL",
         set_common_data = function(...) {
         },
 
-        submit_jobs = function(n_jobs=0, template=list(), log_worker=FALSE) {
+        submit_jobs = function(...) {
         },
 
-        cleanup = function() {
+        cleanup = function(quiet=FALSE, timeout=3) {
+            invisible(TRUE)
         }
     )
 )

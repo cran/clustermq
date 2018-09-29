@@ -13,13 +13,24 @@ QSys = R6::R6Class("QSys",
         # @param ports   Range of ports to choose from
         # @param master  rZMQ address of the master (if NULL we create it here)
         initialize = function(data=NULL, reuse=FALSE, ports=6000:8000, master=NULL,
-                              protocol="tcp", node=Sys.info()[['nodename']]) {
+                              node=host(), protocol="tcp", template=NULL) {
             private$zmq_context = rzmq::init.context(3L)
             private$socket = rzmq::init.socket(private$zmq_context, "ZMQ_REP")
             private$port = bind_avail(private$socket, ports)
             private$listen = sprintf("%s://%s:%i", protocol, node, private$port)
             private$timer = proc.time()
             private$reuse = reuse
+
+            if (!is.null(template)) {
+                if (!file.exists(template))
+                    template = system.file(paste0(template, ".tmpl"),
+                                           package="clustermq", mustWork=TRUE)
+                if (file.exists(template))
+                    private$template = readChar(template, file.info(template)$size)
+                else
+                    stop("Template file does not exist: ", sQuote(template))
+            }
+            private$defaults = getOption("clustermq.defaults", list())
 
             if (is.null(master))
                 private$master = private$listen
@@ -38,14 +49,14 @@ QSys = R6::R6Class("QSys",
             stop(sQuote(submit_jobs), " must be overwritten")
         },
 
+        # Evaluate an arbitrary expression on a worker
+        send_call = function(expr, env=list(), ref=substitute(expr)) {
+            private$send(id="DO_CALL", expr=substitute(expr), env=env, ref=ref)
+        },
+
         # Sets the common data as an rzmq message object
         set_common_data = function(...) {
-            args = list(...)
-            for (n in names(args)) {
-                obj = args[[n]]
-                if (is.call(obj) || is.name(obj))
-                    args[[n]] = eval(obj, envir=parent.frame())
-            }
+            args = lapply(list(...), force)
 
             if ("fun" %in% names(args))
                 environment(args$fun) = .GlobalEnv
@@ -57,15 +68,14 @@ QSys = R6::R6Class("QSys",
                 args$token = private$token
             }
             private$common_data = rzmq::init.message(c(list(id="DO_SETUP"), args))
+            args$token
         },
 
         # Send the data common to all workers, only serialize once
         send_common_data = function() {
             if (is.null(private$common_data))
                 stop("Need to set_common_data() first")
-
             rzmq::send.message.object(private$socket, private$common_data)
-            private$workers_up = private$workers_up + 1
         },
 
         # Send iterated data to one worker
@@ -74,24 +84,49 @@ QSys = R6::R6Class("QSys",
         },
 
         # Wait for a total of 50 ms
-        send_wait = function() {
-            private$send(id="WORKER_WAIT", wait=0.05*self$workers_running)
+        send_wait = function(wait=0.05*self$workers_running) {
+            private$send(id="WORKER_WAIT", wait=wait)
         },
 
         # Read data from the socket
-        receive_data = function(timeout=Inf) {
+        receive_data = function(timeout=Inf, with_checks=TRUE) {
+            if (private$workers_total == 0 && with_checks)
+                stop("Trying to receive data without workers")
+
             if (is.infinite(timeout))
-                timeout = -1L
+                msec = -1L
             else
-                timeout = as.integer(timeout * 1000)
+                msec = as.integer(timeout * 1000)
 
             rcv = rzmq::poll.socket(list(private$socket),
-                                    list("read"), timeout=timeout)
+                                    list("read"), timeout=msec)
+            if (is.null(rcv[[1]]))
+                return(self$receive_data(timeout, with_checks=with_checks))
 
-            if (rcv[[1]]$read)
-                rzmq::receive.socket(private$socket)
-            else # timeout reached
-                NULL
+            if (rcv[[1]]$read) { # otherwise timeout reached
+                msg = rzmq::receive.socket(private$socket)
+                switch(msg$id,
+                    "WORKER_UP" = {
+                        if (!is.null(private$pkg_warn) && msg$pkgver != private$pkg_warn) {
+                            warning("\nVersion mismatch: master has ", private$pkg_warn,
+                                    ", worker ", msg$pkgver, immediate.=TRUE)
+                            private$pkg_warn = NULL
+                        }
+                        msg$id = "WORKER_READY"
+                        msg$token = "not set"
+                        private$workers_up = private$workers_up + 1
+                    },
+                    "WORKER_DONE" = {
+                        private$disconnect_worker(msg)
+                        if (private$workers_up > 0)
+                            return(self$receive_data(timeout, with_checks=with_checks))
+                        else if (with_checks)
+                            stop("Trying to receive data after work finished")
+                    },
+                    "WORKER_ERROR" = stop("\nWORKER_ERROR: ", msg$msg)
+                )
+                msg
+            }
         },
 
         # Send shutdown signal to worker
@@ -99,48 +134,34 @@ QSys = R6::R6Class("QSys",
             private$send(id="WORKER_STOP")
         },
 
-        disconnect_worker = function(msg) {
-            private$send()
-            private$workers_up = private$workers_up - 1
-            private$worker_stats = c(private$worker_stats, list(msg))
-        },
-
         # Make sure all resources are closed properly
-        cleanup = function() {
-            while(self$workers_running > 0) {
-                msg = self$receive_data(timeout=5)
+        cleanup = function(quiet=FALSE, timeout=5) {
+            while(private$workers_up > 0) {
+                msg = self$receive_data(timeout=timeout, with_checks=FALSE)
                 if (is.null(msg)) {
                     warning(sprintf("%i/%i workers did not shut down properly",
                             self$workers_running, self$workers), immediate.=TRUE)
                     break
-                } else if (msg$id == "WORKER_READY")
-                    self$send_shutdown_worker()
-                else if (msg$id == "WORKER_DONE")
-                    self$disconnect_worker(msg)
-                else
-                    warning("something went wrong during cleanup")
+                }
+                switch(msg$id,
+                    "WORKER_UP" = {
+                        self$workers_running = self$workers_running + 1
+                        self$send_shutdown_worker()
+                    },
+                    "WORKER_READY" = self$send_shutdown_worker(),
+                    "WORKER_DONE" = next,
+                    warning("Unexpected message ID: ", sQuote(msg$id))
+                )
             }
 
-            success = self$workers_running == 0
-            self$summary_stats()
-            success
-        },
-
-        # Compute summary statistics for workers
-        summary_stats = function() {
-            times = lapply(private$worker_stats, function(w) w$time)
-            max_mem = max(sapply(private$worker_stats, function(w) w$mem))
-            wt = Reduce(`+`, times) / length(times)
-            rt = proc.time() - private$timer
-
-            if (class(wt) != "proc_time")
-                wt = rep(NA, 3)
-            if (length(max_mem) != 1)
-                max_mem = NA
-
-            fmt = "Master: [%.1fs %.1f%% CPU]; Worker: [avg %.1f%% CPU, max %.1f Mb]"
-            message(sprintf(fmt, rt[[3]], 100*(rt[[1]]+rt[[2]])/rt[[3]],
-                            100*(wt[[1]]+wt[[2]])/wt[[3]], max_mem))
+            success = self$workers == 0
+            if (!quiet)
+                private$summary_stats()
+            if (success)
+                private$is_cleaned_up = TRUE
+            else
+                self$finalize(quiet=quiet || self$workers_running == 0)
+            invisible(success)
         }
     ),
 
@@ -162,16 +183,56 @@ QSys = R6::R6Class("QSys",
         listen = NULL,
         timer = NULL,
         common_data = NULL,
-        token = "not set",
+        token = NA,
         workers_total = 0,
         workers_up = 0,
         worker_stats = list(),
         reuse = NULL,
+        template = NULL,
+        defaults = list(),
+        is_cleaned_up = FALSE,
+        pkg_warn = utils::packageVersion("clustermq"),
 
         send = function(..., serialize=TRUE) {
             rzmq::send.socket(socket = private$socket,
                               data = list(...),
                               serialize = serialize)
+        },
+
+        disconnect_worker = function(msg) {
+            private$send()
+            private$workers_up = private$workers_up - 1
+            private$workers_total = private$workers_total - 1
+            private$worker_stats = c(private$worker_stats, list(msg))
+        },
+
+        fill_options = function(...) {
+            values = utils::modifyList(private$defaults, list(...))
+            values$master = private$master
+            if (!"job_name" %in% names(values))
+                values$job_name = paste0("cmq", private$port)
+            private$workers_total = values$n_jobs
+            values
+        },
+
+        fill_template = function(values) {
+            infuser::infuse(private$template, values)
+        },
+
+        summary_stats = function() {
+            times = lapply(private$worker_stats, function(w) w$time)
+            max_mem = Reduce(max, lapply(private$worker_stats, function(w) w$mem))
+            wt = Reduce(`+`, times) / length(times)
+            rt = proc.time() - private$timer
+
+            if (class(wt) != "proc_time")
+                wt = rep(NA, 3)
+            if (length(max_mem) != 1)
+                max_mem = NA
+
+            fmt = "Master: [%.1fs %.1f%% CPU]; Worker: [avg %.1f%% CPU, max %.1f Mb]"
+            message(sprintf(fmt, rt[[3]], 100*(rt[[1]]+rt[[2]])/rt[[3]],
+                            100*(wt[[1]]+wt[[2]])/wt[[3]], max_mem + 200))
         }
     ),
 

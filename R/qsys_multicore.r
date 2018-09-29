@@ -9,31 +9,39 @@ MULTICORE = R6::R6Class("MULTICORE",
             super$initialize(..., node="localhost")
         },
 
-        submit_jobs = function(n_jobs, template=list(), log_worker=FALSE) {
+        submit_jobs = function(n_jobs, ...) {
             cmd = quote(clustermq:::worker(private$master, verbose=FALSE))
             for (i in seq_len(n_jobs)) {
-                p = parallel::mcparallel(cmd, silent=TRUE, detached=TRUE)
-                private$pids = c(private$pids, p$pid)
+                p = parallel::mcparallel(cmd, silent=TRUE)
+                private$children[[as.character(p$pid)]] = p
             }
             private$workers_total = n_jobs
         },
 
-        cleanup = function() {
-            success = super$cleanup()
-            if (success)
-                private$pids = NULL
-            self$finalize()
+        cleanup = function(quiet=FALSE, timeout=3) {
+            success = super$cleanup(quiet=quiet, timeout=timeout)
+            private$collect_children(wait=success, timeout=timeout)
+            invisible(success && length(private$children) == 0)
         },
 
         finalize = function() {
-            if (length(private$pids) > 0) {
-                tools::pskill(private$pids, tools::SIGKILL)
-                private$pids = NULL
+            private$collect_children(wait=FALSE, timeout=0)
+            running = names(private$children)
+            if (length(running) > 0) {
+                warning("Unclean shutdown for PIDs: ", paste(running, collapse=", "))
+                tools::pskill(running, tools::SIGKILL)
             }
         }
     ),
 
     private = list(
-        pids = NULL
+        collect_children = function(...) {
+            pids = as.integer(names(private$children))
+            res = suppressWarnings(parallel::mccollect(pids, ...))
+            finished = intersect(names(private$children), names(res))
+            private$children[finished] = NULL
+        },
+
+        children = list()
     )
 )

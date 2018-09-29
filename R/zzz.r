@@ -4,12 +4,15 @@
 #' to the object that contains the desired queueing system. We further call
 #' its setup() function if it exists, and set the variable 'qsys_id' to
 #' the scheduler we use
+#'
+#' @param libname  default arg for compatibility
+#' @param pkgname  default arg for compatibility
 .onLoad = function(libname, pkgname) {
     qsys_default = toupper(getOption('clustermq.scheduler'))
 
     if (length(qsys_default) == 0) {
         qname = c("SLURM", "LSF", "SGE", "LOCAL")
-        exec = Sys.which(c("sbatch", "bsub", "qsh"))
+        exec = Sys.which(c("sbatch", "bsub", "qsub"))
         select = c(which(nchar(exec) > 0), 4)[1]
         qsys_default = qname[select]
     }
@@ -18,6 +21,9 @@
 }
 
 #' Report queueing system on package attach if not set
+#'
+#' @param libname  default arg for compatibility
+#' @param pkgname  default arg for compatibility
 .onAttach = function(libname, pkgname) {
     if (is.null(getOption("clustermq.scheduler"))) {
         packageStartupMessage("* Option 'clustermq.scheduler' not set, ",
