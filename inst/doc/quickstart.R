@@ -37,9 +37,9 @@ Q(fx, x=1:3, export=list(y=10), n_jobs=1)
 
 ## ------------------------------------------------------------------------
 fx = function(x) {
-    library(dplyr)
+    `%>%` = dplyr::`%>%`
     x %>%
-        mutate(area = Sepal.Length * Sepal.Width) %>%
+        dplyr::mutate(area = Sepal.Length * Sepal.Width) %>%
         head()
 }
 Q(fx, x=list(iris), n_jobs=1)

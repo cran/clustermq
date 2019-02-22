@@ -18,6 +18,7 @@
 #'                       defaults to 100 chunks per worker or max. 500 kb per chunk
 #' @param timeout         Maximum time in seconds to wait for worker (default: Inf)
 #' @return               A list of whatever `fun` returned
+#' @keywords  internal
 master = function(qsys, iter, rettype="list", fail_on_error=TRUE,
                   chunk_size=NA, timeout=Inf) {
     # prepare empty variables for managing results
@@ -36,6 +37,7 @@ master = function(qsys, iter, rettype="list", fail_on_error=TRUE,
             " calculations (", chunk_size, " calls/chunk) ...")
     pb = progress::progress_bar$new(total = n_calls,
             format = "[:bar] :percent (:wup/:wtot wrk) eta: :eta")
+    pb$tick(0)
 
     # main event loop
     while((!shutdown && submit_index[1] <= n_calls) || jobs_running > 0) {

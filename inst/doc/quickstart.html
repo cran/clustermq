@@ -10,16 +10,14 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<meta name="author" content="Michael Schubert" />
 
-<meta name="date" content="2018-09-27" />
 
-<title>ClusterMQ: send R function calls as cluster jobs</title>
+<title>ClusterMQ Quick Start</title>
 
 
 
 <style type="text/css">code{white-space: pre;}</style>
-<style type="text/css">
+<style type="text/css" data-origin="pandoc">
 div.sourceCode { overflow-x: auto; }
 table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
   margin: 0; padding: 0; vertical-align: baseline; border: none; }
@@ -55,7 +53,29 @@ code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
 code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
 code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
 code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+
 </style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' || rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
 
 
 
@@ -68,9 +88,7 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 
 
-<h1 class="title toc-ignore">ClusterMQ: send R function calls as cluster jobs</h1>
-<h4 class="author"><em>Michael Schubert</em></h4>
-<h4 class="date"><em>2018-09-27</em></h4>
+<h1 class="title toc-ignore">ClusterMQ Quick Start</h1>
 
 
 
@@ -83,8 +101,6 @@ code {
     border: 0px !important;
 }
 </style>
-<div id="clustermq-send-r-function-calls-as-cluster-jobs" class="section level1">
-<h1>ClusterMQ: send R function calls as cluster jobs</h1>
 <p>This package will allow you to send function calls as jobs on a computing cluster with a minimal interface provided by the <code>Q</code> function:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># load the library and create a simple function</span>
 <span class="kw">library</span>(clustermq)
@@ -92,7 +108,7 @@ fx =<span class="st"> </span><span class="cf">function</span>(x) x <span class="
 
 <span class="co"># queue the function call on your scheduler</span>
 <span class="kw">Q</span>(fx, <span class="dt">x=</span><span class="dv">1</span><span class="op">:</span><span class="dv">3</span>, <span class="dt">n_jobs=</span><span class="dv">1</span>)
-<span class="co">#&gt; Submitting 1 worker jobs (ID: 6096) ...</span>
+<span class="co">#&gt; Submitting 1 worker jobs (ID: 6697) ...</span>
 <span class="co">#&gt; [[1]]</span>
 <span class="co">#&gt; [1] 2</span>
 <span class="co">#&gt; </span>
@@ -106,13 +122,13 @@ fx =<span class="st"> </span><span class="cf">function</span>(x) x <span class="
 <div id="installation" class="section level2">
 <h2>Installation</h2>
 <p>First, we need the <a href="https://github.com/ropensci/rzmq#installation">ZeroMQ</a> system library. Most likely, your package manager will provide this:</p>
-<div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash"><span class="co"># You can skip this step on Windows and OS-X, the rzmq binary has it</span>
+<div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash"><span class="co"># You can skip this step on Windows and macOS, the rzmq binary has it</span>
 <span class="co"># On a computing cluster, we recommend to use Conda or Linuxbrew</span>
-<span class="ex">brew</span> install zeromq <span class="co"># Linuxbrew, Homebrew on OS-X</span>
+<span class="ex">brew</span> install zeromq <span class="co"># Linuxbrew, Homebrew on macOS</span>
 <span class="ex">conda</span> install zeromq <span class="co"># Conda</span>
 <span class="fu">sudo</span> apt-get install libzmq3-dev <span class="co"># Ubuntu</span>
 <span class="fu">sudo</span> yum install zeromq3-devel <span class="co"># Fedora</span>
-<span class="ex">pacman</span> -S zeromq <span class="co"># Archlinux</span></code></pre></div>
+<span class="ex">pacman</span> -S zeromq <span class="co"># Arch Linux</span></code></pre></div>
 <p>Then install the <code>clustermq</code> package in R (which automatically installs the <code>rzmq</code> package as well) from CRAN:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">install.packages</span>(<span class="st">'clustermq'</span>)</code></pre></div>
 <p>Alternatively you can use <code>devtools</code> to install directly from Github:</p>
@@ -153,7 +169,7 @@ devtools<span class="op">::</span><span class="kw">install_github</span>(<span c
 <p>Non-iterated arguments are supported by the <code>const</code> argument:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">fx =<span class="st"> </span><span class="cf">function</span>(x, y) x <span class="op">*</span><span class="st"> </span><span class="dv">2</span> <span class="op">+</span><span class="st"> </span>y
 <span class="kw">Q</span>(fx, <span class="dt">x=</span><span class="dv">1</span><span class="op">:</span><span class="dv">3</span>, <span class="dt">const=</span><span class="kw">list</span>(<span class="dt">y=</span><span class="dv">10</span>), <span class="dt">n_jobs=</span><span class="dv">1</span>)
-<span class="co">#&gt; Submitting 1 worker jobs (ID: 7140) ...</span>
+<span class="co">#&gt; Submitting 1 worker jobs (ID: 6855) ...</span>
 <span class="co">#&gt; [[1]]</span>
 <span class="co">#&gt; [1] 12</span>
 <span class="co">#&gt; </span>
@@ -165,7 +181,7 @@ devtools<span class="op">::</span><span class="kw">install_github</span>(<span c
 <p>If a function relies on objects in its environment that are not passed as arguments, they can be exported using the <code>export</code> argument:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">fx =<span class="st"> </span><span class="cf">function</span>(x) x <span class="op">*</span><span class="st"> </span><span class="dv">2</span> <span class="op">+</span><span class="st"> </span>y
 <span class="kw">Q</span>(fx, <span class="dt">x=</span><span class="dv">1</span><span class="op">:</span><span class="dv">3</span>, <span class="dt">export=</span><span class="kw">list</span>(<span class="dt">y=</span><span class="dv">10</span>), <span class="dt">n_jobs=</span><span class="dv">1</span>)
-<span class="co">#&gt; Submitting 1 worker jobs (ID: 6776) ...</span>
+<span class="co">#&gt; Submitting 1 worker jobs (ID: 6855) ...</span>
 <span class="co">#&gt; [[1]]</span>
 <span class="co">#&gt; [1] 12</span>
 <span class="co">#&gt; </span>
@@ -176,21 +192,13 @@ devtools<span class="op">::</span><span class="kw">install_github</span>(<span c
 <span class="co">#&gt; [1] 16</span></code></pre></div>
 <p>If we want to use a package function we need to load it on the worker using a <code>library()</code> call or referencing it with <code>package_name::</code>:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">fx =<span class="st"> </span><span class="cf">function</span>(x) {
-    <span class="kw">library</span>(dplyr)
+    <span class="st">`</span><span class="dt">%&gt;%</span><span class="st">`</span> =<span class="st"> </span>dplyr<span class="op">::</span><span class="st">`</span><span class="dt">%&gt;%</span><span class="st">`</span>
     x <span class="op">%&gt;%</span>
-<span class="st">        </span><span class="kw">mutate</span>(<span class="dt">area =</span> Sepal.Length <span class="op">*</span><span class="st"> </span>Sepal.Width) <span class="op">%&gt;%</span>
+<span class="st">        </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(<span class="dt">area =</span> Sepal.Length <span class="op">*</span><span class="st"> </span>Sepal.Width) <span class="op">%&gt;%</span>
 <span class="st">        </span><span class="kw">head</span>()
 }
 <span class="kw">Q</span>(fx, <span class="dt">x=</span><span class="kw">list</span>(iris), <span class="dt">n_jobs=</span><span class="dv">1</span>)
-<span class="co">#&gt; Submitting 1 worker jobs (ID: 6181) ...</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; Attaching package: 'dplyr'</span>
-<span class="co">#&gt; The following objects are masked from 'package:stats':</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt;     filter, lag</span>
-<span class="co">#&gt; The following objects are masked from 'package:base':</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt;     intersect, setdiff, setequal, union</span>
+<span class="co">#&gt; Submitting 1 worker jobs (ID: 6855) ...</span>
 <span class="co">#&gt; [[1]]</span>
 <span class="co">#&gt;   Sepal.Length Sepal.Width Petal.Length Petal.Width Species  area</span>
 <span class="co">#&gt; 1          5.1         3.5          1.4         0.2  setosa 17.85</span>
@@ -260,7 +268,6 @@ devtools<span class="op">::</span><span class="kw">install_github</span>(<span c
 <li>you want to design and run a pipeline of different tools</li>
 </ul>
 <p>Don’t use <a href="https://cran.r-project.org/package=batch"><code>batch</code></a> (last updated 2013) or <a href="https://github.com/tudo-r/BatchJobs"><code>BatchJobs</code></a> (issues with SQLite on network-mounted storage).</p>
-</div>
 </div>
 
 
