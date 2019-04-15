@@ -18,41 +18,67 @@
 
 <style type="text/css">code{white-space: pre;}</style>
 <style type="text/css" data-origin="pandoc">
-div.sourceCode { overflow-x: auto; }
-table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
-  margin: 0; padding: 0; vertical-align: baseline; border: none; }
-table.sourceCode { width: 100%; line-height: 100%; }
-td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
-td.sourceCode { padding-left: 5px; }
-code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
-code > span.dt { color: #902000; } /* DataType */
-code > span.dv { color: #40a070; } /* DecVal */
-code > span.bn { color: #40a070; } /* BaseN */
-code > span.fl { color: #40a070; } /* Float */
-code > span.ch { color: #4070a0; } /* Char */
-code > span.st { color: #4070a0; } /* String */
-code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
-code > span.ot { color: #007020; } /* Other */
-code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
-code > span.fu { color: #06287e; } /* Function */
-code > span.er { color: #ff0000; font-weight: bold; } /* Error */
-code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
-code > span.cn { color: #880000; } /* Constant */
-code > span.sc { color: #4070a0; } /* SpecialChar */
-code > span.vs { color: #4070a0; } /* VerbatimString */
-code > span.ss { color: #bb6688; } /* SpecialString */
-code > span.im { } /* Import */
-code > span.va { color: #19177c; } /* Variable */
-code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-code > span.op { color: #666666; } /* Operator */
-code > span.bu { } /* BuiltIn */
-code > span.ex { } /* Extension */
-code > span.pp { color: #bc7a00; } /* Preprocessor */
-code > span.at { color: #7d9029; } /* Attribute */
-code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
-code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; left: -4em; }
+pre.numberSource a.sourceLine::before
+  { content: attr(title);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
 
 </style>
 <script>
@@ -79,7 +105,189 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 
 
-<link href="data:text/css;charset=utf-8,body%20%7B%0Abackground%2Dcolor%3A%20%23fff%3B%0Amargin%3A%201em%20auto%3B%0Amax%2Dwidth%3A%20700px%3B%0Aoverflow%3A%20visible%3B%0Apadding%2Dleft%3A%202em%3B%0Apadding%2Dright%3A%202em%3B%0Afont%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0Afont%2Dsize%3A%2014px%3B%0Aline%2Dheight%3A%201%2E35%3B%0A%7D%0A%23header%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0A%23TOC%20%7B%0Aclear%3A%20both%3B%0Amargin%3A%200%200%2010px%2010px%3B%0Apadding%3A%204px%3B%0Awidth%3A%20400px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Aborder%2Dradius%3A%205px%3B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Afont%2Dsize%3A%2013px%3B%0Aline%2Dheight%3A%201%2E3%3B%0A%7D%0A%23TOC%20%2Etoctitle%20%7B%0Afont%2Dweight%3A%20bold%3B%0Afont%2Dsize%3A%2015px%3B%0Amargin%2Dleft%3A%205px%3B%0A%7D%0A%23TOC%20ul%20%7B%0Apadding%2Dleft%3A%2040px%3B%0Amargin%2Dleft%3A%20%2D1%2E5em%3B%0Amargin%2Dtop%3A%205px%3B%0Amargin%2Dbottom%3A%205px%3B%0A%7D%0A%23TOC%20ul%20ul%20%7B%0Amargin%2Dleft%3A%20%2D2em%3B%0A%7D%0A%23TOC%20li%20%7B%0Aline%2Dheight%3A%2016px%3B%0A%7D%0Atable%20%7B%0Amargin%3A%201em%20auto%3B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dcolor%3A%20%23DDDDDD%3B%0Aborder%2Dstyle%3A%20outset%3B%0Aborder%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0Aborder%2Dwidth%3A%202px%3B%0Apadding%3A%205px%3B%0Aborder%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dstyle%3A%20inset%3B%0Aline%2Dheight%3A%2018px%3B%0Apadding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0Aborder%2Dleft%2Dstyle%3A%20none%3B%0Aborder%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Ap%20%7B%0Amargin%3A%200%2E5em%200%3B%0A%7D%0Ablockquote%20%7B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Apadding%3A%200%2E25em%200%2E75em%3B%0A%7D%0Ahr%20%7B%0Aborder%2Dstyle%3A%20solid%3B%0Aborder%3A%20none%3B%0Aborder%2Dtop%3A%201px%20solid%20%23777%3B%0Amargin%3A%2028px%200%3B%0A%7D%0Adl%20%7B%0Amargin%2Dleft%3A%200%3B%0A%7D%0Adl%20dd%20%7B%0Amargin%2Dbottom%3A%2013px%3B%0Amargin%2Dleft%3A%2013px%3B%0A%7D%0Adl%20dt%20%7B%0Afont%2Dweight%3A%20bold%3B%0A%7D%0Aul%20%7B%0Amargin%2Dtop%3A%200%3B%0A%7D%0Aul%20li%20%7B%0Alist%2Dstyle%3A%20circle%20outside%3B%0A%7D%0Aul%20ul%20%7B%0Amargin%2Dbottom%3A%200%3B%0A%7D%0Apre%2C%20code%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0Aborder%2Dradius%3A%203px%3B%0Acolor%3A%20%23333%3B%0Awhite%2Dspace%3A%20pre%2Dwrap%3B%20%0A%7D%0Apre%20%7B%0Aborder%2Dradius%3A%203px%3B%0Amargin%3A%205px%200px%2010px%200px%3B%0Apadding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Acode%20%7B%0Afont%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0Afont%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0Apadding%3A%202px%200px%3B%0A%7D%0Adiv%2Efigure%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0Abackground%2Dcolor%3A%20%23FFFFFF%3B%0Apadding%3A%202px%3B%0Aborder%3A%201px%20solid%20%23DDDDDD%3B%0Aborder%2Dradius%3A%203px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Amargin%3A%200%205px%3B%0A%7D%0Ah1%20%7B%0Amargin%2Dtop%3A%200%3B%0Afont%2Dsize%3A%2035px%3B%0Aline%2Dheight%3A%2040px%3B%0A%7D%0Ah2%20%7B%0Aborder%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Apadding%2Dbottom%3A%202px%3B%0Afont%2Dsize%3A%20145%25%3B%0A%7D%0Ah3%20%7B%0Aborder%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Afont%2Dsize%3A%20120%25%3B%0A%7D%0Ah4%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0Amargin%2Dleft%3A%208px%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Ah5%2C%20h6%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23ccc%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Aa%20%7B%0Acolor%3A%20%230033dd%3B%0Atext%2Ddecoration%3A%20none%3B%0A%7D%0Aa%3Ahover%20%7B%0Acolor%3A%20%236666ff%3B%20%7D%0Aa%3Avisited%20%7B%0Acolor%3A%20%23800080%3B%20%7D%0Aa%3Avisited%3Ahover%20%7B%0Acolor%3A%20%23BB00BB%3B%20%7D%0Aa%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0Aa%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%20code%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%0A" rel="stylesheet" type="text/css" />
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#header {
+text-align: center;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
 
 </head>
 
@@ -106,27 +314,27 @@ code {
 <div id="zeromq" class="section level3">
 <h3>ZeroMQ</h3>
 <p>The <code>rzmq</code> package (which this package depends on) needs the system library ZeroMQ.</p>
-<div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash"><span class="co"># You can skip this step on Windows and macOS, the rzmq binary has it</span>
-<span class="ex">brew</span> install zeromq <span class="co"># Linuxbrew, Homebrew on macOS</span>
-<span class="ex">conda</span> install zeromq <span class="co"># Conda</span>
-<span class="fu">sudo</span> apt-get install libzmq3-dev <span class="co"># Ubuntu</span>
-<span class="fu">sudo</span> yum install zeromq3-devel <span class="co"># Fedora</span>
-<span class="ex">pacman</span> -S zeromq <span class="co"># Arch Linux</span></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb1-1" title="1"><span class="co"># You can skip this step on Windows and macOS, the rzmq binary has it</span></a>
+<a class="sourceLine" id="cb1-2" title="2"><span class="ex">brew</span> install zeromq <span class="co"># Linuxbrew, Homebrew on macOS</span></a>
+<a class="sourceLine" id="cb1-3" title="3"><span class="ex">conda</span> install zeromq <span class="co"># Conda</span></a>
+<a class="sourceLine" id="cb1-4" title="4"><span class="fu">sudo</span> apt-get install libzmq3-dev <span class="co"># Ubuntu</span></a>
+<a class="sourceLine" id="cb1-5" title="5"><span class="fu">sudo</span> yum install zeromq3-devel <span class="co"># Fedora</span></a>
+<a class="sourceLine" id="cb1-6" title="6"><span class="ex">pacman</span> -S zeromq <span class="co"># Arch Linux</span></a></code></pre></div>
 <p>More details can be found at the <a href="https://github.com/ropensci/rzmq#installation">rzmq project README</a>.</p>
 </div>
 <div id="r-package" class="section level3">
 <h3>R package</h3>
 <p>The latest stable version is available <a href="https://cran.r-project.org/package=clustermq">on CRAN</a>.</p>
 <p>Alternatively, it is also available on the <a href="https://github.com/mschubert/clustermq"><code>master</code></a> branch of the repository.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># from CRAN</span>
-<span class="kw">install.packages</span>(<span class="st">'clustermq'</span>)
-
-<span class="co"># from Github</span>
-<span class="co"># install.packages('devtools')</span>
-devtools<span class="op">::</span><span class="kw">install_github</span>(<span class="st">'mschubert/clustermq'</span>)</code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1"><span class="co"># from CRAN</span></a>
+<a class="sourceLine" id="cb2-2" title="2"><span class="kw">install.packages</span>(<span class="st">&#39;clustermq&#39;</span>)</a>
+<a class="sourceLine" id="cb2-3" title="3"></a>
+<a class="sourceLine" id="cb2-4" title="4"><span class="co"># from Github</span></a>
+<a class="sourceLine" id="cb2-5" title="5"><span class="co"># install.packages(&#39;devtools&#39;)</span></a>
+<a class="sourceLine" id="cb2-6" title="6">devtools<span class="op">::</span><span class="kw">install_github</span>(<span class="st">&#39;mschubert/clustermq&#39;</span>)</a></code></pre></div>
 <p>In the <a href="https://github.com/mschubert/clustermq/tree/develop"><code>develop</code></a> branch, we will introduce code changes and new features. These may contain bugs, poor documentation, or other inconveniences. This branch may not install at times. However, <a href="https://github.com/mschubert/clustermq/issues/new">feedback is very welcome</a>.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># install.packages('devtools')</span>
-devtools<span class="op">::</span><span class="kw">install_github</span>(<span class="st">'mschubert/clustermq'</span>, <span class="dt">ref=</span><span class="st">&quot;develop&quot;</span>)</code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1"><span class="co"># install.packages(&#39;devtools&#39;)</span></a>
+<a class="sourceLine" id="cb3-2" title="2">devtools<span class="op">::</span><span class="kw">install_github</span>(<span class="st">&#39;mschubert/clustermq&#39;</span>, <span class="dt">ref=</span><span class="st">&quot;develop&quot;</span>)</a></code></pre></div>
 </div>
 </div>
 <div id="configuration" class="section level2">
@@ -137,11 +345,11 @@ devtools<span class="op">::</span><span class="kw">install_github</span>(<span c
 <p>By default, we will take whichever scheduler we find and fall back on local processing. This will work in most, but not all cases.</p>
 <p>To set up a scheduler explicitly, see the following links:</p>
 <ul>
-<li><a href="LSF" class="uri">LSF</a></li>
-<li><a href="SGE" class="uri">SGE</a></li>
+<li><a href="LSF">LSF</a></li>
+<li><a href="SGE">SGE</a></li>
 <li><a href="SLURM">Slurm</a></li>
-<li><a href="Torque" class="uri">Torque</a></li>
-<li><a href="PBS" class="uri">PBS</a></li>
+<li><a href="Torque">Torque</a></li>
+<li><a href="PBS">PBS</a></li>
 <li>if you want another scheduler, <a href="https://github.com/mschubert/clustermq/issues/new">open an issue</a></li>
 </ul>
 </div>
@@ -150,11 +358,11 @@ devtools<span class="op">::</span><span class="kw">install_github</span>(<span c
 <p>There are reasons why you might prefer to not to work on the computing cluster directly but rather on your local machine instead. <a href="https://www.rstudio.com/">RStudio</a> is an excellent local IDE, it’s more responsive than and feature-rich than browser-based solutions (<a href="https://www.rstudio.com/products/rstudio/download-server/">RStudio server</a>, <a href="http://jupyter.org/">Project Jupyter</a>), and it avoids X forwarding issues when you want to look at plots you just made.</p>
 <p>Using this setup, however, you lost access to the computing cluster. Instead, you had to copy your data there, and then submit individual scripts as jobs, aggregating the data in the end again. <code>clustermq</code> is trying to solve this by providing a transparent SSH interface.</p>
 <p>In order to use <code>clustermq</code> from your local machine, the package needs to be installed on both there and on the computing cluster. On the computing cluster, <a href="https://github.com/mschubert/clustermq/wiki#setting-up-the-scheduler">set up your scheduler</a> and make sure <code>clustermq</code> runs there without problems. On your local machine, add the following options in your <code>~/.Rprofile</code>:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">options</span>(
-    <span class="dt">clustermq.scheduler =</span> <span class="st">&quot;ssh&quot;</span>,
-    <span class="dt">clustermq.ssh.host =</span> <span class="st">&quot;user@host&quot;</span>, <span class="co"># use your user and host, obviously</span>
-    <span class="dt">clustermq.ssh.log =</span> <span class="st">&quot;~/cmq_ssh.log&quot;</span> <span class="co"># log for easier debugging</span>
-)</code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" title="1"><span class="kw">options</span>(</a>
+<a class="sourceLine" id="cb4-2" title="2">    <span class="dt">clustermq.scheduler =</span> <span class="st">&quot;ssh&quot;</span>,</a>
+<a class="sourceLine" id="cb4-3" title="3">    <span class="dt">clustermq.ssh.host =</span> <span class="st">&quot;user@host&quot;</span>, <span class="co"># use your user and host, obviously</span></a>
+<a class="sourceLine" id="cb4-4" title="4">    <span class="dt">clustermq.ssh.log =</span> <span class="st">&quot;~/cmq_ssh.log&quot;</span> <span class="co"># log for easier debugging</span></a>
+<a class="sourceLine" id="cb4-5" title="5">)</a></code></pre></div>
 <p>We recommend that you <a href="https://www.digitalocean.com/community/tutorials/how-to-configure-ssh-key-based-authentication-on-a-linux-server">set up SSH keys</a> for password-less login.</p>
 </div>
 </div>
@@ -184,80 +392,83 @@ devtools<span class="op">::</span><span class="kw">install_github</span>(<span c
 <h3>Examples</h3>
 <p>The package is designed to distribute arbitrary function calls on HPC worker nodes. There are, however, a couple of caveats to observe as the R session running on a worker does not share your local memory.</p>
 <p>The simplest example is to a function call that is completely self-sufficient, and there is one argument (<code>x</code>) that we iterate through:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">fx =<span class="st"> </span><span class="cf">function</span>(x) x <span class="op">*</span><span class="st"> </span><span class="dv">2</span>
-<span class="kw">Q</span>(fx, <span class="dt">x=</span><span class="dv">1</span><span class="op">:</span><span class="dv">3</span>, <span class="dt">n_jobs=</span><span class="dv">1</span>)
-<span class="co">#&gt; Submitting 1 worker jobs (ID: 6855) ...</span>
-<span class="co">#&gt; [[1]]</span>
-<span class="co">#&gt; [1] 2</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; [[2]]</span>
-<span class="co">#&gt; [1] 4</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; [[3]]</span>
-<span class="co">#&gt; [1] 6</span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" title="1">fx =<span class="st"> </span><span class="cf">function</span>(x) x <span class="op">*</span><span class="st"> </span><span class="dv">2</span></a>
+<a class="sourceLine" id="cb5-2" title="2"><span class="kw">Q</span>(fx, <span class="dt">x=</span><span class="dv">1</span><span class="op">:</span><span class="dv">3</span>, <span class="dt">n_jobs=</span><span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb5-3" title="3"><span class="co">#&gt; Submitting 1 worker jobs (ID: 6855) ...</span></a>
+<a class="sourceLine" id="cb5-4" title="4"><span class="co">#&gt; [[1]]</span></a>
+<a class="sourceLine" id="cb5-5" title="5"><span class="co">#&gt; [1] 2</span></a>
+<a class="sourceLine" id="cb5-6" title="6"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb5-7" title="7"><span class="co">#&gt; [[2]]</span></a>
+<a class="sourceLine" id="cb5-8" title="8"><span class="co">#&gt; [1] 4</span></a>
+<a class="sourceLine" id="cb5-9" title="9"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb5-10" title="10"><span class="co">#&gt; [[3]]</span></a>
+<a class="sourceLine" id="cb5-11" title="11"><span class="co">#&gt; [1] 6</span></a></code></pre></div>
 <p>Non-iterated arguments are supported by the <code>const</code> argument:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">fx =<span class="st"> </span><span class="cf">function</span>(x, y) x <span class="op">*</span><span class="st"> </span><span class="dv">2</span> <span class="op">+</span><span class="st"> </span>y
-<span class="kw">Q</span>(fx, <span class="dt">x=</span><span class="dv">1</span><span class="op">:</span><span class="dv">3</span>, <span class="dt">const=</span><span class="kw">list</span>(<span class="dt">y=</span><span class="dv">10</span>), <span class="dt">n_jobs=</span><span class="dv">1</span>)
-<span class="co">#&gt; Submitting 1 worker jobs (ID: 6855) ...</span>
-<span class="co">#&gt; [[1]]</span>
-<span class="co">#&gt; [1] 12</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; [[2]]</span>
-<span class="co">#&gt; [1] 14</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; [[3]]</span>
-<span class="co">#&gt; [1] 16</span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" title="1">fx =<span class="st"> </span><span class="cf">function</span>(x, y) x <span class="op">*</span><span class="st"> </span><span class="dv">2</span> <span class="op">+</span><span class="st"> </span>y</a>
+<a class="sourceLine" id="cb6-2" title="2"><span class="kw">Q</span>(fx, <span class="dt">x=</span><span class="dv">1</span><span class="op">:</span><span class="dv">3</span>, <span class="dt">const=</span><span class="kw">list</span>(<span class="dt">y=</span><span class="dv">10</span>), <span class="dt">n_jobs=</span><span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb6-3" title="3"><span class="co">#&gt; Submitting 1 worker jobs (ID: 6855) ...</span></a>
+<a class="sourceLine" id="cb6-4" title="4"><span class="co">#&gt; [[1]]</span></a>
+<a class="sourceLine" id="cb6-5" title="5"><span class="co">#&gt; [1] 12</span></a>
+<a class="sourceLine" id="cb6-6" title="6"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb6-7" title="7"><span class="co">#&gt; [[2]]</span></a>
+<a class="sourceLine" id="cb6-8" title="8"><span class="co">#&gt; [1] 14</span></a>
+<a class="sourceLine" id="cb6-9" title="9"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb6-10" title="10"><span class="co">#&gt; [[3]]</span></a>
+<a class="sourceLine" id="cb6-11" title="11"><span class="co">#&gt; [1] 16</span></a></code></pre></div>
 <p>If a function relies on objects in its environment that are not passed as arguments, they can be exported using the <code>export</code> argument:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">fx =<span class="st"> </span><span class="cf">function</span>(x) x <span class="op">*</span><span class="st"> </span><span class="dv">2</span> <span class="op">+</span><span class="st"> </span>y
-<span class="kw">Q</span>(fx, <span class="dt">x=</span><span class="dv">1</span><span class="op">:</span><span class="dv">3</span>, <span class="dt">export=</span><span class="kw">list</span>(<span class="dt">y=</span><span class="dv">10</span>), <span class="dt">n_jobs=</span><span class="dv">1</span>)
-<span class="co">#&gt; Submitting 1 worker jobs (ID: 6855) ...</span>
-<span class="co">#&gt; [[1]]</span>
-<span class="co">#&gt; [1] 12</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; [[2]]</span>
-<span class="co">#&gt; [1] 14</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; [[3]]</span>
-<span class="co">#&gt; [1] 16</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" title="1">fx =<span class="st"> </span><span class="cf">function</span>(x) x <span class="op">*</span><span class="st"> </span><span class="dv">2</span> <span class="op">+</span><span class="st"> </span>y</a>
+<a class="sourceLine" id="cb7-2" title="2"><span class="kw">Q</span>(fx, <span class="dt">x=</span><span class="dv">1</span><span class="op">:</span><span class="dv">3</span>, <span class="dt">export=</span><span class="kw">list</span>(<span class="dt">y=</span><span class="dv">10</span>), <span class="dt">n_jobs=</span><span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb7-3" title="3"><span class="co">#&gt; Submitting 1 worker jobs (ID: 6855) ...</span></a>
+<a class="sourceLine" id="cb7-4" title="4"><span class="co">#&gt; [[1]]</span></a>
+<a class="sourceLine" id="cb7-5" title="5"><span class="co">#&gt; [1] 12</span></a>
+<a class="sourceLine" id="cb7-6" title="6"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb7-7" title="7"><span class="co">#&gt; [[2]]</span></a>
+<a class="sourceLine" id="cb7-8" title="8"><span class="co">#&gt; [1] 14</span></a>
+<a class="sourceLine" id="cb7-9" title="9"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb7-10" title="10"><span class="co">#&gt; [[3]]</span></a>
+<a class="sourceLine" id="cb7-11" title="11"><span class="co">#&gt; [1] 16</span></a></code></pre></div>
 <p>If we want to use a package function we need to load it on the worker using a <code>library()</code> call or referencing it with <code>package_name::</code>:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">fx =<span class="st"> </span><span class="cf">function</span>(x) {
-    <span class="kw">library</span>(dplyr)
-    x <span class="op">%&gt;%</span>
-<span class="st">        </span><span class="kw">mutate</span>(<span class="dt">area =</span> Sepal.Length <span class="op">*</span><span class="st"> </span>Sepal.Width) <span class="op">%&gt;%</span>
-<span class="st">        </span><span class="kw">head</span>()
-}
-<span class="kw">Q</span>(fx, <span class="dt">x=</span><span class="kw">list</span>(iris), <span class="dt">n_jobs=</span><span class="dv">1</span>)
-<span class="co">#&gt; Submitting 1 worker jobs (ID: 6855) ...</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt; Attaching package: 'dplyr'</span>
-<span class="co">#&gt; The following objects are masked from 'package:stats':</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt;     filter, lag</span>
-<span class="co">#&gt; The following objects are masked from 'package:base':</span>
-<span class="co">#&gt; </span>
-<span class="co">#&gt;     intersect, setdiff, setequal, union</span>
-<span class="co">#&gt; [[1]]</span>
-<span class="co">#&gt;   Sepal.Length Sepal.Width Petal.Length Petal.Width Species  area</span>
-<span class="co">#&gt; 1          5.1         3.5          1.4         0.2  setosa 17.85</span>
-<span class="co">#&gt; 2          4.9         3.0          1.4         0.2  setosa 14.70</span>
-<span class="co">#&gt; 3          4.7         3.2          1.3         0.2  setosa 15.04</span>
-<span class="co">#&gt; 4          4.6         3.1          1.5         0.2  setosa 14.26</span>
-<span class="co">#&gt; 5          5.0         3.6          1.4         0.2  setosa 18.00</span>
-<span class="co">#&gt; 6          5.4         3.9          1.7         0.4  setosa 21.06</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" title="1">fx =<span class="st"> </span><span class="cf">function</span>(x) {</a>
+<a class="sourceLine" id="cb8-2" title="2">    <span class="kw">library</span>(dplyr)</a>
+<a class="sourceLine" id="cb8-3" title="3">    x <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb8-4" title="4"><span class="st">        </span><span class="kw">mutate</span>(<span class="dt">area =</span> Sepal.Length <span class="op">*</span><span class="st"> </span>Sepal.Width) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb8-5" title="5"><span class="st">        </span><span class="kw">head</span>()</a>
+<a class="sourceLine" id="cb8-6" title="6">}</a>
+<a class="sourceLine" id="cb8-7" title="7"><span class="kw">Q</span>(fx, <span class="dt">x=</span><span class="kw">list</span>(iris), <span class="dt">n_jobs=</span><span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb8-8" title="8"><span class="co">#&gt; Submitting 1 worker jobs (ID: 6855) ...</span></a>
+<a class="sourceLine" id="cb8-9" title="9"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb8-10" title="10"><span class="co">#&gt; Attaching package: &#39;dplyr&#39;</span></a>
+<a class="sourceLine" id="cb8-11" title="11"><span class="co">#&gt; The following objects are masked from &#39;package:stats&#39;:</span></a>
+<a class="sourceLine" id="cb8-12" title="12"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb8-13" title="13"><span class="co">#&gt;     filter, lag</span></a>
+<a class="sourceLine" id="cb8-14" title="14"><span class="co">#&gt; The following objects are masked from &#39;package:base&#39;:</span></a>
+<a class="sourceLine" id="cb8-15" title="15"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb8-16" title="16"><span class="co">#&gt;     intersect, setdiff, setequal, union</span></a>
+<a class="sourceLine" id="cb8-17" title="17"><span class="co">#&gt; [[1]]</span></a>
+<a class="sourceLine" id="cb8-18" title="18"><span class="co">#&gt;   Sepal.Length Sepal.Width Petal.Length Petal.Width Species  area</span></a>
+<a class="sourceLine" id="cb8-19" title="19"><span class="co">#&gt; 1          5.1         3.5          1.4         0.2  setosa 17.85</span></a>
+<a class="sourceLine" id="cb8-20" title="20"><span class="co">#&gt; 2          4.9         3.0          1.4         0.2  setosa 14.70</span></a>
+<a class="sourceLine" id="cb8-21" title="21"><span class="co">#&gt; 3          4.7         3.2          1.3         0.2  setosa 15.04</span></a>
+<a class="sourceLine" id="cb8-22" title="22"><span class="co">#&gt; 4          4.6         3.1          1.5         0.2  setosa 14.26</span></a>
+<a class="sourceLine" id="cb8-23" title="23"><span class="co">#&gt; 5          5.0         3.6          1.4         0.2  setosa 18.00</span></a>
+<a class="sourceLine" id="cb8-24" title="24"><span class="co">#&gt; 6          5.4         3.9          1.7         0.4  setosa 21.06</span></a></code></pre></div>
 </div>
 <div id="as-parallel-foreach-backend" class="section level3">
 <h3>As parallel <code>foreach</code> backend</h3>
 <p>The <a href="https://cran.r-project.org/package=foreach"><code>foreach</code></a> package provides an interface to perform repeated tasks on different backends. While it can perform the function of simple loops using <code>%do%</code>:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(foreach)
-x =<span class="st"> </span><span class="kw">foreach</span>(<span class="dt">i=</span><span class="dv">1</span><span class="op">:</span><span class="dv">3</span>) <span class="op">%do%</span><span class="st"> </span><span class="kw">sqrt</span>(i)</code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" title="1"><span class="kw">library</span>(foreach)</a>
+<a class="sourceLine" id="cb9-2" title="2">x =<span class="st"> </span><span class="kw">foreach</span>(<span class="dt">i=</span><span class="dv">1</span><span class="op">:</span><span class="dv">3</span>) <span class="op">%do%</span><span class="st"> </span><span class="kw">sqrt</span>(i)</a></code></pre></div>
 <p>it can also perform these operations in parallel using <code>%dopar%</code>:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">x =<span class="st"> </span><span class="kw">foreach</span>(<span class="dt">i=</span><span class="dv">1</span><span class="op">:</span><span class="dv">3</span>) <span class="op">%dopar%</span><span class="st"> </span><span class="kw">sqrt</span>(i)
-<span class="co">#&gt; Submitting 2 worker jobs (ID: 6665) ...</span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" title="1">x =<span class="st"> </span><span class="kw">foreach</span>(<span class="dt">i=</span><span class="dv">1</span><span class="op">:</span><span class="dv">3</span>) <span class="op">%dopar%</span><span class="st"> </span><span class="kw">sqrt</span>(i)</a>
+<a class="sourceLine" id="cb10-2" title="2"><span class="co">#&gt; Submitting 2 worker jobs (ID: 6665) ...</span></a></code></pre></div>
 <p>The latter allows registering different handlers for parallel execution, where we can use <code>clustermq</code>:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">clustermq<span class="op">::</span><span class="kw">register_dopar_cmq</span>(<span class="dt">n_jobs=</span><span class="dv">2</span>, <span class="dt">memory=</span><span class="dv">1024</span>) <span class="co"># this accepts same arguments as `Q`</span>
-x =<span class="st"> </span><span class="kw">foreach</span>(<span class="dt">i=</span><span class="dv">1</span><span class="op">:</span><span class="dv">3</span>) <span class="op">%dopar%</span><span class="st"> </span><span class="kw">sqrt</span>(i) <span class="co"># this will be executed as jobs</span>
-<span class="co">#&gt; Submitting 2 worker jobs (ID: 6855) ...</span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" title="1">clustermq<span class="op">::</span><span class="kw">register_dopar_cmq</span>(<span class="dt">n_jobs=</span><span class="dv">2</span>, <span class="dt">memory=</span><span class="dv">1024</span>) <span class="co"># this accepts same arguments as `Q`</span></a>
+<a class="sourceLine" id="cb11-2" title="2">x =<span class="st"> </span><span class="kw">foreach</span>(<span class="dt">i=</span><span class="dv">1</span><span class="op">:</span><span class="dv">3</span>) <span class="op">%dopar%</span><span class="st"> </span><span class="kw">sqrt</span>(i) <span class="co"># this will be executed as jobs</span></a>
+<a class="sourceLine" id="cb11-3" title="3"><span class="co">#&gt; Submitting 2 worker jobs (ID: 6855) ...</span></a></code></pre></div>
 <p>As <a href="http://bioconductor.org/packages/release/bioc/html/BiocParallel.html">BiocParallel</a> supports <code>foreach</code> too, this means we can run all packages that use <code>BiocParallel</code> on the cluster as well via <code>DoparParam</code>.</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" title="1"><span class="kw">library</span>(BiocParallel)</a>
+<a class="sourceLine" id="cb12-2" title="2"><span class="kw">register</span>(<span class="kw">DoparParam</span>()) <span class="co"># after register_dopar_cmq(...)</span></a>
+<a class="sourceLine" id="cb12-3" title="3"><span class="kw">bplapply</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">3</span>, sqrt)</a></code></pre></div>
 </div>
 <div id="with-drake" class="section level3">
 <h3>With <code>drake</code></h3>
@@ -266,11 +477,11 @@ x =<span class="st"> </span><span class="kw">foreach</span>(<span class="dt">i=<
 <p>drake — or, Data Frames in R for Make — is a general-purpose workflow manager for data-driven tasks. It rebuilds intermediate data objects when their dependencies change, and it skips work when the results are already up to date. Not every runthrough starts from scratch, and completed workflows have tangible evidence of reproducibility. drake also supports scalability, parallel computing, and a smooth user experience when it comes to setting up, deploying, and maintaining data science projects.</p>
 </blockquote>
 <p>It can use <code>clustermq</code> to perform calculations as jobs:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(drake)
-<span class="kw">load_mtcars_example</span>()
-<span class="co"># clean(destroy = TRUE)</span>
-<span class="co"># options(clustermq.scheduler = &quot;multicore&quot;)</span>
-<span class="kw">make</span>(my_plan, <span class="dt">parallelism =</span> <span class="st">&quot;clustermq&quot;</span>, <span class="dt">jobs =</span> <span class="dv">2</span>, <span class="dt">verbose =</span> <span class="dv">4</span>)</code></pre></div>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" title="1"><span class="kw">library</span>(drake)</a>
+<a class="sourceLine" id="cb13-2" title="2"><span class="kw">load_mtcars_example</span>()</a>
+<a class="sourceLine" id="cb13-3" title="3"><span class="co"># clean(destroy = TRUE)</span></a>
+<a class="sourceLine" id="cb13-4" title="4"><span class="co"># options(clustermq.scheduler = &quot;multicore&quot;)</span></a>
+<a class="sourceLine" id="cb13-5" title="5"><span class="kw">make</span>(my_plan, <span class="dt">parallelism =</span> <span class="st">&quot;clustermq&quot;</span>, <span class="dt">jobs =</span> <span class="dv">2</span>, <span class="dt">verbose =</span> <span class="dv">4</span>)</a></code></pre></div>
 </div>
 </div>
 <div id="troubleshooting" class="section level2">
@@ -286,7 +497,7 @@ x =<span class="st"> </span><span class="kw">foreach</span>(<span class="dt">i=<
 <li>Probably others</li>
 </ul>
 <p>In this case, it is useful to have the worker(s) create a log file that will also include events that are not reported back. It can be requested using:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">Q</span>(..., <span class="dt">log_file=</span><span class="st">&quot;/path/to.file&quot;</span>)</code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" title="1"><span class="kw">Q</span>(..., <span class="dt">log_file=</span><span class="st">&quot;/path/to.file&quot;</span>)</a></code></pre></div>
 <p>Note that <code>log_file</code> is a template field of your scheduler script, and hence needs to be present there in order for this to work. The default templates all have this field included.</p>
 <p>In order to log each worker separately, some schedulers support wildcards in their log file names. For instance:</p>
 <ul>
@@ -302,17 +513,17 @@ x =<span class="st"> </span><span class="kw">foreach</span>(<span class="dt">i=<
 <p>If the terminal is stuck at</p>
 <pre><code>Connecting &lt;user@host&gt; via SSH ...</code></pre>
 <p>make sure that each step of your SSH connection works by typing the following commands in your <strong>local</strong> terminal and make sure that you don’t get errors or warnings in each step:</p>
-<div class="sourceCode"><pre class="sourceCode sh"><code class="sourceCode bash"><span class="co"># test your ssh login that you set up in ~/.ssh/config</span>
-<span class="co"># if this fails you have not set up SSH correctly</span>
-<span class="fu">ssh</span> <span class="op">&lt;</span>user@host<span class="op">&gt;</span>
-
-<span class="co"># test port forwarding from 54709 remote to 6687 local (ports are random)</span>
-<span class="co"># if the fails you will not be able to use clustermq via SSH</span>
-<span class="fu">ssh</span> -R 54709:localhost:6687 <span class="op">&lt;</span>user@host<span class="op">&gt;</span> R --vanilla</code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode sh"><code class="sourceCode bash"><a class="sourceLine" id="cb16-1" title="1"><span class="co"># test your ssh login that you set up in ~/.ssh/config</span></a>
+<a class="sourceLine" id="cb16-2" title="2"><span class="co"># if this fails you have not set up SSH correctly</span></a>
+<a class="sourceLine" id="cb16-3" title="3"><span class="fu">ssh</span> <span class="op">&lt;</span>user@host<span class="op">&gt;</span></a>
+<a class="sourceLine" id="cb16-4" title="4"></a>
+<a class="sourceLine" id="cb16-5" title="5"><span class="co"># test port forwarding from 54709 remote to 6687 local (ports are random)</span></a>
+<a class="sourceLine" id="cb16-6" title="6"><span class="co"># if the fails you will not be able to use clustermq via SSH</span></a>
+<a class="sourceLine" id="cb16-7" title="7"><span class="fu">ssh</span> -R 54709:localhost:6687 <span class="op">&lt;</span>user@host<span class="op">&gt;</span> R --vanilla</a></code></pre></div>
 <p>If you get an <code>Command not found: R</code> error, make sure your <code>$PATH</code> is set up correctly in your <code>~/.bash_profile</code> and/or your <code>~/.bashrc</code> (depending on your cluster config you might need either).</p>
 <p>If you get a SSH warning or error try again with <code>ssh -v</code> to enable verbose output.</p>
 <p>If the forward itself works, set the following option in your <code>~/.Rprofile</code>:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">options</span>(<span class="dt">clustermq.ssh.log =</span> <span class="st">&quot;~/ssh_proxy.log&quot;</span>)</code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" title="1"><span class="kw">options</span>(<span class="dt">clustermq.ssh.log =</span> <span class="st">&quot;~/ssh_proxy.log&quot;</span>)</a></code></pre></div>
 <p>This will create a log file <em>on the remote server</em> that will contain any errors that might have occurred during <code>ssh_proxy</code> startup.</p>
 </div>
 </div>
@@ -325,51 +536,51 @@ x =<span class="st"> </span><span class="kw">foreach</span>(<span class="dt">i=<
 <li><a href="https://conda.io/">Conda</a> environments</li>
 <li><a href="https://www.docker.com/">Docker</a>/<a href="https://singularity.lbl.gov/">Singularity</a> containers</li>
 </ul>
-<p>It should be possible to activate them in the job submission script (i.e., the template file). This is widely untested, but would look the following for the <a href="LSF" class="uri">LSF</a> scheduler (analogous for others):</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co">#BSUB-J {{ job_name }}[1-{{ n_jobs }}]  # name of the job / array jobs</span>
-<span class="co">#BSUB-o {{ log_file | /dev/null }}      # stdout + stderr</span>
-<span class="co">#BSUB-M {{ memory | 4096 }}             # Memory requirements in Mbytes</span>
-<span class="co">#BSUB-R rusage[mem={{ memory | 4096 }}] # Memory requirements in Mbytes</span>
-##BSUB-q default                        # name of the queue (uncomment)
-##BSUB-W {{ walltime | 6:00 }}          # walltime (uncomment)
-
-module load {{ bashenv <span class="op">|</span><span class="st"> </span>default_bash_env }}
-<span class="co"># or: source activate {{ conda | default_conda_env_name }}</span>
-<span class="co"># or: your environment activation command</span>
-ulimit <span class="op">-</span>v <span class="op">$</span>(( <span class="dv">1024</span> <span class="op">*</span><span class="st"> </span>{{ memory <span class="op">|</span><span class="st"> </span><span class="dv">4096</span> }} ))
-R <span class="op">--</span>no<span class="op">-</span>save <span class="op">--</span>no<span class="op">-</span>restore <span class="op">-</span>e <span class="st">'clustermq:::worker(&quot;{{ master }}&quot;)'</span></code></pre></div>
+<p>It should be possible to activate them in the job submission script (i.e., the template file). This is widely untested, but would look the following for the <a href="LSF">LSF</a> scheduler (analogous for others):</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb18-1" title="1"><span class="co">#BSUB-J {{ job_name }}[1-{{ n_jobs }}]  # name of the job / array jobs</span></a>
+<a class="sourceLine" id="cb18-2" title="2"><span class="co">#BSUB-o {{ log_file | /dev/null }}      # stdout + stderr</span></a>
+<a class="sourceLine" id="cb18-3" title="3"><span class="co">#BSUB-M {{ memory | 4096 }}             # Memory requirements in Mbytes</span></a>
+<a class="sourceLine" id="cb18-4" title="4"><span class="co">#BSUB-R rusage[mem={{ memory | 4096 }}] # Memory requirements in Mbytes</span></a>
+<a class="sourceLine" id="cb18-5" title="5"><span class="co">##BSUB-q default                        # name of the queue (uncomment)</span></a>
+<a class="sourceLine" id="cb18-6" title="6"><span class="co">##BSUB-W {{ walltime | 6:00 }}          # walltime (uncomment)</span></a>
+<a class="sourceLine" id="cb18-7" title="7"></a>
+<a class="sourceLine" id="cb18-8" title="8">module load {{ bashenv <span class="op">|</span><span class="st"> </span>default_bash_env }}</a>
+<a class="sourceLine" id="cb18-9" title="9"><span class="co"># or: source activate {{ conda | default_conda_env_name }}</span></a>
+<a class="sourceLine" id="cb18-10" title="10"><span class="co"># or: your environment activation command</span></a>
+<a class="sourceLine" id="cb18-11" title="11">ulimit <span class="op">-</span>v <span class="op">$</span>(( <span class="dv">1024</span> <span class="op">*</span><span class="st"> </span>{{ memory <span class="op">|</span><span class="st"> </span><span class="dv">4096</span> }} ))</a>
+<a class="sourceLine" id="cb18-12" title="12">R <span class="op">--</span>no<span class="op">-</span>save <span class="op">--</span>no<span class="op">-</span>restore <span class="op">-</span>e <span class="st">&#39;clustermq:::worker(&quot;{{ master }}&quot;)&#39;</span></a></code></pre></div>
 <p>This template still needs to be filled, so in the above example you need to pass either</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">Q</span>(..., <span class="dt">template=</span><span class="kw">list</span>(<span class="dt">bashenv=</span><span class="st">&quot;my environment name&quot;</span>))</code></pre></div>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb19-1" title="1"><span class="kw">Q</span>(..., <span class="dt">template=</span><span class="kw">list</span>(<span class="dt">bashenv=</span><span class="st">&quot;my environment name&quot;</span>))</a></code></pre></div>
 <p>or set it via an <em>.Rprofile</em> option:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">options</span>(
-    <span class="dt">clustermq.defaults =</span> <span class="kw">list</span>(<span class="dt">bashenv=</span><span class="st">&quot;my default env&quot;</span>)
-)</code></pre></div>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb20-1" title="1"><span class="kw">options</span>(</a>
+<a class="sourceLine" id="cb20-2" title="2">    <span class="dt">clustermq.defaults =</span> <span class="kw">list</span>(<span class="dt">bashenv=</span><span class="st">&quot;my default env&quot;</span>)</a>
+<a class="sourceLine" id="cb20-3" title="3">)</a></code></pre></div>
 </div>
 <div id="scheduler-templates" class="section level2">
 <h2>Scheduler templates</h2>
 <div id="lsf" class="section level3">
 <h3>LSF</h3>
 <p>In your <code>~/.Rprofile</code> on your computing cluster, set the following options:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">options</span>(
-    <span class="dt">clustermq.scheduler =</span> <span class="st">&quot;lsf&quot;</span>,
-    <span class="dt">clustermq.template =</span> <span class="st">&quot;/path/to/file/below&quot;</span>
-)</code></pre></div>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb21-1" title="1"><span class="kw">options</span>(</a>
+<a class="sourceLine" id="cb21-2" title="2">    <span class="dt">clustermq.scheduler =</span> <span class="st">&quot;lsf&quot;</span>,</a>
+<a class="sourceLine" id="cb21-3" title="3">    <span class="dt">clustermq.template =</span> <span class="st">&quot;/path/to/file/below&quot;</span></a>
+<a class="sourceLine" id="cb21-4" title="4">)</a></code></pre></div>
 <p>The option <code>clustermq.template</code> should point to a LSF template file like the one below.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co">#BSUB-J {{ job_name }}[1-{{ n_jobs }}]  # name of the job / array jobs</span>
-<span class="co">#BSUB-o {{ log_file | /dev/null }}      # stdout + stderr; %I for array index</span>
-<span class="co">#BSUB-M {{ memory | 4096 }}             # Memory requirements in Mbytes</span>
-<span class="co">#BSUB-R rusage[mem={{ memory | 4096 }}] # Memory requirements in Mbytes</span>
-##BSUB-q default                        # name of the queue (uncomment)
-##BSUB-W {{ walltime | 6:00 }}          # walltime (uncomment)
-
-ulimit <span class="op">-</span>v <span class="op">$</span>(( <span class="dv">1024</span> <span class="op">*</span><span class="st"> </span>{{ memory <span class="op">|</span><span class="st"> </span><span class="dv">4096</span> }} ))
-R <span class="op">--</span>no<span class="op">-</span>save <span class="op">--</span>no<span class="op">-</span>restore <span class="op">-</span>e <span class="st">'clustermq:::worker(&quot;{{ master }}&quot;)'</span></code></pre></div>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb22-1" title="1"><span class="co">#BSUB-J {{ job_name }}[1-{{ n_jobs }}]  # name of the job / array jobs</span></a>
+<a class="sourceLine" id="cb22-2" title="2"><span class="co">#BSUB-o {{ log_file | /dev/null }}      # stdout + stderr; %I for array index</span></a>
+<a class="sourceLine" id="cb22-3" title="3"><span class="co">#BSUB-M {{ memory | 4096 }}             # Memory requirements in Mbytes</span></a>
+<a class="sourceLine" id="cb22-4" title="4"><span class="co">#BSUB-R rusage[mem={{ memory | 4096 }}] # Memory requirements in Mbytes</span></a>
+<a class="sourceLine" id="cb22-5" title="5"><span class="co">##BSUB-q default                        # name of the queue (uncomment)</span></a>
+<a class="sourceLine" id="cb22-6" title="6"><span class="co">##BSUB-W {{ walltime | 6:00 }}          # walltime (uncomment)</span></a>
+<a class="sourceLine" id="cb22-7" title="7"></a>
+<a class="sourceLine" id="cb22-8" title="8">ulimit <span class="op">-</span>v <span class="op">$</span>(( <span class="dv">1024</span> <span class="op">*</span><span class="st"> </span>{{ memory <span class="op">|</span><span class="st"> </span><span class="dv">4096</span> }} ))</a>
+<a class="sourceLine" id="cb22-9" title="9">R <span class="op">--</span>no<span class="op">-</span>save <span class="op">--</span>no<span class="op">-</span>restore <span class="op">-</span>e <span class="st">&#39;clustermq:::worker(&quot;{{ master }}&quot;)&#39;</span></a></code></pre></div>
 <p>In this file, <code>#BSUB-*</code> defines command-line arguments to the <code>bsub</code> program.</p>
 <ul>
 <li>Memory: defined by <code>BSUB-M</code> and <code>BSUB-R</code>. Check your local setup if the memory values supplied are MiB or KiB, default is <code>4096</code> if not requesting memory when calling <code>Q()</code></li>
 <li>Queue: <code>BSUB-q default</code>. Use the queue with name <em>default</em>. This will most likely not exist on your system, so choose the right name (or comment out this line with an additional <code>#</code>)</li>
 <li>Walltime: <code>BSUB-W {{ walltime }}</code>. Set the maximum time a job is allowed to run before being killed. The default here is to disable this line. If you enable it, enter a fixed value or pass the <code>walltime</code> argument to each function call. The way it is written, it will use 6 hours if no arguemnt is given.</li>
-<li>For other options, see <a href="http://www.vub.ac.be/BFUCC/LSF/man/bsub.1.html">the LSF documentation</a> and add them via <code>#BSUB-*</code> (where <code>*</code> represents the argument)</li>
+<li>For other options, see <a href="https://www.ibm.com/support/knowledgecenter/en/SSETD4_9.1.2/lsf_command_ref/bsub.1.html">the LSF documentation</a> and add them via <code>#BSUB-*</code> (where <code>*</code> represents the argument)</li>
 <li>Do not change the identifiers in curly braces (<code>{{ ... }}</code>), as they are used to fill in the right variables</li>
 </ul>
 <p>Once this is done, the package will use your settings and no longer warn you of the missing options.</p>
@@ -377,21 +588,21 @@ R <span class="op">--</span>no<span class="op">-</span>save <span class="op">--<
 <div id="sge" class="section level3">
 <h3>SGE</h3>
 <p>In your <code>~/.Rprofile</code> on your computing cluster, set the following options:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">options</span>(
-    <span class="dt">clustermq.scheduler =</span> <span class="st">&quot;sge&quot;</span>,
-    <span class="dt">clustermq.template =</span> <span class="st">&quot;/path/to/file/below&quot;</span>
-)</code></pre></div>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb23-1" title="1"><span class="kw">options</span>(</a>
+<a class="sourceLine" id="cb23-2" title="2">    <span class="dt">clustermq.scheduler =</span> <span class="st">&quot;sge&quot;</span>,</a>
+<a class="sourceLine" id="cb23-3" title="3">    <span class="dt">clustermq.template =</span> <span class="st">&quot;/path/to/file/below&quot;</span></a>
+<a class="sourceLine" id="cb23-4" title="4">)</a></code></pre></div>
 <p>The option <code>clustermq.template</code> should point to a SGE template file like the one below.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co">#$ -N {{ job_name }}               # job name</span>
-<span class="co">#$ -q default                      # submit to queue named &quot;default&quot;</span>
-<span class="co">#$ -j y                            # combine stdout/error in one file</span>
-<span class="co">#$ -o {{ log_file | /dev/null }}   # output file</span>
-<span class="co">#$ -cwd                            # use pwd as work dir</span>
-<span class="co">#$ -V                              # use environment variable</span>
-<span class="co">#$ -t 1-{{ n_jobs }}               # submit jobs as array</span>
-
-ulimit <span class="op">-</span>v <span class="op">$</span>(( <span class="dv">1024</span> <span class="op">*</span><span class="st"> </span>{{ memory <span class="op">|</span><span class="st"> </span><span class="dv">4096</span> }} ))
-R <span class="op">--</span>no<span class="op">-</span>save <span class="op">--</span>no<span class="op">-</span>restore <span class="op">-</span>e <span class="st">'clustermq:::worker(&quot;{{ master }}&quot;)'</span></code></pre></div>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb24-1" title="1"><span class="co">#$ -N {{ job_name }}               # job name</span></a>
+<a class="sourceLine" id="cb24-2" title="2"><span class="co">#$ -q default                      # submit to queue named &quot;default&quot;</span></a>
+<a class="sourceLine" id="cb24-3" title="3"><span class="co">#$ -j y                            # combine stdout/error in one file</span></a>
+<a class="sourceLine" id="cb24-4" title="4"><span class="co">#$ -o {{ log_file | /dev/null }}   # output file</span></a>
+<a class="sourceLine" id="cb24-5" title="5"><span class="co">#$ -cwd                            # use pwd as work dir</span></a>
+<a class="sourceLine" id="cb24-6" title="6"><span class="co">#$ -V                              # use environment variable</span></a>
+<a class="sourceLine" id="cb24-7" title="7"><span class="co">#$ -t 1-{{ n_jobs }}               # submit jobs as array</span></a>
+<a class="sourceLine" id="cb24-8" title="8"></a>
+<a class="sourceLine" id="cb24-9" title="9">ulimit <span class="op">-</span>v <span class="op">$</span>(( <span class="dv">1024</span> <span class="op">*</span><span class="st"> </span>{{ memory <span class="op">|</span><span class="st"> </span><span class="dv">4096</span> }} ))</a>
+<a class="sourceLine" id="cb24-10" title="10">R <span class="op">--</span>no<span class="op">-</span>save <span class="op">--</span>no<span class="op">-</span>restore <span class="op">-</span>e <span class="st">&#39;clustermq:::worker(&quot;{{ master }}&quot;)&#39;</span></a></code></pre></div>
 <p>In this file, <code>#$-*</code> defines command-line arguments to the <code>qsub</code> program.</p>
 <ul>
 <li>Queue: <code>$ -q default</code>. Use the queue with name <em>default</em>. This will most likely not exist on your system, so choose the right name (or comment out this line with an additional <code>#</code>)</li>
@@ -402,21 +613,21 @@ R <span class="op">--</span>no<span class="op">-</span>save <span class="op">--<
 <div id="slurm" class="section level3">
 <h3>SLURM</h3>
 <p>In your <code>~/.Rprofile</code> on your computing cluster, set the following options:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">options</span>(
-    <span class="dt">clustermq.scheduler =</span> <span class="st">&quot;slurm&quot;</span>,
-    <span class="dt">clustermq.template =</span> <span class="st">&quot;/path/to/file/below&quot;</span>
-)</code></pre></div>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb25-1" title="1"><span class="kw">options</span>(</a>
+<a class="sourceLine" id="cb25-2" title="2">    <span class="dt">clustermq.scheduler =</span> <span class="st">&quot;slurm&quot;</span>,</a>
+<a class="sourceLine" id="cb25-3" title="3">    <span class="dt">clustermq.template =</span> <span class="st">&quot;/path/to/file/below&quot;</span></a>
+<a class="sourceLine" id="cb25-4" title="4">)</a></code></pre></div>
 <p>The option <code>clustermq.template</code> should point to a SLURM template file like the one below.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co">#!/bin/sh</span>
-<span class="co">#SBATCH --job-name={{ job_name }}</span>
-<span class="co">#SBATCH --partition=default</span>
-<span class="co">#SBATCH --output={{ log_file | /dev/null }} # you can add .%a for array index</span>
-<span class="co">#SBATCH --error={{ log_file | /dev/null }}</span>
-<span class="co">#SBATCH --mem-per-cpu={{ memory | 4096 }}</span>
-<span class="co">#SBATCH --array=1-{{ n_jobs }}</span>
-
-ulimit <span class="op">-</span>v <span class="op">$</span>(( <span class="dv">1024</span> <span class="op">*</span><span class="st"> </span>{{ memory <span class="op">|</span><span class="st"> </span><span class="dv">4096</span> }} ))
-R <span class="op">--</span>no<span class="op">-</span>save <span class="op">--</span>no<span class="op">-</span>restore <span class="op">-</span>e <span class="st">'clustermq:::worker(&quot;{{ master }}&quot;)'</span></code></pre></div>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb26-1" title="1"><span class="co">#!/bin/sh</span></a>
+<a class="sourceLine" id="cb26-2" title="2"><span class="co">#SBATCH --job-name={{ job_name }}</span></a>
+<a class="sourceLine" id="cb26-3" title="3"><span class="co">#SBATCH --partition=default</span></a>
+<a class="sourceLine" id="cb26-4" title="4"><span class="co">#SBATCH --output={{ log_file | /dev/null }} # you can add .%a for array index</span></a>
+<a class="sourceLine" id="cb26-5" title="5"><span class="co">#SBATCH --error={{ log_file | /dev/null }}</span></a>
+<a class="sourceLine" id="cb26-6" title="6"><span class="co">#SBATCH --mem-per-cpu={{ memory | 4096 }}</span></a>
+<a class="sourceLine" id="cb26-7" title="7"><span class="co">#SBATCH --array=1-{{ n_jobs }}</span></a>
+<a class="sourceLine" id="cb26-8" title="8"></a>
+<a class="sourceLine" id="cb26-9" title="9">ulimit <span class="op">-</span>v <span class="op">$</span>(( <span class="dv">1024</span> <span class="op">*</span><span class="st"> </span>{{ memory <span class="op">|</span><span class="st"> </span><span class="dv">4096</span> }} ))</a>
+<a class="sourceLine" id="cb26-10" title="10">R <span class="op">--</span>no<span class="op">-</span>save <span class="op">--</span>no<span class="op">-</span>restore <span class="op">-</span>e <span class="st">&#39;clustermq:::worker(&quot;{{ master }}&quot;)&#39;</span></a></code></pre></div>
 <p>In this file, <code>#SBATCH</code> defines command-line arguments to the <code>sbatch</code> program.</p>
 <ul>
 <li>Queue: <code>SBATCH --partition default</code>. Use the queue with name <em>default</em>. This will most likely not exist on your system, so choose the right name (or comment out this line with an additional <code>#</code>)</li>
@@ -427,20 +638,20 @@ R <span class="op">--</span>no<span class="op">-</span>save <span class="op">--<
 <div id="pbs" class="section level3">
 <h3>PBS</h3>
 <p>In your <code>~/.Rprofile</code> on your computing cluster, use the SGE scheduler with a PBS template:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">options</span>(
-    <span class="dt">clustermq.scheduler =</span> <span class="st">&quot;sge&quot;</span>,
-    <span class="dt">clustermq.template.lsf =</span> <span class="st">&quot;/path/to/file/below&quot;</span>
-)</code></pre></div>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb27-1" title="1"><span class="kw">options</span>(</a>
+<a class="sourceLine" id="cb27-2" title="2">    <span class="dt">clustermq.scheduler =</span> <span class="st">&quot;sge&quot;</span>,</a>
+<a class="sourceLine" id="cb27-3" title="3">    <span class="dt">clustermq.template.lsf =</span> <span class="st">&quot;/path/to/file/below&quot;</span></a>
+<a class="sourceLine" id="cb27-4" title="4">)</a></code></pre></div>
 <p>The option <code>clustermq.template</code> should point to a PBS template file like the one below.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co">#PBS -N {{ job_name }}</span>
-<span class="co">#PBS -l select=1:ncpus={{ cores | 1 }}</span>
-<span class="co">#PBS -l walltime={{ walltime | 1:00:00 }}</span>
-<span class="co">#PBS -q default</span>
-<span class="co">#PBS -o {{ log_file | /dev/null }}</span>
-<span class="co">#PBS -j oe</span>
-
-ulimit <span class="op">-</span>v <span class="op">$</span>(( <span class="dv">1024</span> <span class="op">*</span><span class="st"> </span>{{ memory <span class="op">|</span><span class="st"> </span><span class="dv">4096</span> }} ))
-R <span class="op">--</span>no<span class="op">-</span>save <span class="op">--</span>no<span class="op">-</span>restore <span class="op">-</span>e <span class="st">'clustermq:::worker(&quot;{{ master }}&quot;)'</span></code></pre></div>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb28-1" title="1"><span class="co">#PBS -N {{ job_name }}</span></a>
+<a class="sourceLine" id="cb28-2" title="2"><span class="co">#PBS -l select=1:ncpus={{ cores | 1 }}</span></a>
+<a class="sourceLine" id="cb28-3" title="3"><span class="co">#PBS -l walltime={{ walltime | 1:00:00 }}</span></a>
+<a class="sourceLine" id="cb28-4" title="4"><span class="co">#PBS -q default</span></a>
+<a class="sourceLine" id="cb28-5" title="5"><span class="co">#PBS -o {{ log_file | /dev/null }}</span></a>
+<a class="sourceLine" id="cb28-6" title="6"><span class="co">#PBS -j oe</span></a>
+<a class="sourceLine" id="cb28-7" title="7"></a>
+<a class="sourceLine" id="cb28-8" title="8">ulimit <span class="op">-</span>v <span class="op">$</span>(( <span class="dv">1024</span> <span class="op">*</span><span class="st"> </span>{{ memory <span class="op">|</span><span class="st"> </span><span class="dv">4096</span> }} ))</a>
+<a class="sourceLine" id="cb28-9" title="9">R <span class="op">--</span>no<span class="op">-</span>save <span class="op">--</span>no<span class="op">-</span>restore <span class="op">-</span>e <span class="st">&#39;clustermq:::worker(&quot;{{ master }}&quot;)&#39;</span></a></code></pre></div>
 <p>In this file, <code>#PBS-*</code> defines command-line arguments to the <code>qsub</code> program.</p>
 <ul>
 <li>Queue: <code>#PBS-q default</code>. Use the queue with name <em>default</em>. This will most likely not exist on your system, so choose the right name (or comment out this line with an additional <code>#</code>)</li>
@@ -451,19 +662,19 @@ R <span class="op">--</span>no<span class="op">-</span>save <span class="op">--<
 <div id="torque" class="section level3">
 <h3>Torque</h3>
 <p>In your <code>~/.Rprofile</code> on your computing cluster, use the SGE scheduler with a Torque template:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">options</span>(
-    <span class="dt">clustermq.scheduler =</span> <span class="st">&quot;sge&quot;</span>,
-    <span class="dt">clustermq.template.lsf =</span> <span class="st">&quot;/path/to/file/below&quot;</span>
-)</code></pre></div>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb29-1" title="1"><span class="kw">options</span>(</a>
+<a class="sourceLine" id="cb29-2" title="2">    <span class="dt">clustermq.scheduler =</span> <span class="st">&quot;sge&quot;</span>,</a>
+<a class="sourceLine" id="cb29-3" title="3">    <span class="dt">clustermq.template.lsf =</span> <span class="st">&quot;/path/to/file/below&quot;</span></a>
+<a class="sourceLine" id="cb29-4" title="4">)</a></code></pre></div>
 <p>The option <code>clustermq.template</code> should point to a Torque template file like the one below.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co">#PBS -N {{ job_name }}</span>
-<span class="co">#PBS -l nodes={{ n_jobs }}:ppn=1,walltime={{ walltime | 30:00 }}</span>
-<span class="co">#PBS -o {{ log_file | /dev/null }}</span>
-<span class="co">#PBS -q default</span>
-<span class="co">#PBS -j oe</span>
-
-ulimit <span class="op">-</span>v <span class="op">$</span>(( <span class="dv">1024</span> <span class="op">*</span><span class="st"> </span>{{ memory <span class="op">|</span><span class="st"> </span><span class="dv">4096</span> }} ))
-R <span class="op">--</span>no<span class="op">-</span>save <span class="op">--</span>no<span class="op">-</span>restore <span class="op">-</span>e <span class="st">'clustermq:::worker(&quot;{{ master }}&quot;)'</span></code></pre></div>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb30-1" title="1"><span class="co">#PBS -N {{ job_name }}</span></a>
+<a class="sourceLine" id="cb30-2" title="2"><span class="co">#PBS -l nodes={{ n_jobs }}:ppn=1,walltime={{ walltime | 30:00 }}</span></a>
+<a class="sourceLine" id="cb30-3" title="3"><span class="co">#PBS -o {{ log_file | /dev/null }}</span></a>
+<a class="sourceLine" id="cb30-4" title="4"><span class="co">#PBS -q default</span></a>
+<a class="sourceLine" id="cb30-5" title="5"><span class="co">#PBS -j oe</span></a>
+<a class="sourceLine" id="cb30-6" title="6"></a>
+<a class="sourceLine" id="cb30-7" title="7">ulimit <span class="op">-</span>v <span class="op">$</span>(( <span class="dv">1024</span> <span class="op">*</span><span class="st"> </span>{{ memory <span class="op">|</span><span class="st"> </span><span class="dv">4096</span> }} ))</a>
+<a class="sourceLine" id="cb30-8" title="8">R <span class="op">--</span>no<span class="op">-</span>save <span class="op">--</span>no<span class="op">-</span>restore <span class="op">-</span>e <span class="st">&#39;clustermq:::worker(&quot;{{ master }}&quot;)&#39;</span></a></code></pre></div>
 <p>In this file, <code>#PBS-*</code> defines command-line arguments to the <code>qsub</code> program.</p>
 <ul>
 <li>Queue: <code>#PBS -q default</code>. Use the queue with name <em>default</em>. This will most likely not exist on your system, so choose the right name (or comment out this line with an additional <code>#</code>)</li>

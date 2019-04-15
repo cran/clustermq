@@ -53,6 +53,11 @@ clustermq::register_dopar_cmq(n_jobs=2, memory=1024) # this accepts same argumen
 x = foreach(i=1:3) %dopar% sqrt(i) # this will be executed as jobs
 
 ## ----eval=FALSE----------------------------------------------------------
+#  library(BiocParallel)
+#  register(DoparParam()) # after register_dopar_cmq(...)
+#  bplapply(1:3, sqrt)
+
+## ----eval=FALSE----------------------------------------------------------
 #  library(drake)
 #  load_mtcars_example()
 #  # clean(destroy = TRUE)

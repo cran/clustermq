@@ -70,6 +70,7 @@ QSys = R6::R6Class("QSys",
                 args$token = private$token
             }
             private$common_data = rzmq::init.message(c(list(id="DO_SETUP"), args))
+            private$n_common = length(args)
             args$token
         },
 
@@ -98,7 +99,7 @@ QSys = R6::R6Class("QSys",
             if (is.infinite(timeout))
                 msec = -1L
             else
-                msec = as.integer(timeout * 1000)
+                msec = as.integer(timeout)
 
             rcv = rzmq::poll.socket(list(private$socket),
                                     list("read"), timeout=msec)
@@ -163,10 +164,9 @@ QSys = R6::R6Class("QSys",
             success = self$workers == 0
             if (!quiet)
                 private$summary_stats()
-            if (success)
-                private$is_cleaned_up = TRUE
-            else
-                self$finalize(quiet=quiet || self$workers_running == 0)
+            if (!success)
+                self$finalize(quiet=(quiet || self$workers_running == 0))
+            private$is_cleaned_up = TRUE
             invisible(success)
         }
     ),
@@ -175,9 +175,11 @@ QSys = R6::R6Class("QSys",
         id = function() private$port,
         url = function() private$listen,
         sock = function() private$socket,
-        workers = function() private$workers_total,
+        workers = function() ifelse(private$is_cleaned_up, 0, private$workers_total),
         workers_running = function() private$workers_up,
         data_token = function() private$token,
+        data_num = function() private$n_common,
+        data_size = function() utils::object.size(private$common_data),
         reusable = function() private$reuse
     ),
 
@@ -189,6 +191,7 @@ QSys = R6::R6Class("QSys",
         listen = NULL,
         timer = NULL,
         common_data = NULL,
+        n_common = 0,
         token = NA,
         workers_total = 0,
         workers_up = 0,
@@ -217,6 +220,8 @@ QSys = R6::R6Class("QSys",
             values = utils::modifyList(private$defaults, list(...))
             values$master = private$master
             if ("auth" %in% names(infuser::variables_requested(private$template))) {
+                # note: auth will be obligatory in the future and this check will
+                #   be removed (i.e., filling will fail if no field in template)
                 values$auth = private$auth = paste(sample(letters, 5, TRUE), collapse="")
             } else {
                 values$auth = NULL
@@ -230,8 +235,6 @@ QSys = R6::R6Class("QSys",
         },
 
         fill_template = function(values) {
-            # note: auth will be obligatory in the future and this check will
-            #   be removed (i.e., filling will fail if no field in template)
             infuser::infuse(private$template, values)
         },
 

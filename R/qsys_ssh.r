@@ -7,41 +7,39 @@ SSH = R6::R6Class("SSH",
     inherit = QSys,
 
     public = list(
-        initialize = function(data, ...) {
-            private$ssh_host = getOption("clustermq.ssh.host")
-            if (is.null(private$ssh_host))
+        initialize = function(data, ...,
+                              ssh_host = getOption("clustermq.ssh.host"),
+                              ssh_log = getOption("clustermq.ssh.log"),
+                              template = getOption("clustermq.template", "SSH")) {
+            if (is.null(ssh_host))
                 stop("Option 'clustermq.ssh.host' required for SSH but not set")
 
-            super$initialize(...)
+            super$initialize(..., template=template)
             private$proxy_socket = rzmq::init.socket(private$zmq_context, "ZMQ_REP")
-            local_port = bind_avail(private$proxy_socket, 11000:13000)
-            remote_port = sample(50000:55000, 2)
 
             # set forward and run ssh.r (send port, master)
-            ctl_tunnel = sprintf("%i:localhost:%i", remote_port[1], local_port)
-            job_tunnel = sprintf("%i:localhost:%i", remote_port[2], private$port)
-            rcmd = sprintf("R --no-save --no-restore -e \\
-                           'clustermq:::ssh_proxy(ctl=%i, job=%i)' > %s 2>&1",
-                           remote_port[1], remote_port[2],
-                           getOption("clustermq.ssh.log", default="/dev/null"))
-            ssh_cmd = sprintf('ssh -f -R %s -R %s %s "%s"',
-                              ctl_tunnel, job_tunnel, private$ssh_host, rcmd)
+            opts = private$fill_options(ssh_log=ssh_log, ssh_host=ssh_host)
+            ssh_cmd = private$fill_template(opts)
 
             # wait for ssh to connect
-            message(sprintf("Connecting %s via SSH ...", private$ssh_host))
+            message(sprintf("Connecting %s via SSH ...", ssh_host))
             system(ssh_cmd, wait=TRUE, ignore.stdout=TRUE, ignore.stderr=TRUE)
 
             # Exchange init messages with proxy
+            poll = rzmq::poll.socket(list(private$proxy_socket), list("read"), timeout=5)
+            if (!poll[[1]]$read)
+                stop("Remote R process did not respond after 5 seconds. ",
+                     "Check your SSH server log.")
             msg = rzmq::receive.socket(private$proxy_socket)
             if (msg$id != "PROXY_UP")
-                stop("Establishing connection failed")
+                stop("Expected PROXY_UP, received ", sQuote(msg$id))
 
             # send common data to ssh
             message("Sending common data ...")
             rzmq::send.socket(private$proxy_socket, data=c(list(id="DO_SETUP"), data))
             msg = rzmq::receive.socket(private$proxy_socket)
             if (msg$id != "PROXY_READY")
-                stop("Sending failed")
+                stop("Expected PROXY_READY, received ", sQuote(msg$id))
 
             self$set_common_data(id="DO_SETUP", redirect=msg$data_url,
                                  token = msg$token)
@@ -90,8 +88,21 @@ SSH = R6::R6Class("SSH",
     ),
 
 	private = list(
-        ssh_host = NULL,
         proxy_socket = NULL,
-        ssh_proxy_running = TRUE
+        ssh_proxy_running = TRUE,
+
+        fill_options = function(ssh_host, ...) {
+            values = utils::modifyList(private$defaults,
+                                       list(ssh_host=ssh_host, ...))
+
+            #TODO: let user define ports in private$defaults here and respect them
+            remote = sample(50000:55000, 2)
+            values$ssh_host = ssh_host
+            values$local_port = bind_avail(private$proxy_socket, 11000:13000)
+            values$ctl_port = remote[1]
+            values$job_port = remote[2]
+            values$fwd_port = private$port
+            values
+        }
 	)
 )

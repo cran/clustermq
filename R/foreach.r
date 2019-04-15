@@ -29,12 +29,28 @@ cmq_foreach = function(obj, expr, envir, data) {
     it = iterators::iter(obj)
     args_df = do.call(rbind, as.list(it))
 
-    fun = function() NULL
-    formals(fun) = stats::setNames(replicate(ncol(args_df), substitute()), obj$argnames)
+    if (is.call(expr) && as.character(expr[[1]]) != "{")
+        obj$export = c(as.character(expr[[1]]), obj$export)
+
+    fun = function(...) NULL
+    formals(fun) = c(stats::setNames(replicate(ncol(args_df), substitute()),
+                                     obj$argnames),
+                     formals(fun))
     body(fun) = expr
 
-    data$export = utils::modifyList(as.list(data$export), as.list(obj$export))
-#    data$packages = utils::modifyList(as.list(data$packages), as.list(obj$packages))
+    # evaluate objects in "export" amd add them to clustermq exports
+    if (length(obj$export) > 0) {
+        export = as.list(mget(obj$export, envir=envir, inherits=TRUE))
+        data$export = utils::modifyList(as.list(data$export), export)
+    }
 
-    do.call(Q_rows, c(list(df=args_df, fun=fun), data))
+    # make sure packages are loaded on the dopar target
+    if (length(obj$packages) > 0) {
+#        data$packages = utils::modifyList(as.list(data$packages), as.list(obj$packages))
+        stop("foreach .packages currently not supported in clustermq")
+    }
+
+    result = do.call(Q_rows, c(list(df=args_df, fun=fun), data))
+    names(result) = paste0("result.", seq_along(result))
+    Reduce(obj$combineInfo$fun, result)
 }

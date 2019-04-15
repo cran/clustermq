@@ -1,9 +1,7 @@
 #' Select the queueing system on package loading
 #'
 #' This is done by setting the variable 'qsys' in the package environment
-#' to the object that contains the desired queueing system. We further call
-#' its setup() function if it exists, and set the variable 'qsys_id' to
-#' the scheduler we use
+#' to the object that contains the desired queueing system.
 #'
 #' @param libname  default arg for compatibility
 #' @param pkgname  default arg for compatibility
@@ -30,6 +28,6 @@
     if (is.null(getOption("clustermq.scheduler"))) {
         packageStartupMessage("* Option 'clustermq.scheduler' not set, ",
                 "defaulting to ", sQuote(qsys_default))
-        packageStartupMessage("--- see: https://github.com/mschubert/clustermq/wiki/Configuration")
+        packageStartupMessage("--- see: https://mschubert.github.io/clustermq/articles/userguide.html#configuration")
     }
 }
