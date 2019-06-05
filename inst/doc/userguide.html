@@ -289,6 +289,9 @@ code > span.al { color: #ff0000; font-weight: bold; }
 code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61717; background-color: #e3d2d2; } 
 </style>
 
+
+
+
 </head>
 
 <body>
@@ -345,11 +348,11 @@ code {
 <p>By default, we will take whichever scheduler we find and fall back on local processing. This will work in most, but not all cases.</p>
 <p>To set up a scheduler explicitly, see the following links:</p>
 <ul>
-<li><a href="LSF">LSF</a></li>
-<li><a href="SGE">SGE</a></li>
-<li><a href="SLURM">Slurm</a></li>
-<li><a href="Torque">Torque</a></li>
-<li><a href="PBS">PBS</a></li>
+<li><a href="#LSF">LSF</a></li>
+<li><a href="#SGE">SGE</a></li>
+<li><a href="#SLURM">Slurm</a></li>
+<li><a href="#Torque">Torque</a></li>
+<li><a href="#PBS">PBS</a></li>
 <li>if you want another scheduler, <a href="https://github.com/mschubert/clustermq/issues/new">open an issue</a></li>
 </ul>
 </div>
@@ -427,31 +430,30 @@ code {
 <a class="sourceLine" id="cb7-9" title="9"><span class="co">#&gt; </span></a>
 <a class="sourceLine" id="cb7-10" title="10"><span class="co">#&gt; [[3]]</span></a>
 <a class="sourceLine" id="cb7-11" title="11"><span class="co">#&gt; [1] 16</span></a></code></pre></div>
-<p>If we want to use a package function we need to load it on the worker using a <code>library()</code> call or referencing it with <code>package_name::</code>:</p>
+<p>If we want to use a package function we need to load it on the worker using the <code>pkg</code> argument or referencing it with <code>package_name::</code>:</p>
 <div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" title="1">fx =<span class="st"> </span><span class="cf">function</span>(x) {</a>
-<a class="sourceLine" id="cb8-2" title="2">    <span class="kw">library</span>(dplyr)</a>
-<a class="sourceLine" id="cb8-3" title="3">    x <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb8-4" title="4"><span class="st">        </span><span class="kw">mutate</span>(<span class="dt">area =</span> Sepal.Length <span class="op">*</span><span class="st"> </span>Sepal.Width) <span class="op">%&gt;%</span></a>
-<a class="sourceLine" id="cb8-5" title="5"><span class="st">        </span><span class="kw">head</span>()</a>
-<a class="sourceLine" id="cb8-6" title="6">}</a>
-<a class="sourceLine" id="cb8-7" title="7"><span class="kw">Q</span>(fx, <span class="dt">x=</span><span class="kw">list</span>(iris), <span class="dt">n_jobs=</span><span class="dv">1</span>)</a>
-<a class="sourceLine" id="cb8-8" title="8"><span class="co">#&gt; Submitting 1 worker jobs (ID: 6855) ...</span></a>
-<a class="sourceLine" id="cb8-9" title="9"><span class="co">#&gt; </span></a>
-<a class="sourceLine" id="cb8-10" title="10"><span class="co">#&gt; Attaching package: &#39;dplyr&#39;</span></a>
-<a class="sourceLine" id="cb8-11" title="11"><span class="co">#&gt; The following objects are masked from &#39;package:stats&#39;:</span></a>
-<a class="sourceLine" id="cb8-12" title="12"><span class="co">#&gt; </span></a>
-<a class="sourceLine" id="cb8-13" title="13"><span class="co">#&gt;     filter, lag</span></a>
-<a class="sourceLine" id="cb8-14" title="14"><span class="co">#&gt; The following objects are masked from &#39;package:base&#39;:</span></a>
-<a class="sourceLine" id="cb8-15" title="15"><span class="co">#&gt; </span></a>
-<a class="sourceLine" id="cb8-16" title="16"><span class="co">#&gt;     intersect, setdiff, setequal, union</span></a>
-<a class="sourceLine" id="cb8-17" title="17"><span class="co">#&gt; [[1]]</span></a>
-<a class="sourceLine" id="cb8-18" title="18"><span class="co">#&gt;   Sepal.Length Sepal.Width Petal.Length Petal.Width Species  area</span></a>
-<a class="sourceLine" id="cb8-19" title="19"><span class="co">#&gt; 1          5.1         3.5          1.4         0.2  setosa 17.85</span></a>
-<a class="sourceLine" id="cb8-20" title="20"><span class="co">#&gt; 2          4.9         3.0          1.4         0.2  setosa 14.70</span></a>
-<a class="sourceLine" id="cb8-21" title="21"><span class="co">#&gt; 3          4.7         3.2          1.3         0.2  setosa 15.04</span></a>
-<a class="sourceLine" id="cb8-22" title="22"><span class="co">#&gt; 4          4.6         3.1          1.5         0.2  setosa 14.26</span></a>
-<a class="sourceLine" id="cb8-23" title="23"><span class="co">#&gt; 5          5.0         3.6          1.4         0.2  setosa 18.00</span></a>
-<a class="sourceLine" id="cb8-24" title="24"><span class="co">#&gt; 6          5.4         3.9          1.7         0.4  setosa 21.06</span></a></code></pre></div>
+<a class="sourceLine" id="cb8-2" title="2">    x <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb8-3" title="3"><span class="st">        </span><span class="kw">mutate</span>(<span class="dt">area =</span> Sepal.Length <span class="op">*</span><span class="st"> </span>Sepal.Width) <span class="op">%&gt;%</span></a>
+<a class="sourceLine" id="cb8-4" title="4"><span class="st">        </span><span class="kw">head</span>()</a>
+<a class="sourceLine" id="cb8-5" title="5">}</a>
+<a class="sourceLine" id="cb8-6" title="6"><span class="kw">Q</span>(fx, <span class="dt">x=</span><span class="kw">list</span>(iris), <span class="dt">pkgs=</span><span class="st">&quot;dplyr&quot;</span>, <span class="dt">n_jobs=</span><span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb8-7" title="7"><span class="co">#&gt; Submitting 1 worker jobs (ID: 6855) ...</span></a>
+<a class="sourceLine" id="cb8-8" title="8"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb8-9" title="9"><span class="co">#&gt; Attaching package: &#39;dplyr&#39;</span></a>
+<a class="sourceLine" id="cb8-10" title="10"><span class="co">#&gt; The following objects are masked from &#39;package:stats&#39;:</span></a>
+<a class="sourceLine" id="cb8-11" title="11"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb8-12" title="12"><span class="co">#&gt;     filter, lag</span></a>
+<a class="sourceLine" id="cb8-13" title="13"><span class="co">#&gt; The following objects are masked from &#39;package:base&#39;:</span></a>
+<a class="sourceLine" id="cb8-14" title="14"><span class="co">#&gt; </span></a>
+<a class="sourceLine" id="cb8-15" title="15"><span class="co">#&gt;     intersect, setdiff, setequal, union</span></a>
+<a class="sourceLine" id="cb8-16" title="16"><span class="co">#&gt; [[1]]</span></a>
+<a class="sourceLine" id="cb8-17" title="17"><span class="co">#&gt;   Sepal.Length Sepal.Width Petal.Length Petal.Width Species  area</span></a>
+<a class="sourceLine" id="cb8-18" title="18"><span class="co">#&gt; 1          5.1         3.5          1.4         0.2  setosa 17.85</span></a>
+<a class="sourceLine" id="cb8-19" title="19"><span class="co">#&gt; 2          4.9         3.0          1.4         0.2  setosa 14.70</span></a>
+<a class="sourceLine" id="cb8-20" title="20"><span class="co">#&gt; 3          4.7         3.2          1.3         0.2  setosa 15.04</span></a>
+<a class="sourceLine" id="cb8-21" title="21"><span class="co">#&gt; 4          4.6         3.1          1.5         0.2  setosa 14.26</span></a>
+<a class="sourceLine" id="cb8-22" title="22"><span class="co">#&gt; 5          5.0         3.6          1.4         0.2  setosa 18.00</span></a>
+<a class="sourceLine" id="cb8-23" title="23"><span class="co">#&gt; 6          5.4         3.9          1.7         0.4  setosa 21.06</span></a></code></pre></div>
 </div>
 <div id="as-parallel-foreach-backend" class="section level3">
 <h3>As parallel <code>foreach</code> backend</h3>
@@ -536,7 +538,7 @@ code {
 <li><a href="https://conda.io/">Conda</a> environments</li>
 <li><a href="https://www.docker.com/">Docker</a>/<a href="https://singularity.lbl.gov/">Singularity</a> containers</li>
 </ul>
-<p>It should be possible to activate them in the job submission script (i.e., the template file). This is widely untested, but would look the following for the <a href="LSF">LSF</a> scheduler (analogous for others):</p>
+<p>It should be possible to activate them in the job submission script (i.e., the template file). This is widely untested, but would look the following for the <a href="#LSF">LSF</a> scheduler (analogous for others):</p>
 <div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb18-1" title="1"><span class="co">#BSUB-J {{ job_name }}[1-{{ n_jobs }}]  # name of the job / array jobs</span></a>
 <a class="sourceLine" id="cb18-2" title="2"><span class="co">#BSUB-o {{ log_file | /dev/null }}      # stdout + stderr</span></a>
 <a class="sourceLine" id="cb18-3" title="3"><span class="co">#BSUB-M {{ memory | 4096 }}             # Memory requirements in Mbytes</span></a>
@@ -548,7 +550,7 @@ code {
 <a class="sourceLine" id="cb18-9" title="9"><span class="co"># or: source activate {{ conda | default_conda_env_name }}</span></a>
 <a class="sourceLine" id="cb18-10" title="10"><span class="co"># or: your environment activation command</span></a>
 <a class="sourceLine" id="cb18-11" title="11">ulimit <span class="op">-</span>v <span class="op">$</span>(( <span class="dv">1024</span> <span class="op">*</span><span class="st"> </span>{{ memory <span class="op">|</span><span class="st"> </span><span class="dv">4096</span> }} ))</a>
-<a class="sourceLine" id="cb18-12" title="12">R <span class="op">--</span>no<span class="op">-</span>save <span class="op">--</span>no<span class="op">-</span>restore <span class="op">-</span>e <span class="st">&#39;clustermq:::worker(&quot;{{ master }}&quot;)&#39;</span></a></code></pre></div>
+<a class="sourceLine" id="cb18-12" title="12">CMQ_AUTH={{ auth }} R <span class="op">--</span>no<span class="op">-</span>save <span class="op">--</span>no<span class="op">-</span>restore <span class="op">-</span>e <span class="st">&#39;clustermq:::worker(&quot;{{ master }}&quot;)&#39;</span></a></code></pre></div>
 <p>This template still needs to be filled, so in the above example you need to pass either</p>
 <div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb19-1" title="1"><span class="kw">Q</span>(..., <span class="dt">template=</span><span class="kw">list</span>(<span class="dt">bashenv=</span><span class="st">&quot;my environment name&quot;</span>))</a></code></pre></div>
 <p>or set it via an <em>.Rprofile</em> option:</p>
@@ -558,7 +560,7 @@ code {
 </div>
 <div id="scheduler-templates" class="section level2">
 <h2>Scheduler templates</h2>
-<div id="lsf" class="section level3">
+<div id="LSF" class="section level3">
 <h3>LSF</h3>
 <p>In your <code>~/.Rprofile</code> on your computing cluster, set the following options:</p>
 <div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb21-1" title="1"><span class="kw">options</span>(</a>
@@ -567,14 +569,15 @@ code {
 <a class="sourceLine" id="cb21-4" title="4">)</a></code></pre></div>
 <p>The option <code>clustermq.template</code> should point to a LSF template file like the one below.</p>
 <div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb22-1" title="1"><span class="co">#BSUB-J {{ job_name }}[1-{{ n_jobs }}]  # name of the job / array jobs</span></a>
-<a class="sourceLine" id="cb22-2" title="2"><span class="co">#BSUB-o {{ log_file | /dev/null }}      # stdout + stderr; %I for array index</span></a>
-<a class="sourceLine" id="cb22-3" title="3"><span class="co">#BSUB-M {{ memory | 4096 }}             # Memory requirements in Mbytes</span></a>
-<a class="sourceLine" id="cb22-4" title="4"><span class="co">#BSUB-R rusage[mem={{ memory | 4096 }}] # Memory requirements in Mbytes</span></a>
-<a class="sourceLine" id="cb22-5" title="5"><span class="co">##BSUB-q default                        # name of the queue (uncomment)</span></a>
-<a class="sourceLine" id="cb22-6" title="6"><span class="co">##BSUB-W {{ walltime | 6:00 }}          # walltime (uncomment)</span></a>
-<a class="sourceLine" id="cb22-7" title="7"></a>
-<a class="sourceLine" id="cb22-8" title="8">ulimit <span class="op">-</span>v <span class="op">$</span>(( <span class="dv">1024</span> <span class="op">*</span><span class="st"> </span>{{ memory <span class="op">|</span><span class="st"> </span><span class="dv">4096</span> }} ))</a>
-<a class="sourceLine" id="cb22-9" title="9">R <span class="op">--</span>no<span class="op">-</span>save <span class="op">--</span>no<span class="op">-</span>restore <span class="op">-</span>e <span class="st">&#39;clustermq:::worker(&quot;{{ master }}&quot;)&#39;</span></a></code></pre></div>
+<a class="sourceLine" id="cb22-2" title="2"><span class="co">#BSUB-n {{ cores | 1 }}                 # number of cores to use per job</span></a>
+<a class="sourceLine" id="cb22-3" title="3"><span class="co">#BSUB-o {{ log_file | /dev/null }}      # stdout + stderr; %I for array index</span></a>
+<a class="sourceLine" id="cb22-4" title="4"><span class="co">#BSUB-M {{ memory | 4096 }}             # Memory requirements in Mbytes</span></a>
+<a class="sourceLine" id="cb22-5" title="5"><span class="co">#BSUB-R rusage[mem={{ memory | 4096 }}] # Memory requirements in Mbytes</span></a>
+<a class="sourceLine" id="cb22-6" title="6"><span class="co">##BSUB-q default                        # name of the queue (uncomment)</span></a>
+<a class="sourceLine" id="cb22-7" title="7"><span class="co">##BSUB-W {{ walltime | 6:00 }}          # walltime (uncomment)</span></a>
+<a class="sourceLine" id="cb22-8" title="8"></a>
+<a class="sourceLine" id="cb22-9" title="9">ulimit <span class="op">-</span>v <span class="op">$</span>(( <span class="dv">1024</span> <span class="op">*</span><span class="st"> </span>{{ memory <span class="op">|</span><span class="st"> </span><span class="dv">4096</span> }} ))</a>
+<a class="sourceLine" id="cb22-10" title="10">CMQ_AUTH={{ auth }} R <span class="op">--</span>no<span class="op">-</span>save <span class="op">--</span>no<span class="op">-</span>restore <span class="op">-</span>e <span class="st">&#39;clustermq:::worker(&quot;{{ master }}&quot;)&#39;</span></a></code></pre></div>
 <p>In this file, <code>#BSUB-*</code> defines command-line arguments to the <code>bsub</code> program.</p>
 <ul>
 <li>Memory: defined by <code>BSUB-M</code> and <code>BSUB-R</code>. Check your local setup if the memory values supplied are MiB or KiB, default is <code>4096</code> if not requesting memory when calling <code>Q()</code></li>
@@ -585,7 +588,7 @@ code {
 </ul>
 <p>Once this is done, the package will use your settings and no longer warn you of the missing options.</p>
 </div>
-<div id="sge" class="section level3">
+<div id="SGE" class="section level3">
 <h3>SGE</h3>
 <p>In your <code>~/.Rprofile</code> on your computing cluster, set the following options:</p>
 <div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb23-1" title="1"><span class="kw">options</span>(</a>
@@ -600,9 +603,10 @@ code {
 <a class="sourceLine" id="cb24-5" title="5"><span class="co">#$ -cwd                            # use pwd as work dir</span></a>
 <a class="sourceLine" id="cb24-6" title="6"><span class="co">#$ -V                              # use environment variable</span></a>
 <a class="sourceLine" id="cb24-7" title="7"><span class="co">#$ -t 1-{{ n_jobs }}               # submit jobs as array</span></a>
-<a class="sourceLine" id="cb24-8" title="8"></a>
-<a class="sourceLine" id="cb24-9" title="9">ulimit <span class="op">-</span>v <span class="op">$</span>(( <span class="dv">1024</span> <span class="op">*</span><span class="st"> </span>{{ memory <span class="op">|</span><span class="st"> </span><span class="dv">4096</span> }} ))</a>
-<a class="sourceLine" id="cb24-10" title="10">R <span class="op">--</span>no<span class="op">-</span>save <span class="op">--</span>no<span class="op">-</span>restore <span class="op">-</span>e <span class="st">&#39;clustermq:::worker(&quot;{{ master }}&quot;)&#39;</span></a></code></pre></div>
+<a class="sourceLine" id="cb24-8" title="8"><span class="co">#$ -pe {{ cores | 1 }}             # number of cores to use per job</span></a>
+<a class="sourceLine" id="cb24-9" title="9"></a>
+<a class="sourceLine" id="cb24-10" title="10">ulimit <span class="op">-</span>v <span class="op">$</span>(( <span class="dv">1024</span> <span class="op">*</span><span class="st"> </span>{{ memory <span class="op">|</span><span class="st"> </span><span class="dv">4096</span> }} ))</a>
+<a class="sourceLine" id="cb24-11" title="11">CMQ_AUTH={{ auth }} R <span class="op">--</span>no<span class="op">-</span>save <span class="op">--</span>no<span class="op">-</span>restore <span class="op">-</span>e <span class="st">&#39;clustermq:::worker(&quot;{{ master }}&quot;)&#39;</span></a></code></pre></div>
 <p>In this file, <code>#$-*</code> defines command-line arguments to the <code>qsub</code> program.</p>
 <ul>
 <li>Queue: <code>$ -q default</code>. Use the queue with name <em>default</em>. This will most likely not exist on your system, so choose the right name (or comment out this line with an additional <code>#</code>)</li>
@@ -610,7 +614,7 @@ code {
 </ul>
 <p>Once this is done, the package will use your settings and no longer warn you of the missing options.</p>
 </div>
-<div id="slurm" class="section level3">
+<div id="SLURM" class="section level3">
 <h3>SLURM</h3>
 <p>In your <code>~/.Rprofile</code> on your computing cluster, set the following options:</p>
 <div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb25-1" title="1"><span class="kw">options</span>(</a>
@@ -625,9 +629,10 @@ code {
 <a class="sourceLine" id="cb26-5" title="5"><span class="co">#SBATCH --error={{ log_file | /dev/null }}</span></a>
 <a class="sourceLine" id="cb26-6" title="6"><span class="co">#SBATCH --mem-per-cpu={{ memory | 4096 }}</span></a>
 <a class="sourceLine" id="cb26-7" title="7"><span class="co">#SBATCH --array=1-{{ n_jobs }}</span></a>
-<a class="sourceLine" id="cb26-8" title="8"></a>
-<a class="sourceLine" id="cb26-9" title="9">ulimit <span class="op">-</span>v <span class="op">$</span>(( <span class="dv">1024</span> <span class="op">*</span><span class="st"> </span>{{ memory <span class="op">|</span><span class="st"> </span><span class="dv">4096</span> }} ))</a>
-<a class="sourceLine" id="cb26-10" title="10">R <span class="op">--</span>no<span class="op">-</span>save <span class="op">--</span>no<span class="op">-</span>restore <span class="op">-</span>e <span class="st">&#39;clustermq:::worker(&quot;{{ master }}&quot;)&#39;</span></a></code></pre></div>
+<a class="sourceLine" id="cb26-8" title="8"><span class="co">#SBATCH --cpus-per-task={{ cores | 1 }}</span></a>
+<a class="sourceLine" id="cb26-9" title="9"></a>
+<a class="sourceLine" id="cb26-10" title="10">ulimit <span class="op">-</span>v <span class="op">$</span>(( <span class="dv">1024</span> <span class="op">*</span><span class="st"> </span>{{ memory <span class="op">|</span><span class="st"> </span><span class="dv">4096</span> }} ))</a>
+<a class="sourceLine" id="cb26-11" title="11">CMQ_AUTH={{ auth }} R <span class="op">--</span>no<span class="op">-</span>save <span class="op">--</span>no<span class="op">-</span>restore <span class="op">-</span>e <span class="st">&#39;clustermq:::worker(&quot;{{ master }}&quot;)&#39;</span></a></code></pre></div>
 <p>In this file, <code>#SBATCH</code> defines command-line arguments to the <code>sbatch</code> program.</p>
 <ul>
 <li>Queue: <code>SBATCH --partition default</code>. Use the queue with name <em>default</em>. This will most likely not exist on your system, so choose the right name (or comment out this line with an additional <code>#</code>)</li>
@@ -635,7 +640,7 @@ code {
 </ul>
 <p>Once this is done, the package will use your settings and no longer warn you of the missing options.</p>
 </div>
-<div id="pbs" class="section level3">
+<div id="PBS" class="section level3">
 <h3>PBS</h3>
 <p>In your <code>~/.Rprofile</code> on your computing cluster, use the SGE scheduler with a PBS template:</p>
 <div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb27-1" title="1"><span class="kw">options</span>(</a>
@@ -651,7 +656,7 @@ code {
 <a class="sourceLine" id="cb28-6" title="6"><span class="co">#PBS -j oe</span></a>
 <a class="sourceLine" id="cb28-7" title="7"></a>
 <a class="sourceLine" id="cb28-8" title="8">ulimit <span class="op">-</span>v <span class="op">$</span>(( <span class="dv">1024</span> <span class="op">*</span><span class="st"> </span>{{ memory <span class="op">|</span><span class="st"> </span><span class="dv">4096</span> }} ))</a>
-<a class="sourceLine" id="cb28-9" title="9">R <span class="op">--</span>no<span class="op">-</span>save <span class="op">--</span>no<span class="op">-</span>restore <span class="op">-</span>e <span class="st">&#39;clustermq:::worker(&quot;{{ master }}&quot;)&#39;</span></a></code></pre></div>
+<a class="sourceLine" id="cb28-9" title="9">CMQ_AUTH={{ auth }} R <span class="op">--</span>no<span class="op">-</span>save <span class="op">--</span>no<span class="op">-</span>restore <span class="op">-</span>e <span class="st">&#39;clustermq:::worker(&quot;{{ master }}&quot;)&#39;</span></a></code></pre></div>
 <p>In this file, <code>#PBS-*</code> defines command-line arguments to the <code>qsub</code> program.</p>
 <ul>
 <li>Queue: <code>#PBS-q default</code>. Use the queue with name <em>default</em>. This will most likely not exist on your system, so choose the right name (or comment out this line with an additional <code>#</code>)</li>
@@ -659,7 +664,7 @@ code {
 </ul>
 <p>Once this is done, the package will use your settings and no longer warn you of the missing options.</p>
 </div>
-<div id="torque" class="section level3">
+<div id="Torque" class="section level3">
 <h3>Torque</h3>
 <p>In your <code>~/.Rprofile</code> on your computing cluster, use the SGE scheduler with a Torque template:</p>
 <div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb29-1" title="1"><span class="kw">options</span>(</a>
@@ -668,13 +673,13 @@ code {
 <a class="sourceLine" id="cb29-4" title="4">)</a></code></pre></div>
 <p>The option <code>clustermq.template</code> should point to a Torque template file like the one below.</p>
 <div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb30-1" title="1"><span class="co">#PBS -N {{ job_name }}</span></a>
-<a class="sourceLine" id="cb30-2" title="2"><span class="co">#PBS -l nodes={{ n_jobs }}:ppn=1,walltime={{ walltime | 30:00 }}</span></a>
+<a class="sourceLine" id="cb30-2" title="2"><span class="co">#PBS -l nodes={{ n_jobs }}:ppn={{ cores | 1 }},walltime={{ walltime | 12:00:00 }}</span></a>
 <a class="sourceLine" id="cb30-3" title="3"><span class="co">#PBS -o {{ log_file | /dev/null }}</span></a>
 <a class="sourceLine" id="cb30-4" title="4"><span class="co">#PBS -q default</span></a>
 <a class="sourceLine" id="cb30-5" title="5"><span class="co">#PBS -j oe</span></a>
 <a class="sourceLine" id="cb30-6" title="6"></a>
 <a class="sourceLine" id="cb30-7" title="7">ulimit <span class="op">-</span>v <span class="op">$</span>(( <span class="dv">1024</span> <span class="op">*</span><span class="st"> </span>{{ memory <span class="op">|</span><span class="st"> </span><span class="dv">4096</span> }} ))</a>
-<a class="sourceLine" id="cb30-8" title="8">R <span class="op">--</span>no<span class="op">-</span>save <span class="op">--</span>no<span class="op">-</span>restore <span class="op">-</span>e <span class="st">&#39;clustermq:::worker(&quot;{{ master }}&quot;)&#39;</span></a></code></pre></div>
+<a class="sourceLine" id="cb30-8" title="8">CMQ_AUTH={{ auth }} R <span class="op">--</span>no<span class="op">-</span>save <span class="op">--</span>no<span class="op">-</span>restore <span class="op">-</span>e <span class="st">&#39;clustermq:::worker(&quot;{{ master }}&quot;)&#39;</span></a></code></pre></div>
 <p>In this file, <code>#PBS-*</code> defines command-line arguments to the <code>qsub</code> program.</p>
 <ul>
 <li>Queue: <code>#PBS -q default</code>. Use the queue with name <em>default</em>. This will most likely not exist on your system, so choose the right name (or comment out this line with an additional <code>#</code>)</li>

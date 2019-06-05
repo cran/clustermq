@@ -22,7 +22,10 @@ test_that(".export objects are exported", {
 })
 
 test_that(".packages are loaded", {
-    expect_error(foreach(i=1:3, .packages="testthat") %dopar% sqrt(i))
+    expect_error(foreach(i="a string") %dopar% { md5sum(i) })
+    res = foreach(i="a string", .packages="tools") %dopar% { md5sum(i) }
+    cmp = foreach(i="a string") %do% { md5sum(i) }
+    expect_equal(res, cmp)
 })
 
 test_that(".combine is respected", {
@@ -36,12 +39,33 @@ test_that(".combine is respected", {
 
     res = foreach(i=1:3, .combine=cbind) %dopar% sqrt(i)
     cmp = foreach(i=1:3, .combine=cbind) %do% sqrt(i)
-    colnames(res) = colnames(cmp) = NULL # ignore names for now
     expect_equal(res, cmp)
 
     res = foreach(i=1:3, .combine=rbind) %dopar% sqrt(i)
     cmp = foreach(i=1:3, .combine=rbind) %do% sqrt(i)
-    rownames(res) = rownames(cmp) = NULL # ignore names for now
+    expect_equal(res, cmp)
+})
+
+test_that("no matrix unlisting (#143)", {
+    fx = function(x) matrix(c(1,2)+x, ncol=1)
+    res = foreach(i=1:3) %dopar% fx(i)
+    cmp = foreach(i=1:3) %do% fx(i)
+    expect_equal(res, cmp)
+})
+
+test_that("automatic export in foreach", {
+    fx = function(x) x + y
+    y = 5
+    res = foreach(x=1:3) %dopar% { x + y }
+    cmp = foreach(x=1:3) %do% { x + y }
+    expect_equal(res, cmp)
+})
+
+test_that("NULL objects are exported", {
+    fx = function(x) is.null(x)
+    y = NULL
+    res = foreach(i=1) %dopar% fx(y)
+    cmp = foreach(i=1) %do% fx(y)
     expect_equal(res, cmp)
 })
 

@@ -3,8 +3,12 @@
 #' @param ...  List of arguments passed to the `Q` function, e.g. n_jobs
 #' @export
 register_dopar_cmq = function(...) {
-    info = function(data, item)
-        switch(item, name="clustermq", version=utils::packageVersion("clustermq"))
+    info = function(data, item) {
+        switch(item,
+               name = "clustermq",
+               version = utils::packageVersion("clustermq"),
+               workers = NA)
+    }
     foreach::setDoPar(cmq_foreach, data=list(...), info=info)
 }
 
@@ -38,19 +42,23 @@ cmq_foreach = function(obj, expr, envir, data) {
                      formals(fun))
     body(fun) = expr
 
-    # evaluate objects in "export" amd add them to clustermq exports
+    # scan 'expr' for exports, eval and add objects ref'd in '.export'
+    export_env = new.env(parent=envir)
+    foreach::getexports(expr, e=export_env, env=envir)
+    obj$export = c(obj$export, ls(export_env))
     if (length(obj$export) > 0) {
-        export = as.list(mget(obj$export, envir=envir, inherits=TRUE))
-        data$export = utils::modifyList(as.list(data$export), export)
+        export = as.list(mget(obj$export, envir=export_env, inherits=TRUE))
+        data$export = utils::modifyList(as.list(data$export), export, keep.null=TRUE)
     }
 
     # make sure packages are loaded on the dopar target
     if (length(obj$packages) > 0) {
-#        data$packages = utils::modifyList(as.list(data$packages), as.list(obj$packages))
-        stop("foreach .packages currently not supported in clustermq")
+        data$pkgs = unique(c(data$pkgs, obj$packages))
     }
 
     result = do.call(Q_rows, c(list(df=args_df, fun=fun), data))
-    names(result) = paste0("result.", seq_along(result))
-    Reduce(obj$combineInfo$fun, result)
+
+    accum = foreach::makeAccum(it)
+    accum(result, tags=seq_along(result))
+    foreach::getResult(it)
 }

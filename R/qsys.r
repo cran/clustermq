@@ -70,7 +70,8 @@ QSys = R6::R6Class("QSys",
                 args$token = private$token
             }
             private$common_data = rzmq::init.message(c(list(id="DO_SETUP"), args))
-            private$n_common = length(args)
+            private$size_common = object.size(args)
+            private$n_common = length(args$const) + length(args$export)
             args$token
         },
 
@@ -179,7 +180,7 @@ QSys = R6::R6Class("QSys",
         workers_running = function() private$workers_up,
         data_token = function() private$token,
         data_num = function() private$n_common,
-        data_size = function() utils::object.size(private$common_data),
+        data_size = function() private$size_common,
         reusable = function() private$reuse
     ),
 
@@ -192,6 +193,7 @@ QSys = R6::R6Class("QSys",
         timer = NULL,
         common_data = NULL,
         n_common = 0,
+        size_common = 0,
         token = NA,
         workers_total = 0,
         workers_up = 0,
@@ -219,7 +221,7 @@ QSys = R6::R6Class("QSys",
         fill_options = function(...) {
             values = utils::modifyList(private$defaults, list(...))
             values$master = private$master
-            if ("auth" %in% names(infuser::variables_requested(private$template))) {
+            if (grepl("CMQ_AUTH", private$template)) {
                 # note: auth will be obligatory in the future and this check will
                 #   be removed (i.e., filling will fail if no field in template)
                 values$auth = private$auth = paste(sample(letters, 5, TRUE), collapse="")
@@ -235,7 +237,25 @@ QSys = R6::R6Class("QSys",
         },
 
         fill_template = function(values) {
-            infuser::infuse(private$template, values)
+            pattern = "\\{\\{\\s*([^\\s]+)\\s*(\\|\\s*[^\\s]+\\s*)?\\}\\}"
+            match_obj = gregexpr(pattern, private$template, perl=TRUE)
+            matches = regmatches(private$template, match_obj)[[1]]
+
+            no_delim = substr(matches, 3, nchar(matches)-2)
+            kv_str = strsplit(no_delim, "|", fixed=TRUE)
+            keys = sapply(kv_str, function(s) gsub("\\s", "", s[1]))
+            vals = sapply(kv_str, function(s) gsub("\\s", "", s[2]))
+
+            upd = keys %in% names(values)
+            vals[upd] = unlist(values)[keys[upd]]
+            if (any(is.na(vals)))
+                stop("Template values required but not provided: ",
+                     paste(unique(keys[is.na(vals)]), collapse=", "))
+
+            tmpl = private$template
+            for (i in seq_along(matches))
+                tmpl = sub(matches[i], vals[i], tmpl, fixed=TRUE)
+            tmpl
         },
 
         summary_stats = function() {

@@ -34,12 +34,11 @@ Q(fx, x=1:3, export=list(y=10), n_jobs=1)
 
 ## ------------------------------------------------------------------------
 fx = function(x) {
-    library(dplyr)
     x %>%
         mutate(area = Sepal.Length * Sepal.Width) %>%
         head()
 }
-Q(fx, x=list(iris), n_jobs=1)
+Q(fx, x=list(iris), pkgs="dplyr", n_jobs=1)
 
 ## ------------------------------------------------------------------------
 library(foreach)
@@ -78,6 +77,7 @@ x = foreach(i=1:3) %dopar% sqrt(i) # this will be executed as jobs
 
 ## ----eval=FALSE----------------------------------------------------------
 #  #BSUB-J {{ job_name }}[1-{{ n_jobs }}]  # name of the job / array jobs
+#  #BSUB-n {{ cores | 1 }}                 # number of cores to use per job
 #  #BSUB-o {{ log_file | /dev/null }}      # stdout + stderr; %I for array index
 #  #BSUB-M {{ memory | 4096 }}             # Memory requirements in Mbytes
 #  #BSUB-R rusage[mem={{ memory | 4096 }}] # Memory requirements in Mbytes
@@ -85,7 +85,7 @@ x = foreach(i=1:3) %dopar% sqrt(i) # this will be executed as jobs
 #  ##BSUB-W {{ walltime | 6:00 }}          # walltime (uncomment)
 #  
 #  ulimit -v $(( 1024 * {{ memory | 4096 }} ))
-#  R --no-save --no-restore -e 'clustermq:::worker("{{ master }}")'
+#  CMQ_AUTH={{ auth }} R --no-save --no-restore -e 'clustermq:::worker("{{ master }}")'
 
 ## ----eval=FALSE----------------------------------------------------------
 #  options(
@@ -101,9 +101,10 @@ x = foreach(i=1:3) %dopar% sqrt(i) # this will be executed as jobs
 #  #$ -cwd                            # use pwd as work dir
 #  #$ -V                              # use environment variable
 #  #$ -t 1-{{ n_jobs }}               # submit jobs as array
+#  #$ -pe {{ cores | 1 }}             # number of cores to use per job
 #  
 #  ulimit -v $(( 1024 * {{ memory | 4096 }} ))
-#  R --no-save --no-restore -e 'clustermq:::worker("{{ master }}")'
+#  CMQ_AUTH={{ auth }} R --no-save --no-restore -e 'clustermq:::worker("{{ master }}")'
 
 ## ----eval=FALSE----------------------------------------------------------
 #  options(
@@ -119,9 +120,10 @@ x = foreach(i=1:3) %dopar% sqrt(i) # this will be executed as jobs
 #  #SBATCH --error={{ log_file | /dev/null }}
 #  #SBATCH --mem-per-cpu={{ memory | 4096 }}
 #  #SBATCH --array=1-{{ n_jobs }}
+#  #SBATCH --cpus-per-task={{ cores | 1 }}
 #  
 #  ulimit -v $(( 1024 * {{ memory | 4096 }} ))
-#  R --no-save --no-restore -e 'clustermq:::worker("{{ master }}")'
+#  CMQ_AUTH={{ auth }} R --no-save --no-restore -e 'clustermq:::worker("{{ master }}")'
 
 ## ----eval=FALSE----------------------------------------------------------
 #  options(
@@ -138,7 +140,7 @@ x = foreach(i=1:3) %dopar% sqrt(i) # this will be executed as jobs
 #  #PBS -j oe
 #  
 #  ulimit -v $(( 1024 * {{ memory | 4096 }} ))
-#  R --no-save --no-restore -e 'clustermq:::worker("{{ master }}")'
+#  CMQ_AUTH={{ auth }} R --no-save --no-restore -e 'clustermq:::worker("{{ master }}")'
 
 ## ----eval=FALSE----------------------------------------------------------
 #  options(
@@ -148,11 +150,11 @@ x = foreach(i=1:3) %dopar% sqrt(i) # this will be executed as jobs
 
 ## ----eval=FALSE----------------------------------------------------------
 #  #PBS -N {{ job_name }}
-#  #PBS -l nodes={{ n_jobs }}:ppn=1,walltime={{ walltime | 30:00 }}
+#  #PBS -l nodes={{ n_jobs }}:ppn={{ cores | 1 }},walltime={{ walltime | 12:00:00 }}
 #  #PBS -o {{ log_file | /dev/null }}
 #  #PBS -q default
 #  #PBS -j oe
 #  
 #  ulimit -v $(( 1024 * {{ memory | 4096 }} ))
-#  R --no-save --no-restore -e 'clustermq:::worker("{{ master }}")'
+#  CMQ_AUTH={{ auth }} R --no-save --no-restore -e 'clustermq:::worker("{{ master }}")'
 
