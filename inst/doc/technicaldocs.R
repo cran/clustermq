@@ -1,4 +1,4 @@
-## ----echo=FALSE, results="hide"------------------------------------------
+## ----echo=FALSE, results="hide"-----------------------------------------------
 knitr::opts_chunk$set(
     cache = FALSE,
     echo = TRUE,
@@ -8,28 +8,28 @@ knitr::opts_chunk$set(
 options(clustermq.scheduler = "local")
 library(clustermq)
 
-## ----eval=FALSE----------------------------------------------------------
+## ----eval=FALSE---------------------------------------------------------------
 #  # this will block until a worker is ready
 #  msg = w$receive_data()
 
-## ----eval=FALSE----------------------------------------------------------
+## ----eval=FALSE---------------------------------------------------------------
 #  # create a reusable, serialized ZeroMQ object with the common data on the master
 #  w$set_common_data(fun, const, export, rettype, common_seed, token)
 
-## ----eval=FALSE----------------------------------------------------------
+## ----eval=FALSE---------------------------------------------------------------
 #  chunk = data.frame(arg1=1:5, arg2=5:1, ` id `=1:5)
 #  w$send_job_data(chunk)
 
-## ----eval=FALSE----------------------------------------------------------
+## ----eval=FALSE---------------------------------------------------------------
 #  msg = w$receive_data()
 #  if (!is.null(msg$result)) {
 #      # store result here, handle errors/warnings if required
 #  }
 
-## ----eval=FALSE----------------------------------------------------------
+## ----eval=FALSE---------------------------------------------------------------
 #  w$send_call(expr, env=list(...), ref="mycall1")
 
-## ----eval=FALSE----------------------------------------------------------
+## ----eval=FALSE---------------------------------------------------------------
 #  w = workers(3)
 #  on.exit(w$finalize())
 #  
@@ -49,32 +49,32 @@ library(clustermq)
 #  if (w$cleanup())
 #      on.exit()
 
-## ----eval=FALSE----------------------------------------------------------
+## ----eval=FALSE---------------------------------------------------------------
 #  w = workers(n_jobs, ...)
 #  # w$cleanup() for a clean shutdown at the end
 
-## ----eval=FALSE----------------------------------------------------------
+## ----eval=FALSE---------------------------------------------------------------
 #  # create a reusable, serialized ZeroMQ object with the common data on the master
 #  w$set_common_data()
 #  # send this object to a worker
 #  w$send_common_data()
 
-## ----eval=FALSE----------------------------------------------------------
+## ----eval=FALSE---------------------------------------------------------------
 #  w$send_job_data()
 
-## ----eval=FALSE----------------------------------------------------------
+## ----eval=FALSE---------------------------------------------------------------
 #  w$send_call()
 
-## ----eval=FALSE----------------------------------------------------------
+## ----eval=FALSE---------------------------------------------------------------
 #  w$send_wait()
 
-## ----eval=FALSE----------------------------------------------------------
+## ----eval=FALSE---------------------------------------------------------------
 #  w$send_shutdown_worker()
 
-## ----eval=FALSE----------------------------------------------------------
+## ----eval=FALSE---------------------------------------------------------------
 #  w$disconnect_worker()
 
-## ----eval=FALSE----------------------------------------------------------
+## ----eval=FALSE---------------------------------------------------------------
 #  w$set_common_data(...)
 #  
 #  while(work remaining or w$workers_running > 0) {
@@ -94,7 +94,7 @@ library(clustermq)
 #      }
 #  }
 
-## ----eval=FALSE----------------------------------------------------------
+## ----eval=FALSE---------------------------------------------------------------
 #  w$set_common_data(...) # optional, if common data required
 #  
 #  while(work remaining or w$workers_running > 0) {

@@ -1,4 +1,4 @@
-## ----echo=FALSE, results="hide"------------------------------------------
+## ----echo=FALSE, results="hide"-----------------------------------------------
 knitr::opts_chunk$set(
     cache = FALSE,
     echo = TRUE,
@@ -8,7 +8,7 @@ knitr::opts_chunk$set(
 options(clustermq.scheduler = "local")
 library(clustermq)
 
-## ----eval=FALSE----------------------------------------------------------
+## ----eval=FALSE---------------------------------------------------------------
 #  # from CRAN
 #  install.packages('clustermq')
 #  
@@ -16,23 +16,23 @@ library(clustermq)
 #  # install.packages('devtools')
 #  devtools::install_github('mschubert/clustermq')
 
-## ----eval=FALSE----------------------------------------------------------
+## ----eval=FALSE---------------------------------------------------------------
 #  # install.packages('devtools')
 #  devtools::install_github('mschubert/clustermq', ref="develop")
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 fx = function(x) x * 2
 Q(fx, x=1:3, n_jobs=1)
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 fx = function(x, y) x * 2 + y
 Q(fx, x=1:3, const=list(y=10), n_jobs=1)
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 fx = function(x) x * 2 + y
 Q(fx, x=1:3, export=list(y=10), n_jobs=1)
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 fx = function(x) {
     x %>%
         mutate(area = Sepal.Length * Sepal.Width) %>%
@@ -40,42 +40,45 @@ fx = function(x) {
 }
 Q(fx, x=list(iris), pkgs="dplyr", n_jobs=1)
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 library(foreach)
 x = foreach(i=1:3) %do% sqrt(i)
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 x = foreach(i=1:3) %dopar% sqrt(i)
 
-## ------------------------------------------------------------------------
+## -----------------------------------------------------------------------------
 clustermq::register_dopar_cmq(n_jobs=2, memory=1024) # this accepts same arguments as `Q`
 x = foreach(i=1:3) %dopar% sqrt(i) # this will be executed as jobs
 
-## ----eval=FALSE----------------------------------------------------------
+## ----eval=FALSE---------------------------------------------------------------
 #  library(BiocParallel)
 #  register(DoparParam()) # after register_dopar_cmq(...)
 #  bplapply(1:3, sqrt)
 
-## ----eval=FALSE----------------------------------------------------------
+## ----eval=FALSE---------------------------------------------------------------
 #  library(drake)
 #  load_mtcars_example()
 #  # clean(destroy = TRUE)
 #  # options(clustermq.scheduler = "multicore")
 #  make(my_plan, parallelism = "clustermq", jobs = 2, verbose = 4)
 
-## ----eval=FALSE----------------------------------------------------------
+## ----eval=FALSE---------------------------------------------------------------
 #  Q(..., log_file="/path/to.file")
 
-## ----eval=FALSE----------------------------------------------------------
+## ----eval=FALSE---------------------------------------------------------------
 #  options(clustermq.ssh.log = "~/ssh_proxy.log")
 
-## ----eval=FALSE----------------------------------------------------------
+## ----eval=FALSE---------------------------------------------------------------
+#  options(clustermq.ssh.timeout = 10) # or a higher number
+
+## ----eval=FALSE---------------------------------------------------------------
 #  options(
 #      clustermq.scheduler = "lsf",
 #      clustermq.template = "/path/to/file/below"
 #  )
 
-## ----eval=FALSE----------------------------------------------------------
+## ----eval=FALSE---------------------------------------------------------------
 #  #BSUB-J {{ job_name }}[1-{{ n_jobs }}]  # name of the job / array jobs
 #  #BSUB-n {{ cores | 1 }}                 # number of cores to use per job
 #  #BSUB-o {{ log_file | /dev/null }}      # stdout + stderr; %I for array index
@@ -87,13 +90,13 @@ x = foreach(i=1:3) %dopar% sqrt(i) # this will be executed as jobs
 #  ulimit -v $(( 1024 * {{ memory | 4096 }} ))
 #  CMQ_AUTH={{ auth }} R --no-save --no-restore -e 'clustermq:::worker("{{ master }}")'
 
-## ----eval=FALSE----------------------------------------------------------
+## ----eval=FALSE---------------------------------------------------------------
 #  options(
 #      clustermq.scheduler = "sge",
 #      clustermq.template = "/path/to/file/below"
 #  )
 
-## ----eval=FALSE----------------------------------------------------------
+## ----eval=FALSE---------------------------------------------------------------
 #  #$ -N {{ job_name }}               # job name
 #  #$ -q default                      # submit to queue named "default"
 #  #$ -j y                            # combine stdout/error in one file
@@ -106,13 +109,13 @@ x = foreach(i=1:3) %dopar% sqrt(i) # this will be executed as jobs
 #  ulimit -v $(( 1024 * {{ memory | 4096 }} ))
 #  CMQ_AUTH={{ auth }} R --no-save --no-restore -e 'clustermq:::worker("{{ master }}")'
 
-## ----eval=FALSE----------------------------------------------------------
+## ----eval=FALSE---------------------------------------------------------------
 #  options(
 #      clustermq.scheduler = "slurm",
 #      clustermq.template = "/path/to/file/below"
 #  )
 
-## ----eval=FALSE----------------------------------------------------------
+## ----eval=FALSE---------------------------------------------------------------
 #  #!/bin/sh
 #  #SBATCH --job-name={{ job_name }}
 #  #SBATCH --partition=default
@@ -125,13 +128,13 @@ x = foreach(i=1:3) %dopar% sqrt(i) # this will be executed as jobs
 #  ulimit -v $(( 1024 * {{ memory | 4096 }} ))
 #  CMQ_AUTH={{ auth }} R --no-save --no-restore -e 'clustermq:::worker("{{ master }}")'
 
-## ----eval=FALSE----------------------------------------------------------
+## ----eval=FALSE---------------------------------------------------------------
 #  options(
 #      clustermq.scheduler = "sge",
 #      clustermq.template.lsf = "/path/to/file/below"
 #  )
 
-## ----eval=FALSE----------------------------------------------------------
+## ----eval=FALSE---------------------------------------------------------------
 #  #PBS -N {{ job_name }}
 #  #PBS -l select=1:ncpus={{ cores | 1 }}
 #  #PBS -l walltime={{ walltime | 1:00:00 }}
@@ -142,13 +145,13 @@ x = foreach(i=1:3) %dopar% sqrt(i) # this will be executed as jobs
 #  ulimit -v $(( 1024 * {{ memory | 4096 }} ))
 #  CMQ_AUTH={{ auth }} R --no-save --no-restore -e 'clustermq:::worker("{{ master }}")'
 
-## ----eval=FALSE----------------------------------------------------------
+## ----eval=FALSE---------------------------------------------------------------
 #  options(
 #      clustermq.scheduler = "sge",
 #      clustermq.template.lsf = "/path/to/file/below"
 #  )
 
-## ----eval=FALSE----------------------------------------------------------
+## ----eval=FALSE---------------------------------------------------------------
 #  #PBS -N {{ job_name }}
 #  #PBS -l nodes={{ n_jobs }}:ppn={{ cores | 1 }},walltime={{ walltime | 12:00:00 }}
 #  #PBS -o {{ log_file | /dev/null }}
