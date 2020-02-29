@@ -75,7 +75,7 @@ x = foreach(i=1:3) %dopar% sqrt(i) # this will be executed as jobs
 ## ----eval=FALSE---------------------------------------------------------------
 #  options(
 #      clustermq.scheduler = "lsf",
-#      clustermq.template = "/path/to/file/below"
+#      clustermq.template = "/path/to/file/below" # if using your own template
 #  )
 
 ## ----eval=FALSE---------------------------------------------------------------
@@ -93,7 +93,7 @@ x = foreach(i=1:3) %dopar% sqrt(i) # this will be executed as jobs
 ## ----eval=FALSE---------------------------------------------------------------
 #  options(
 #      clustermq.scheduler = "sge",
-#      clustermq.template = "/path/to/file/below"
+#      clustermq.template = "/path/to/file/below" # if using your own template
 #  )
 
 ## ----eval=FALSE---------------------------------------------------------------
@@ -112,7 +112,7 @@ x = foreach(i=1:3) %dopar% sqrt(i) # this will be executed as jobs
 ## ----eval=FALSE---------------------------------------------------------------
 #  options(
 #      clustermq.scheduler = "slurm",
-#      clustermq.template = "/path/to/file/below"
+#      clustermq.template = "/path/to/file/below" # if using your own template
 #  )
 
 ## ----eval=FALSE---------------------------------------------------------------
@@ -130,25 +130,27 @@ x = foreach(i=1:3) %dopar% sqrt(i) # this will be executed as jobs
 
 ## ----eval=FALSE---------------------------------------------------------------
 #  options(
-#      clustermq.scheduler = "sge",
-#      clustermq.template.lsf = "/path/to/file/below"
+#      clustermq.scheduler = "pbs",
+#      clustermq.template = "/path/to/file/below" # if using your own template
 #  )
 
 ## ----eval=FALSE---------------------------------------------------------------
 #  #PBS -N {{ job_name }}
-#  #PBS -l select=1:ncpus={{ cores | 1 }}
-#  #PBS -l walltime={{ walltime | 1:00:00 }}
-#  #PBS -q default
+#  #PBS -J 1-{{ n_jobs }}
+#  #PBS -l select=1:ncpus={{ cores | 1 }}:mpiprocs={{ cores | 1 }}:mem={{ memory | 4096 }}MB
+#  #PBS -l walltime={{ walltime | 12:00:00 }}
 #  #PBS -o {{ log_file | /dev/null }}
 #  #PBS -j oe
 #  
+#  #PBS -q default
+#  
 #  ulimit -v $(( 1024 * {{ memory | 4096 }} ))
 #  CMQ_AUTH={{ auth }} R --no-save --no-restore -e 'clustermq:::worker("{{ master }}")'
+#  
 
 ## ----eval=FALSE---------------------------------------------------------------
-#  options(
-#      clustermq.scheduler = "sge",
-#      clustermq.template.lsf = "/path/to/file/below"
+#  options(clustermq.scheduler = "Torque",
+#          clustermq.template = "/path/to/file/below" # if using your own template
 #  )
 
 ## ----eval=FALSE---------------------------------------------------------------

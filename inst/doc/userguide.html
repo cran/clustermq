@@ -1,20 +1,32 @@
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
 
 <head>
 
 <meta charset="utf-8" />
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta name="generator" content="pandoc" />
 <meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
 
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 
 
 
 <title>ClusterMQ User Guide</title>
 
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
 
 
 <style type="text/css">code{white-space: pre;}</style>
@@ -117,9 +129,6 @@ padding-right: 2em;
 font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
 font-size: 14px;
 line-height: 1.35;
-}
-#header {
-text-align: center;
 }
 #TOC {
 clear: both;
@@ -288,7 +297,8 @@ code > span.st { color: #d14; }
 code > span.co { color: #888888; font-style: italic; } 
 code > span.ot { color: #007020; } 
 code > span.al { color: #ff0000; font-weight: bold; } 
-code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61717; background-color: #e3d2d2; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
 </style>
 
 
@@ -572,9 +582,9 @@ code {
 <p>In your <code>~/.Rprofile</code> on your computing cluster, set the following options:</p>
 <div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1"></a><span class="kw">options</span>(</span>
 <span id="cb23-2"><a href="#cb23-2"></a>    <span class="dt">clustermq.scheduler =</span> <span class="st">&quot;lsf&quot;</span>,</span>
-<span id="cb23-3"><a href="#cb23-3"></a>    <span class="dt">clustermq.template =</span> <span class="st">&quot;/path/to/file/below&quot;</span></span>
+<span id="cb23-3"><a href="#cb23-3"></a>    <span class="dt">clustermq.template =</span> <span class="st">&quot;/path/to/file/below&quot;</span> <span class="co"># if using your own template</span></span>
 <span id="cb23-4"><a href="#cb23-4"></a>)</span></code></pre></div>
-<p>The option <code>clustermq.template</code> should point to a LSF template file like the one below.</p>
+<p>The option <code>clustermq.template</code> should point to a LSF template file like the one below (only needed if you want to supply your own template rather than using the default).</p>
 <div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1"></a><span class="co">#BSUB-J {{ job_name }}[1-{{ n_jobs }}]  # name of the job / array jobs</span></span>
 <span id="cb24-2"><a href="#cb24-2"></a><span class="co">#BSUB-n {{ cores | 1 }}                 # number of cores to use per job</span></span>
 <span id="cb24-3"><a href="#cb24-3"></a><span class="co">#BSUB-o {{ log_file | /dev/null }}      # stdout + stderr; %I for array index</span></span>
@@ -600,9 +610,9 @@ code {
 <p>In your <code>~/.Rprofile</code> on your computing cluster, set the following options:</p>
 <div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1"></a><span class="kw">options</span>(</span>
 <span id="cb25-2"><a href="#cb25-2"></a>    <span class="dt">clustermq.scheduler =</span> <span class="st">&quot;sge&quot;</span>,</span>
-<span id="cb25-3"><a href="#cb25-3"></a>    <span class="dt">clustermq.template =</span> <span class="st">&quot;/path/to/file/below&quot;</span></span>
+<span id="cb25-3"><a href="#cb25-3"></a>    <span class="dt">clustermq.template =</span> <span class="st">&quot;/path/to/file/below&quot;</span> <span class="co"># if using your own template</span></span>
 <span id="cb25-4"><a href="#cb25-4"></a>)</span></code></pre></div>
-<p>The option <code>clustermq.template</code> should point to a SGE template file like the one below.</p>
+<p>The option <code>clustermq.template</code> should point to a SGE template file like the one below (only needed if you want to supply your own template rather than using the default).</p>
 <div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1"></a><span class="co">#$ -N {{ job_name }}               # job name</span></span>
 <span id="cb26-2"><a href="#cb26-2"></a><span class="co">#$ -q default                      # submit to queue named &quot;default&quot;</span></span>
 <span id="cb26-3"><a href="#cb26-3"></a><span class="co">#$ -j y                            # combine stdout/error in one file</span></span>
@@ -626,9 +636,9 @@ code {
 <p>In your <code>~/.Rprofile</code> on your computing cluster, set the following options:</p>
 <div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1"></a><span class="kw">options</span>(</span>
 <span id="cb27-2"><a href="#cb27-2"></a>    <span class="dt">clustermq.scheduler =</span> <span class="st">&quot;slurm&quot;</span>,</span>
-<span id="cb27-3"><a href="#cb27-3"></a>    <span class="dt">clustermq.template =</span> <span class="st">&quot;/path/to/file/below&quot;</span></span>
+<span id="cb27-3"><a href="#cb27-3"></a>    <span class="dt">clustermq.template =</span> <span class="st">&quot;/path/to/file/below&quot;</span> <span class="co"># if using your own template</span></span>
 <span id="cb27-4"><a href="#cb27-4"></a>)</span></code></pre></div>
-<p>The option <code>clustermq.template</code> should point to a SLURM template file like the one below.</p>
+<p>The option <code>clustermq.template</code> should point to a SLURM template file like the one below (only needed if you want to supply your own template rather than using the default).</p>
 <div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1"></a><span class="co">#!/bin/sh</span></span>
 <span id="cb28-2"><a href="#cb28-2"></a><span class="co">#SBATCH --job-name={{ job_name }}</span></span>
 <span id="cb28-3"><a href="#cb28-3"></a><span class="co">#SBATCH --partition=default</span></span>
@@ -649,21 +659,23 @@ code {
 </div>
 <div id="PBS" class="section level3">
 <h3>PBS</h3>
-<p>In your <code>~/.Rprofile</code> on your computing cluster, use the SGE scheduler with a PBS template:</p>
+<p>In your <code>~/.Rprofile</code> on your computing cluster, set the following options:</p>
 <div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1"></a><span class="kw">options</span>(</span>
-<span id="cb29-2"><a href="#cb29-2"></a>    <span class="dt">clustermq.scheduler =</span> <span class="st">&quot;sge&quot;</span>,</span>
-<span id="cb29-3"><a href="#cb29-3"></a>    <span class="dt">clustermq.template.lsf =</span> <span class="st">&quot;/path/to/file/below&quot;</span></span>
+<span id="cb29-2"><a href="#cb29-2"></a>    <span class="dt">clustermq.scheduler =</span> <span class="st">&quot;pbs&quot;</span>,</span>
+<span id="cb29-3"><a href="#cb29-3"></a>    <span class="dt">clustermq.template =</span> <span class="st">&quot;/path/to/file/below&quot;</span> <span class="co"># if using your own template</span></span>
 <span id="cb29-4"><a href="#cb29-4"></a>)</span></code></pre></div>
-<p>The option <code>clustermq.template</code> should point to a PBS template file like the one below.</p>
+<p>The option <code>clustermq.template</code> should point to a PBS template file like the one below (only needed if you want to supply your own template rather than using the default).</p>
 <div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1"></a><span class="co">#PBS -N {{ job_name }}</span></span>
-<span id="cb30-2"><a href="#cb30-2"></a><span class="co">#PBS -l select=1:ncpus={{ cores | 1 }}</span></span>
-<span id="cb30-3"><a href="#cb30-3"></a><span class="co">#PBS -l walltime={{ walltime | 1:00:00 }}</span></span>
-<span id="cb30-4"><a href="#cb30-4"></a><span class="co">#PBS -q default</span></span>
+<span id="cb30-2"><a href="#cb30-2"></a><span class="co">#PBS -J 1-{{ n_jobs }}</span></span>
+<span id="cb30-3"><a href="#cb30-3"></a><span class="co">#PBS -l select=1:ncpus={{ cores | 1 }}:mpiprocs={{ cores | 1 }}:mem={{ memory | 4096 }}MB</span></span>
+<span id="cb30-4"><a href="#cb30-4"></a><span class="co">#PBS -l walltime={{ walltime | 12:00:00 }}</span></span>
 <span id="cb30-5"><a href="#cb30-5"></a><span class="co">#PBS -o {{ log_file | /dev/null }}</span></span>
 <span id="cb30-6"><a href="#cb30-6"></a><span class="co">#PBS -j oe</span></span>
 <span id="cb30-7"><a href="#cb30-7"></a></span>
-<span id="cb30-8"><a href="#cb30-8"></a>ulimit <span class="op">-</span>v <span class="op">$</span>(( <span class="dv">1024</span> <span class="op">*</span><span class="st"> </span>{{ memory <span class="op">|</span><span class="st"> </span><span class="dv">4096</span> }} ))</span>
-<span id="cb30-9"><a href="#cb30-9"></a>CMQ_AUTH={{ auth }} R <span class="op">--</span>no<span class="op">-</span>save <span class="op">--</span>no<span class="op">-</span>restore <span class="op">-</span>e <span class="st">&#39;clustermq:::worker(&quot;{{ master }}&quot;)&#39;</span></span></code></pre></div>
+<span id="cb30-8"><a href="#cb30-8"></a><span class="co">#PBS -q default</span></span>
+<span id="cb30-9"><a href="#cb30-9"></a></span>
+<span id="cb30-10"><a href="#cb30-10"></a>ulimit <span class="op">-</span>v <span class="op">$</span>(( <span class="dv">1024</span> <span class="op">*</span><span class="st"> </span>{{ memory <span class="op">|</span><span class="st"> </span><span class="dv">4096</span> }} ))</span>
+<span id="cb30-11"><a href="#cb30-11"></a>CMQ_AUTH={{ auth }} R <span class="op">--</span>no<span class="op">-</span>save <span class="op">--</span>no<span class="op">-</span>restore <span class="op">-</span>e <span class="st">&#39;clustermq:::worker(&quot;{{ master }}&quot;)&#39;</span></span></code></pre></div>
 <p>In this file, <code>#PBS-*</code> defines command-line arguments to the <code>qsub</code> program.</p>
 <ul>
 <li>Queue: <code>#PBS-q default</code>. Use the queue with name <em>default</em>. This will most likely not exist on your system, so choose the right name (or comment out this line with an additional <code>#</code>)</li>
@@ -673,12 +685,11 @@ code {
 </div>
 <div id="Torque" class="section level3">
 <h3>Torque</h3>
-<p>In your <code>~/.Rprofile</code> on your computing cluster, use the SGE scheduler with a Torque template:</p>
-<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1"></a><span class="kw">options</span>(</span>
-<span id="cb31-2"><a href="#cb31-2"></a>    <span class="dt">clustermq.scheduler =</span> <span class="st">&quot;sge&quot;</span>,</span>
-<span id="cb31-3"><a href="#cb31-3"></a>    <span class="dt">clustermq.template.lsf =</span> <span class="st">&quot;/path/to/file/below&quot;</span></span>
-<span id="cb31-4"><a href="#cb31-4"></a>)</span></code></pre></div>
-<p>The option <code>clustermq.template</code> should point to a Torque template file like the one below.</p>
+<p>In your <code>~/.Rprofile</code> on your computing cluster, use the Torque scheduler with the default template:</p>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1"></a><span class="kw">options</span>(<span class="dt">clustermq.scheduler =</span> <span class="st">&quot;Torque&quot;</span>,</span>
+<span id="cb31-2"><a href="#cb31-2"></a>        <span class="dt">clustermq.template =</span> <span class="st">&quot;/path/to/file/below&quot;</span> <span class="co"># if using your own template</span></span>
+<span id="cb31-3"><a href="#cb31-3"></a>)</span></code></pre></div>
+<p>The option <code>clustermq.template</code> should point to a Torque template file like the one below (only needed if you want to supply your own template rather than using the default).</p>
 <div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1"></a><span class="co">#PBS -N {{ job_name }}</span></span>
 <span id="cb32-2"><a href="#cb32-2"></a><span class="co">#PBS -l nodes={{ n_jobs }}:ppn={{ cores | 1 }},walltime={{ walltime | 12:00:00 }}</span></span>
 <span id="cb32-3"><a href="#cb32-3"></a><span class="co">#PBS -o {{ log_file | /dev/null }}</span></span>

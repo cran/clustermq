@@ -1,14 +1,12 @@
 Package: clustermq
 Title: Evaluate Function Calls on HPC Schedulers (LSF, SGE, SLURM,
         PBS/Torque)
-Version: 0.8.8.1
+Version: 0.8.9
 Authors@R: c(
     person('Michael', 'Schubert', email='mschu.dev@gmail.com',
            role = c('aut', 'cre', 'cph'),
            comment = c(ORCID='0000-0002-6862-5221')
-    ),
-    person('EMBL', role = c('cph', 'fnd'))
-    )
+    ))
 Maintainer: Michael Schubert <mschu.dev@gmail.com>
 Description: Evaluate arbitrary function calls using workers on HPC schedulers
     in single line of code. All processing is done on the network without
@@ -23,11 +21,10 @@ Encoding: UTF-8
 Suggests: devtools, dplyr, foreach, iterators, knitr, parallel,
         roxygen2 (>= 5.0.0), testthat, tools
 VignetteBuilder: knitr
-RoxygenNote: 6.1.1
-NeedsCompilation: no
-Packaged: 2019-12-18 08:29:04 UTC; mschu
+RoxygenNote: 7.0.2
+NeedsCompilation: yes
+Packaged: 2020-02-29 19:01:42 UTC; mschu
 Author: Michael Schubert [aut, cre, cph]
-    (<https://orcid.org/0000-0002-6862-5221>),
-  EMBL [cph, fnd]
+    (<https://orcid.org/0000-0002-6862-5221>)
 Repository: CRAN
-Date/Publication: 2019-12-18 10:10:02 UTC
+Date/Publication: 2020-02-29 19:20:02 UTC
