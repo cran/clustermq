@@ -15,13 +15,13 @@ fx = function(x) x * 2
 # queue the function call on your scheduler
 Q(fx, x=1:3, n_jobs=1)
 
-## ----eval=FALSE---------------------------------------------------------------
+## ---- eval=FALSE--------------------------------------------------------------
 #  install.packages('clustermq')
 
-## ----eval=FALSE---------------------------------------------------------------
-#  # install.packages('devtools')
-#  devtools::install_github('mschubert/clustermq')
-#  # devtools::install_github('mschubert/clustermq', ref="develop") # dev version
+## ---- eval=FALSE--------------------------------------------------------------
+#  # install.packages('remotes')
+#  remotes::install_github('mschubert/clustermq')
+#  # remotes::install_github('mschubert/clustermq', ref="develop") # dev version
 
 ## -----------------------------------------------------------------------------
 fx = function(x) x * 2

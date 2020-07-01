@@ -27,6 +27,22 @@ document.addEventListener('DOMContentLoaded', function(e) {
   }
 });
 </script>
+<script>// Hide empty <a> tag within highlighted CodeBlock for screen reader accessibility (see https://github.com/jgm/pandoc/issues/6352#issuecomment-626106786) -->
+// v0.0.1
+// Written by JooYoung Seo (jooyoung@psu.edu) and Atsushi Yasumoto on June 1st, 2020.
+
+document.addEventListener('DOMContentLoaded', function() {
+  const codeList = document.getElementsByClassName("sourceCode");
+  for (var i = 0; i < codeList.length; i++) {
+    var linkList = codeList[i].getElementsByTagName('a');
+    for (var j = 0; j < linkList.length; j++) {
+      if (linkList[j].innerHTML === "") {
+        linkList[j].setAttribute('aria-hidden', 'true');
+      }
+    }
+  }
+});
+</script>
 
 
 <style type="text/css">code{white-space: pre;}</style>
@@ -325,127 +341,127 @@ code {
 }
 </style>
 <p>This package will allow you to send function calls as jobs on a computing cluster with a minimal interface provided by the <code>Q</code> function:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1"></a><span class="co"># load the library and create a simple function</span></span>
-<span id="cb1-2"><a href="#cb1-2"></a><span class="kw">library</span>(clustermq)</span>
-<span id="cb1-3"><a href="#cb1-3"></a>fx =<span class="st"> </span><span class="cf">function</span>(x) x <span class="op">*</span><span class="st"> </span><span class="dv">2</span></span>
-<span id="cb1-4"><a href="#cb1-4"></a></span>
-<span id="cb1-5"><a href="#cb1-5"></a><span class="co"># queue the function call on your scheduler</span></span>
-<span id="cb1-6"><a href="#cb1-6"></a><span class="kw">Q</span>(fx, <span class="dt">x=</span><span class="dv">1</span><span class="op">:</span><span class="dv">3</span>, <span class="dt">n_jobs=</span><span class="dv">1</span>)</span>
-<span id="cb1-7"><a href="#cb1-7"></a><span class="co">#&gt; Submitting 1 worker jobs (ID: 7356) ...</span></span>
-<span id="cb1-8"><a href="#cb1-8"></a><span class="co">#&gt; [[1]]</span></span>
-<span id="cb1-9"><a href="#cb1-9"></a><span class="co">#&gt; [1] 2</span></span>
-<span id="cb1-10"><a href="#cb1-10"></a><span class="co">#&gt; </span></span>
-<span id="cb1-11"><a href="#cb1-11"></a><span class="co">#&gt; [[2]]</span></span>
-<span id="cb1-12"><a href="#cb1-12"></a><span class="co">#&gt; [1] 4</span></span>
-<span id="cb1-13"><a href="#cb1-13"></a><span class="co">#&gt; </span></span>
-<span id="cb1-14"><a href="#cb1-14"></a><span class="co">#&gt; [[3]]</span></span>
-<span id="cb1-15"><a href="#cb1-15"></a><span class="co">#&gt; [1] 6</span></span></code></pre></div>
-<p>Computations are done <a href="https://github.com/armstrtw/rzmq">entirely on the network</a> and without any temporary files on network-mounted storage, so there is no strain on the file system apart from starting up R once per job. This way, we can also send data and results around a lot quicker.</p>
-<p>All calculations are load-balanced, i.e. workers that get their jobs done faster will also receive more function calls to work on. This is especially useful if not all calls return after the same time, or one worker has a high load.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true"></a><span class="co"># load the library and create a simple function</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true"></a><span class="kw">library</span>(clustermq)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true"></a>fx =<span class="st"> </span><span class="cf">function</span>(x) x <span class="op">*</span><span class="st"> </span><span class="dv">2</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true"></a></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true"></a><span class="co"># queue the function call on your scheduler</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true"></a><span class="kw">Q</span>(fx, <span class="dt">x=</span><span class="dv">1</span><span class="op">:</span><span class="dv">3</span>, <span class="dt">n_jobs=</span><span class="dv">1</span>)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true"></a><span class="co">#&gt; Running sequentially (&#39;LOCAL&#39;) ...</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true"></a><span class="co">#&gt; [[1]]</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true"></a><span class="co">#&gt; [1] 2</span></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true"></a><span class="co">#&gt; </span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true"></a><span class="co">#&gt; [[2]]</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true"></a><span class="co">#&gt; [1] 4</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true"></a><span class="co">#&gt; </span></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true"></a><span class="co">#&gt; [[3]]</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true"></a><span class="co">#&gt; [1] 6</span></span></code></pre></div>
+<p>Computations are done <a href="https://zeromq.org/">entirely on the network</a> and without any temporary files on network-mounted storage, so there is no strain on the file system apart from starting up R once per job. All calculations are load-balanced, i.e. workers that get their jobs done faster will also receive more function calls to work on. This is especially useful if not all calls return after the same time, or one worker has a high load.</p>
 <div id="installation" class="section level2">
 <h2>Installation</h2>
-<p>First, we need the <a href="https://github.com/ropensci/rzmq#installation">ZeroMQ</a> system library. Most likely, your package manager will provide this:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1"></a><span class="co"># You can skip this step on Windows and macOS, the rzmq binary has it</span></span>
-<span id="cb2-2"><a href="#cb2-2"></a><span class="co"># On a computing cluster, we recommend to use Conda or Linuxbrew</span></span>
-<span id="cb2-3"><a href="#cb2-3"></a><span class="ex">brew</span> install zeromq <span class="co"># Linuxbrew, Homebrew on macOS</span></span>
-<span id="cb2-4"><a href="#cb2-4"></a><span class="ex">conda</span> install zeromq <span class="co"># Conda</span></span>
-<span id="cb2-5"><a href="#cb2-5"></a><span class="fu">sudo</span> apt-get install libzmq3-dev <span class="co"># Ubuntu</span></span>
-<span id="cb2-6"><a href="#cb2-6"></a><span class="fu">sudo</span> yum install zeromq3-devel <span class="co"># Fedora</span></span>
-<span id="cb2-7"><a href="#cb2-7"></a><span class="ex">pacman</span> -S zeromq <span class="co"># Arch Linux</span></span></code></pre></div>
-<p>Then install the <code>clustermq</code> package in R (which automatically installs the <code>rzmq</code> package as well) from CRAN:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a><span class="kw">install.packages</span>(<span class="st">&#39;clustermq&#39;</span>)</span></code></pre></div>
-<p>Alternatively you can use <code>devtools</code> to install directly from Github:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a><span class="co"># install.packages(&#39;devtools&#39;)</span></span>
-<span id="cb4-2"><a href="#cb4-2"></a>devtools<span class="op">::</span><span class="kw">install_github</span>(<span class="st">&#39;mschubert/clustermq&#39;</span>)</span>
-<span id="cb4-3"><a href="#cb4-3"></a><span class="co"># devtools::install_github(&#39;mschubert/clustermq&#39;, ref=&quot;develop&quot;) # dev version</span></span></code></pre></div>
+<p>First, we need the <a href="https://github.com/zeromq/libzmq">ZeroMQ</a> system library. This is probably already installed on your system. If not, your package manager will provide it:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true"></a><span class="co"># You can skip this step on Windows and macOS, the package binary has it</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true"></a><span class="co"># On a computing cluster, we recommend to use Conda or Linuxbrew</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true"></a><span class="ex">brew</span> install zeromq # Linuxbrew, Homebrew on macOS</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true"></a><span class="ex">conda</span> install zeromq # Conda, Miniconda</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true"></a><span class="fu">sudo</span> apt-get install libzmq3-dev <span class="co"># Ubuntu</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true"></a><span class="fu">sudo</span> yum install zeromq-devel <span class="co"># Fedora</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true"></a><span class="ex">pacman</span> -S zeromq # Arch Linux</span></code></pre></div>
+<p>Then install the <code>clustermq</code> package in R from CRAN:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true"></a><span class="kw">install.packages</span>(<span class="st">&#39;clustermq&#39;</span>)</span></code></pre></div>
+<p>Alternatively you can use the <code>remotes</code> package to install directly from Github:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true"></a><span class="co"># install.packages(&#39;remotes&#39;)</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true"></a>remotes<span class="op">::</span><span class="kw">install_github</span>(<span class="st">&#39;mschubert/clustermq&#39;</span>)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true"></a><span class="co"># remotes::install_github(&#39;mschubert/clustermq&#39;, ref=&quot;develop&quot;) # dev version</span></span></code></pre></div>
 <p>You should be good to go!</p>
 <p>By default, <code>clustermq</code> will look for <code>sbatch</code> (SLURM), <code>bsub</code> (LSF), or <code>qsub</code> (SGE) in your <code>$PATH</code> and use the scheduler that is available. If the examples don’t run out of the box, you might need to set your scheduler explicitly.</p>
 </div>
 <div id="setting-up-the-scheduler-explicitly" class="section level2">
 <h2>Setting up the scheduler explicitly</h2>
 <p>An HPC cluster’s scheduler ensures that computing jobs are distributed to available worker nodes. Hence, this is what clustermq interfaces with in order to do computations.</p>
-<p>We currently support the <a href="https://mschubert.github.io/clustermq/articles/userguide.html#setting-up-the-scheduler">following schedulers</a>:</p>
+<p>We currently support the <a href="https://mschubert.github.io/clustermq/articles/userguide.html#setting-up-the-scheduler">following schedulers</a> (either locally or via SSH):</p>
 <ul>
+<li><a href="https://mschubert.github.io/clustermq/articles/userguide.html#local-parallelization">Multiprocess</a> - <em>test your calls and parallelize on cores using</em> <code>options(clustermq.scheduler=&quot;multiprocess&quot;)</code></li>
 <li><a href="https://mschubert.github.io/clustermq/articles/userguide.html#lsf">LSF</a> - <em>should work without setup</em></li>
 <li><a href="https://mschubert.github.io/clustermq/articles/userguide.html#sge">SGE</a> - <em>should work without setup</em></li>
 <li><a href="https://mschubert.github.io/clustermq/articles/userguide.html#slurm">SLURM</a> - <em>should work without setup</em></li>
 <li><a href="https://mschubert.github.io/clustermq/articles/userguide.html#pbs">PBS</a>/<a href="https://mschubert.github.io/clustermq/articles/userguide.html#torque">Torque</a> - <em>needs</em> <code>options(clustermq.scheduler=&quot;PBS&quot;/&quot;Torque&quot;)</code></li>
+<li>via <a href="https://mschubert.github.io/clustermq/articles/userguide.html#ssh-connector">SSH</a> - <em>needs</em> <code>options(clustermq.scheduler=&quot;ssh&quot;, clustermq.ssh.host=&lt;yourhost&gt;)</code></li>
 </ul>
-<p>You can also access each of these schedulers from your local machine via the <a href="https://mschubert.github.io/clustermq/articles/userguide.html#ssh-connector">SSH connector</a>. Results will be returned to your local session.</p>
-<p>If you need specific <a href="https://mschubert.github.io/clustermq/articles/userguide.html#environments">computing environments or containers</a>, you can activate them via the scheduler template.</p>
+<p>Default submission templates <a href="https://github.com/mschubert/clustermq/tree/master/inst">are provided</a> and <a href="https://mschubert.github.io/clustermq/articles/userguide.html#configuration">can be customized</a>, e.g. to activate <a href="https://mschubert.github.io/clustermq/articles/userguide.html#environments">compute environments or containers</a>.</p>
 </div>
 <div id="examples" class="section level2">
 <h2>Examples</h2>
 <p>The package is designed to distribute arbitrary function calls on HPC worker nodes. There are, however, a couple of caveats to observe as the R session running on a worker does not share your local memory.</p>
 <p>The simplest example is to a function call that is completely self-sufficient, and there is one argument (<code>x</code>) that we iterate through:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>fx =<span class="st"> </span><span class="cf">function</span>(x) x <span class="op">*</span><span class="st"> </span><span class="dv">2</span></span>
-<span id="cb5-2"><a href="#cb5-2"></a><span class="kw">Q</span>(fx, <span class="dt">x=</span><span class="dv">1</span><span class="op">:</span><span class="dv">3</span>, <span class="dt">n_jobs=</span><span class="dv">1</span>)</span>
-<span id="cb5-3"><a href="#cb5-3"></a><span class="co">#&gt; Submitting 1 worker jobs (ID: 7393) ...</span></span>
-<span id="cb5-4"><a href="#cb5-4"></a><span class="co">#&gt; [[1]]</span></span>
-<span id="cb5-5"><a href="#cb5-5"></a><span class="co">#&gt; [1] 2</span></span>
-<span id="cb5-6"><a href="#cb5-6"></a><span class="co">#&gt; </span></span>
-<span id="cb5-7"><a href="#cb5-7"></a><span class="co">#&gt; [[2]]</span></span>
-<span id="cb5-8"><a href="#cb5-8"></a><span class="co">#&gt; [1] 4</span></span>
-<span id="cb5-9"><a href="#cb5-9"></a><span class="co">#&gt; </span></span>
-<span id="cb5-10"><a href="#cb5-10"></a><span class="co">#&gt; [[3]]</span></span>
-<span id="cb5-11"><a href="#cb5-11"></a><span class="co">#&gt; [1] 6</span></span></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true"></a>fx =<span class="st"> </span><span class="cf">function</span>(x) x <span class="op">*</span><span class="st"> </span><span class="dv">2</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true"></a><span class="kw">Q</span>(fx, <span class="dt">x=</span><span class="dv">1</span><span class="op">:</span><span class="dv">3</span>, <span class="dt">n_jobs=</span><span class="dv">1</span>)</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true"></a><span class="co">#&gt; Running sequentially (&#39;LOCAL&#39;) ...</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true"></a><span class="co">#&gt; [[1]]</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true"></a><span class="co">#&gt; [1] 2</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true"></a><span class="co">#&gt; </span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true"></a><span class="co">#&gt; [[2]]</span></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true"></a><span class="co">#&gt; [1] 4</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true"></a><span class="co">#&gt; </span></span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true"></a><span class="co">#&gt; [[3]]</span></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true"></a><span class="co">#&gt; [1] 6</span></span></code></pre></div>
 <p>Non-iterated arguments are supported by the <code>const</code> argument:</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a>fx =<span class="st"> </span><span class="cf">function</span>(x, y) x <span class="op">*</span><span class="st"> </span><span class="dv">2</span> <span class="op">+</span><span class="st"> </span>y</span>
-<span id="cb6-2"><a href="#cb6-2"></a><span class="kw">Q</span>(fx, <span class="dt">x=</span><span class="dv">1</span><span class="op">:</span><span class="dv">3</span>, <span class="dt">const=</span><span class="kw">list</span>(<span class="dt">y=</span><span class="dv">10</span>), <span class="dt">n_jobs=</span><span class="dv">1</span>)</span>
-<span id="cb6-3"><a href="#cb6-3"></a><span class="co">#&gt; Submitting 1 worker jobs (ID: 7393) ...</span></span>
-<span id="cb6-4"><a href="#cb6-4"></a><span class="co">#&gt; [[1]]</span></span>
-<span id="cb6-5"><a href="#cb6-5"></a><span class="co">#&gt; [1] 12</span></span>
-<span id="cb6-6"><a href="#cb6-6"></a><span class="co">#&gt; </span></span>
-<span id="cb6-7"><a href="#cb6-7"></a><span class="co">#&gt; [[2]]</span></span>
-<span id="cb6-8"><a href="#cb6-8"></a><span class="co">#&gt; [1] 14</span></span>
-<span id="cb6-9"><a href="#cb6-9"></a><span class="co">#&gt; </span></span>
-<span id="cb6-10"><a href="#cb6-10"></a><span class="co">#&gt; [[3]]</span></span>
-<span id="cb6-11"><a href="#cb6-11"></a><span class="co">#&gt; [1] 16</span></span></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true"></a>fx =<span class="st"> </span><span class="cf">function</span>(x, y) x <span class="op">*</span><span class="st"> </span><span class="dv">2</span> <span class="op">+</span><span class="st"> </span>y</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true"></a><span class="kw">Q</span>(fx, <span class="dt">x=</span><span class="dv">1</span><span class="op">:</span><span class="dv">3</span>, <span class="dt">const=</span><span class="kw">list</span>(<span class="dt">y=</span><span class="dv">10</span>), <span class="dt">n_jobs=</span><span class="dv">1</span>)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true"></a><span class="co">#&gt; Running sequentially (&#39;LOCAL&#39;) ...</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true"></a><span class="co">#&gt; [[1]]</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true"></a><span class="co">#&gt; [1] 12</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true"></a><span class="co">#&gt; </span></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true"></a><span class="co">#&gt; [[2]]</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true"></a><span class="co">#&gt; [1] 14</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true"></a><span class="co">#&gt; </span></span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true"></a><span class="co">#&gt; [[3]]</span></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true"></a><span class="co">#&gt; [1] 16</span></span></code></pre></div>
 <p>If a function relies on objects in its environment that are not passed as arguments, they can be exported using the <code>export</code> argument:</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a>fx =<span class="st"> </span><span class="cf">function</span>(x) x <span class="op">*</span><span class="st"> </span><span class="dv">2</span> <span class="op">+</span><span class="st"> </span>y</span>
-<span id="cb7-2"><a href="#cb7-2"></a><span class="kw">Q</span>(fx, <span class="dt">x=</span><span class="dv">1</span><span class="op">:</span><span class="dv">3</span>, <span class="dt">export=</span><span class="kw">list</span>(<span class="dt">y=</span><span class="dv">10</span>), <span class="dt">n_jobs=</span><span class="dv">1</span>)</span>
-<span id="cb7-3"><a href="#cb7-3"></a><span class="co">#&gt; Submitting 1 worker jobs (ID: 7393) ...</span></span>
-<span id="cb7-4"><a href="#cb7-4"></a><span class="co">#&gt; [[1]]</span></span>
-<span id="cb7-5"><a href="#cb7-5"></a><span class="co">#&gt; [1] 12</span></span>
-<span id="cb7-6"><a href="#cb7-6"></a><span class="co">#&gt; </span></span>
-<span id="cb7-7"><a href="#cb7-7"></a><span class="co">#&gt; [[2]]</span></span>
-<span id="cb7-8"><a href="#cb7-8"></a><span class="co">#&gt; [1] 14</span></span>
-<span id="cb7-9"><a href="#cb7-9"></a><span class="co">#&gt; </span></span>
-<span id="cb7-10"><a href="#cb7-10"></a><span class="co">#&gt; [[3]]</span></span>
-<span id="cb7-11"><a href="#cb7-11"></a><span class="co">#&gt; [1] 16</span></span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true"></a>fx =<span class="st"> </span><span class="cf">function</span>(x) x <span class="op">*</span><span class="st"> </span><span class="dv">2</span> <span class="op">+</span><span class="st"> </span>y</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true"></a><span class="kw">Q</span>(fx, <span class="dt">x=</span><span class="dv">1</span><span class="op">:</span><span class="dv">3</span>, <span class="dt">export=</span><span class="kw">list</span>(<span class="dt">y=</span><span class="dv">10</span>), <span class="dt">n_jobs=</span><span class="dv">1</span>)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true"></a><span class="co">#&gt; Running sequentially (&#39;LOCAL&#39;) ...</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true"></a><span class="co">#&gt; [[1]]</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true"></a><span class="co">#&gt; [1] 12</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true"></a><span class="co">#&gt; </span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true"></a><span class="co">#&gt; [[2]]</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true"></a><span class="co">#&gt; [1] 14</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true"></a><span class="co">#&gt; </span></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true"></a><span class="co">#&gt; [[3]]</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true"></a><span class="co">#&gt; [1] 16</span></span></code></pre></div>
 <p>If we want to use a package function we need to load it on the worker using a <code>library()</code> call or referencing it with <code>package_name::</code>:</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a>fx =<span class="st"> </span><span class="cf">function</span>(x) {</span>
-<span id="cb8-2"><a href="#cb8-2"></a>    <span class="st">`</span><span class="dt">%&gt;%</span><span class="st">`</span> =<span class="st"> </span>dplyr<span class="op">::</span><span class="st">`</span><span class="dt">%&gt;%</span><span class="st">`</span></span>
-<span id="cb8-3"><a href="#cb8-3"></a>    x <span class="op">%&gt;%</span></span>
-<span id="cb8-4"><a href="#cb8-4"></a><span class="st">        </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(<span class="dt">area =</span> Sepal.Length <span class="op">*</span><span class="st"> </span>Sepal.Width) <span class="op">%&gt;%</span></span>
-<span id="cb8-5"><a href="#cb8-5"></a><span class="st">        </span><span class="kw">head</span>()</span>
-<span id="cb8-6"><a href="#cb8-6"></a>}</span>
-<span id="cb8-7"><a href="#cb8-7"></a><span class="kw">Q</span>(fx, <span class="dt">x=</span><span class="kw">list</span>(iris), <span class="dt">n_jobs=</span><span class="dv">1</span>)</span>
-<span id="cb8-8"><a href="#cb8-8"></a><span class="co">#&gt; Submitting 1 worker jobs (ID: 7393) ...</span></span>
-<span id="cb8-9"><a href="#cb8-9"></a><span class="co">#&gt; [[1]]</span></span>
-<span id="cb8-10"><a href="#cb8-10"></a><span class="co">#&gt;   Sepal.Length Sepal.Width Petal.Length Petal.Width Species  area</span></span>
-<span id="cb8-11"><a href="#cb8-11"></a><span class="co">#&gt; 1          5.1         3.5          1.4         0.2  setosa 17.85</span></span>
-<span id="cb8-12"><a href="#cb8-12"></a><span class="co">#&gt; 2          4.9         3.0          1.4         0.2  setosa 14.70</span></span>
-<span id="cb8-13"><a href="#cb8-13"></a><span class="co">#&gt; 3          4.7         3.2          1.3         0.2  setosa 15.04</span></span>
-<span id="cb8-14"><a href="#cb8-14"></a><span class="co">#&gt; 4          4.6         3.1          1.5         0.2  setosa 14.26</span></span>
-<span id="cb8-15"><a href="#cb8-15"></a><span class="co">#&gt; 5          5.0         3.6          1.4         0.2  setosa 18.00</span></span>
-<span id="cb8-16"><a href="#cb8-16"></a><span class="co">#&gt; 6          5.4         3.9          1.7         0.4  setosa 21.06</span></span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true"></a>fx =<span class="st"> </span><span class="cf">function</span>(x) {</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true"></a>    <span class="st">`</span><span class="dt">%&gt;%</span><span class="st">`</span> =<span class="st"> </span>dplyr<span class="op">::</span><span class="st">`</span><span class="dt">%&gt;%</span><span class="st">`</span></span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true"></a>    x <span class="op">%&gt;%</span></span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true"></a><span class="st">        </span>dplyr<span class="op">::</span><span class="kw">mutate</span>(<span class="dt">area =</span> Sepal.Length <span class="op">*</span><span class="st"> </span>Sepal.Width) <span class="op">%&gt;%</span></span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true"></a><span class="st">        </span><span class="kw">head</span>()</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true"></a>}</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true"></a><span class="kw">Q</span>(fx, <span class="dt">x=</span><span class="kw">list</span>(iris), <span class="dt">n_jobs=</span><span class="dv">1</span>)</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true"></a><span class="co">#&gt; Running sequentially (&#39;LOCAL&#39;) ...</span></span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true"></a><span class="co">#&gt; [[1]]</span></span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true"></a><span class="co">#&gt;   Sepal.Length Sepal.Width Petal.Length Petal.Width Species  area</span></span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true"></a><span class="co">#&gt; 1          5.1         3.5          1.4         0.2  setosa 17.85</span></span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true"></a><span class="co">#&gt; 2          4.9         3.0          1.4         0.2  setosa 14.70</span></span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true"></a><span class="co">#&gt; 3          4.7         3.2          1.3         0.2  setosa 15.04</span></span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true"></a><span class="co">#&gt; 4          4.6         3.1          1.5         0.2  setosa 14.26</span></span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true"></a><span class="co">#&gt; 5          5.0         3.6          1.4         0.2  setosa 18.00</span></span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true"></a><span class="co">#&gt; 6          5.4         3.9          1.7         0.4  setosa 21.06</span></span></code></pre></div>
 <p><code>clustermq</code> can also be used as a parallel backend for <a href="https://cran.r-project.org/package=foreach"><code>foreach</code></a>. As this is also used by <a href="http://bioconductor.org/packages/release/bioc/html/BiocParallel.html"><code>BiocParallel</code></a>, we can run those packages on the cluster as well:</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a><span class="kw">library</span>(foreach)</span>
-<span id="cb9-2"><a href="#cb9-2"></a><span class="kw">register_dopar_cmq</span>(<span class="dt">n_jobs=</span><span class="dv">2</span>, <span class="dt">memory=</span><span class="dv">1024</span>) <span class="co"># accepts same arguments as `workers`</span></span>
-<span id="cb9-3"><a href="#cb9-3"></a><span class="kw">foreach</span>(<span class="dt">i=</span><span class="dv">1</span><span class="op">:</span><span class="dv">3</span>) <span class="op">%dopar%</span><span class="st"> </span><span class="kw">sqrt</span>(i) <span class="co"># this will be executed as jobs</span></span>
-<span id="cb9-4"><a href="#cb9-4"></a><span class="co">#&gt; Submitting 2 worker jobs (ID: 7326) ...</span></span>
-<span id="cb9-5"><a href="#cb9-5"></a><span class="co">#&gt; [[1]]</span></span>
-<span id="cb9-6"><a href="#cb9-6"></a><span class="co">#&gt; [1] 1</span></span>
-<span id="cb9-7"><a href="#cb9-7"></a><span class="co">#&gt; </span></span>
-<span id="cb9-8"><a href="#cb9-8"></a><span class="co">#&gt; [[2]]</span></span>
-<span id="cb9-9"><a href="#cb9-9"></a><span class="co">#&gt; [1] 1.414214</span></span>
-<span id="cb9-10"><a href="#cb9-10"></a><span class="co">#&gt; </span></span>
-<span id="cb9-11"><a href="#cb9-11"></a><span class="co">#&gt; [[3]]</span></span>
-<span id="cb9-12"><a href="#cb9-12"></a><span class="co">#&gt; [1] 1.732051</span></span></code></pre></div>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a><span class="kw">library</span>(BiocParallel)</span>
-<span id="cb10-2"><a href="#cb10-2"></a><span class="kw">register</span>(<span class="kw">DoparParam</span>()) <span class="co"># after register_dopar_cmq(...)</span></span>
-<span id="cb10-3"><a href="#cb10-3"></a><span class="kw">bplapply</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">3</span>, sqrt)</span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true"></a><span class="kw">library</span>(foreach)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true"></a><span class="kw">register_dopar_cmq</span>(<span class="dt">n_jobs=</span><span class="dv">2</span>, <span class="dt">memory=</span><span class="dv">1024</span>) <span class="co"># accepts same arguments as `workers`</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true"></a><span class="kw">foreach</span>(<span class="dt">i=</span><span class="dv">1</span><span class="op">:</span><span class="dv">3</span>) <span class="op">%dopar%</span><span class="st"> </span><span class="kw">sqrt</span>(i) <span class="co"># this will be executed as jobs</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true"></a><span class="co">#&gt; Running sequentially (&#39;LOCAL&#39;) ...</span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true"></a><span class="co">#&gt; [[1]]</span></span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true"></a><span class="co">#&gt; [1] 1</span></span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true"></a><span class="co">#&gt; </span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true"></a><span class="co">#&gt; [[2]]</span></span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true"></a><span class="co">#&gt; [1] 1.414214</span></span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true"></a><span class="co">#&gt; </span></span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true"></a><span class="co">#&gt; [[3]]</span></span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true"></a><span class="co">#&gt; [1] 1.732051</span></span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true"></a><span class="kw">library</span>(BiocParallel)</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true"></a><span class="kw">register</span>(<span class="kw">DoparParam</span>()) <span class="co"># after register_dopar_cmq(...)</span></span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true"></a><span class="kw">bplapply</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">3</span>, sqrt)</span></code></pre></div>
 <p>More examples are available in <a href="https://mschubert.github.io/clustermq/articles/userguide.html">the user guide</a>.</p>
 </div>
 <div id="usage" class="section level2">

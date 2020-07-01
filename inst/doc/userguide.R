@@ -13,12 +13,12 @@ library(clustermq)
 #  install.packages('clustermq')
 #  
 #  # from Github
-#  # install.packages('devtools')
-#  devtools::install_github('mschubert/clustermq')
+#  # install.packages('remotes')
+#  remotes::install_github('mschubert/clustermq')
 
 ## ----eval=FALSE---------------------------------------------------------------
-#  # install.packages('devtools')
-#  devtools::install_github('mschubert/clustermq', ref="develop")
+#  # install.packages('remotes')
+#  remotes::install_github('mschubert/clustermq', ref="develop")
 
 ## -----------------------------------------------------------------------------
 fx = function(x) x * 2
@@ -48,6 +48,7 @@ x = foreach(i=1:3) %do% sqrt(i)
 x = foreach(i=1:3) %dopar% sqrt(i)
 
 ## -----------------------------------------------------------------------------
+# set up the scheduler first, otherwise this will run sequentially
 clustermq::register_dopar_cmq(n_jobs=2, memory=1024) # this accepts same arguments as `Q`
 x = foreach(i=1:3) %dopar% sqrt(i) # this will be executed as jobs
 
@@ -64,7 +65,10 @@ x = foreach(i=1:3) %dopar% sqrt(i) # this will be executed as jobs
 #  make(my_plan, parallelism = "clustermq", jobs = 2, verbose = 4)
 
 ## ----eval=FALSE---------------------------------------------------------------
-#  Q(..., log_file="/path/to.file")
+#  Q(..., log_worker=TRUE)
+
+## ----eval=FALSE---------------------------------------------------------------
+#  Q(..., template=list(log_file = <yourlog>))
 
 ## ----eval=FALSE---------------------------------------------------------------
 #  options(clustermq.ssh.log = "~/ssh_proxy.log")
