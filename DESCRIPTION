@@ -1,7 +1,7 @@
 Package: clustermq
 Title: Evaluate Function Calls on HPC Schedulers (LSF, SGE, SLURM,
         PBS/Torque)
-Version: 0.8.95
+Version: 0.8.95.1
 Authors@R: c(
     person('Michael', 'Schubert', email='mschu.dev@gmail.com',
            role = c('aut', 'cre'),
@@ -25,7 +25,7 @@ Suggests: callr, devtools, dplyr, foreach, iterators, knitr, parallel,
 VignetteBuilder: knitr
 RoxygenNote: 7.1.0
 NeedsCompilation: yes
-Packaged: 2020-06-30 19:49:22 UTC; mschu
+Packaged: 2020-07-12 22:10:30 UTC; mschu
 Author: Michael Schubert [aut, cre] (<https://orcid.org/0000-0002-6862-5221>)
 Repository: CRAN
-Date/Publication: 2020-07-01 10:50:03 UTC
+Date/Publication: 2020-07-13 12:30:02 UTC

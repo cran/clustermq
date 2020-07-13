@@ -8,51 +8,45 @@ typedef std::chrono::high_resolution_clock Time;
 typedef std::chrono::milliseconds ms;
 extern Rcpp::Function R_serialize;
 extern Rcpp::Function R_unserialize;
-extern int pending_interrupt();
+int pending_interrupt();
 
 class ZeroMQ {
 public:
-    ZeroMQ(int threads=1) { ctx = new zmq::context_t(threads); }
-    ~ZeroMQ() {
-        for (auto kv : sockets)
-            delete sockets[kv.first];
-        delete ctx;
-    }
+    ZeroMQ(int threads=1) : ctx(threads), sockets() {}
+    ZeroMQ(const ZeroMQ &) = delete;
+    ZeroMQ & operator=(ZeroMQ const &) = delete;
 
     std::string listen(Rcpp::CharacterVector addrs, std::string socket_type="ZMQ_REP",
             std::string sid="default") {
-        auto sock = new zmq::socket_t(*ctx, str2socket(socket_type));
+        auto sock = zmq::socket_t(ctx, str2socket(socket_type));
         int i;
         for (i=0; i<addrs.length(); i++) {
             auto addr = Rcpp::as<std::string>(addrs[i]);
             try {
-                sock->bind(addr);
-            } catch(zmq::error_t &e) {
+                sock.bind(addr);
+            } catch(zmq::error_t const &e) {
                 if (errno != EADDRINUSE)
                     Rf_error(e.what());
             }
-            sockets.emplace(sid, sock);
             char option_value[1024];
             size_t option_value_len = sizeof(option_value);
-            sock->getsockopt(ZMQ_LAST_ENDPOINT, option_value, &option_value_len);
+            sock.getsockopt(ZMQ_LAST_ENDPOINT, option_value, &option_value_len);
+            sockets.emplace(sid, std::move(sock));
             return std::string(option_value);
         }
         Rf_error("Could not bind port after ", i, " tries");
     }
     void connect(std::string address, std::string socket_type="ZMQ_REQ", std::string sid="default") {
-        auto sock = new zmq::socket_t(*ctx, str2socket(socket_type));
-        sock->connect(address);
-        sockets.emplace(sid, sock);
+        auto sock = zmq::socket_t(ctx, str2socket(socket_type));
+        sock.connect(address);
+        sockets.emplace(sid, std::move(sock));
     }
     void disconnect(std::string sid="default") {
-        if (sockets[sid]) {
-            delete sockets[sid];
-            sockets.erase(sid);
-        }
+        sockets.erase(sid);
     }
 
     void send(SEXP data, std::string sid="default", bool dont_wait=false, bool send_more=false) {
-        check_socket(sid);
+        auto & socket = find_socket(sid);
         auto flags = zmq::send_flags::none;
         if (dont_wait)
             flags = flags | zmq::send_flags::dontwait;
@@ -64,10 +58,9 @@ public:
 
         zmq::message_t message(Rf_xlength(data));
         memcpy(message.data(), RAW(data), Rf_xlength(data));
-        sockets[sid]->send(message, flags);
+        socket.send(message, flags);
     }
     SEXP receive(std::string sid="default", bool dont_wait=false, bool unserialize=true) {
-        check_socket(sid);
         auto message = rcv_msg(sid, dont_wait);
         SEXP ans = Rf_allocVector(RAWSXP, message.size());
         memcpy(RAW(ans), message.data(), message.size());
@@ -81,8 +74,7 @@ public:
         auto pitems = std::vector<zmq::pollitem_t>(nsock);
         for (int i = 0; i < nsock; i++) {
             auto socket_id = Rcpp::as<std::string>(sids[i]);
-            check_socket(socket_id);
-            pitems[i].socket = *sockets[socket_id];
+            pitems[i].socket = find_socket(socket_id);
             pitems[i].events = ZMQ_POLLIN; // | ZMQ_POLLOUT; // ssh_proxy XREP/XREQ has 2200
         }
 
@@ -91,7 +83,7 @@ public:
         do {
             try {
                 rc = zmq::poll(pitems, timeout);
-            } catch(zmq::error_t &e) {
+            } catch(zmq::error_t const &e) {
                 if (errno != EINTR || pending_interrupt())
                     Rf_error(e.what());
                 if (timeout != -1) {
@@ -110,8 +102,8 @@ public:
     }
 
 private:
-    zmq::context_t *ctx;
-    std::unordered_map<std::string, zmq::socket_t*> sockets;
+    zmq::context_t ctx;
+    std::unordered_map<std::string, zmq::socket_t> sockets;
 
     int str2socket(std::string str) {
         if (str == "ZMQ_REP") {
@@ -128,9 +120,11 @@ private:
         return -1;
     }
 
-    void check_socket(std::string socket_id) {
-        if (sockets.find(socket_id) == sockets.end())
+    zmq::socket_t & find_socket(std::string socket_id) {
+        auto socket_iter = sockets.find(socket_id);
+        if (socket_iter == sockets.end())
             Rf_error("Trying to access non-existing socket: ", socket_id.c_str());
+        return socket_iter->second;
     }
 
     zmq::message_t rcv_msg(std::string sid="default", bool dont_wait=false) {
@@ -139,7 +133,8 @@ private:
             flags = flags | zmq::recv_flags::dontwait;
 
         zmq::message_t message;
-        sockets[sid]->recv(message, flags);
+        auto & socket = find_socket(sid);
+        socket.recv(message, flags);
         return message;
     }
 };
