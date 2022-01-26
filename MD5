@@ -1,4 +1,4 @@
-acd965cdd035770ab7d49ab4770406e8 *DESCRIPTION
+d3be00f85c27eff8255347f6db22428e *DESCRIPTION
 3b83ef96387f14655fc854ddc3c6bd57 *LICENSE
 7e9dccd55eb3a3345cce0d9a66498fdc *NAMESPACE
 5668b71a40c4d1846b1c37a02fc4f01a *NEWS.md
@@ -75,6 +75,7 @@ c75ac5e82035e6608dce0371407c8e7a *man/ssh_proxy.Rd
 6d2b085483085a850424dd3b727db25d *man/worker.Rd
 04daeacf31204a6032ad52f8edbda57e *man/workers.Rd
 a0513b33383601a8c54187b5196095cb *src/Makevars.in
+8c2e57be21db644d2a5e4c1b8af52cb3 *src/Makevars.ucrt
 391b5d21c18a4793e9241b6446ca7ac9 *src/Makevars.win
 88bc7f089ce47b893f67a04b270c6d8e *src/RcppExports.cpp
 339001f8ac5e27f63abc92bb858a9bd7 *src/bindings.cpp
@@ -92,7 +93,7 @@ a0513b33383601a8c54187b5196095cb *src/Makevars.in
 61c872ff39082091315ab7a4863a9b72 *tests/testthat/test-0-util.r
 7106452b029360277af96d310a2d0816 *tests/testthat/test-0-zeromq.r
 62065494d67f849f5c91a90fbe4dfca5 *tests/testthat/test-1-check_args.r
-58933517bad26e7e1164d46c517a5b46 *tests/testthat/test-2-work_chunk.r
+895e5520f6881f0bbcc12944c2bc2dab *tests/testthat/test-2-work_chunk.r
 69320ba494c2069370b7bec175a56a26 *tests/testthat/test-3-worker.r
 e4dd683304ea62da0cb82b972687d138 *tests/testthat/test-4-qsys.r
 f6cfb78ab2f6b0bd60b3e95f8f9af556 *tests/testthat/test-5-qsys_impl.r

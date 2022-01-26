@@ -1,0 +1,12 @@
+CXX_STD = CXX11
+
+PKG_CPPFLAGS = -DSTRICT_R_HEADERS -DZMQ_STATIC \
+	-I../inst
+
+PKG_LIBS = \
+	-lzmq -lsodium -liphlpapi -lws2_32 -fstack-protector
+
+all: clean 
+
+clean:
+	rm -f $(OBJECTS) $(SHLIB)
