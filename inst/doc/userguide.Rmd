@@ -47,6 +47,26 @@ sudo yum install zeromq-devel # Fedora
 pacman -S zeromq # Arch Linux
 ```
 
+You can also manually install it [from the
+release](https://github.com/zeromq/libzmq/releases), e.g. using
+[zeromq-4.3.3.tar.gz](https://github.com/zeromq/libzmq/releases/download/v4.3.3/zeromq-4.3.3.tar.gz):
+
+
+```{sh eval=FALSE}
+# tar -xf zeromq-4.3.3.tar.gz
+# cd zeromq-4.3.3
+./configure
+make
+make DESTDIR=/path/for/the/library install
+```
+
+If R and ZeroMQ are not provided by the same package manager you will need to
+let R know where to find the library when installing `clustermq`:
+
+```{sh eval=FALSE}
+LD_LIBRARY_PATH=/path/for/the/library/lib R -e "install.packages('clustermq')"
+```
+
 ### R package
 
 The latest stable version is available [on
@@ -75,7 +95,21 @@ welcome](https://github.com/mschubert/clustermq/issues/new).
 remotes::install_github('mschubert/clustermq', ref="develop")
 ```
 
-## Configuration
+## Configuration {#configuration}
+
+Choose your preferred parallelism using:
+
+```{r eval=FALSE}
+options(clustermq.scheduler = "your scheduler here")
+```
+
+There are three kinds of schedulers:
+
+* `LOCAL` - sequential processing of calls (default if no HPC scheduler found)
+* [Multiple cores on the same machine](#local-parallelization)
+* [HPC schedulers](#setting-up-the-scheduler)
+
+Parallel and HPC schedulers can also be used [via SSH](#ssh-connector).
 
 ### Local parallelization
 
@@ -86,9 +120,8 @@ to test your code before submitting it to a scheduler.
 * Multiprocess (*recommended*) - Use the `callr` package to run and manage
   multiple parallel R processes with `options(clustermq.scheduler="multiprocess")`
 * Multicore - Uses the `parallel` package to fork the current R process into
-  multiple threads with `options(clustermq.scheduler="multicore")`. This saves
-  memory but sometimes causes problems (macOS, RStudio) and is not available on
-  Windows.
+  multiple threads with `options(clustermq.scheduler="multicore")`. This
+  sometimes causes problems (macOS, RStudio) and is not available on Windows.
 
 ### Setting up the scheduler
 
@@ -110,19 +143,19 @@ To set up a scheduler explicitly, see the following links:
 
 Default submission templates [are
 provided](https://github.com/mschubert/clustermq/tree/master/inst) and [can be
-customized](#Configuration),
+customized](#configuration),
 e.g. to activate [compute environments or
 containers](#Environments).
 
-### SSH connector
+### SSH connector {#ssh-connector}
 
 There are reasons why you might prefer to not to work on the computing cluster
 directly but rather on your local machine instead.
-[RStudio](https://www.rstudio.com/) is an excellent local IDE, it's more
-responsive than and feature-rich than browser-based solutions ([RStudio
-server](https://www.rstudio.com/products/rstudio/download-server/), [Project
-Jupyter](https://jupyter.org/)), and it avoids X forwarding issues when you want
-to look at plots you just made.
+[RStudio](https://posit.co/products/open-source/rstudio/) is an excellent local
+IDE, it's more responsive than and feature-rich than browser-based solutions
+([RStudio server](https://posit.co/products/open-source/rstudio-server/),
+[Project Jupyter](https://jupyter.org/)), and it avoids X forwarding issues
+when you want to look at plots you just made.
 
 Using this setup, however, you lost access to the computing cluster. Instead,
 you had to copy your data there, and then submit individual scripts as jobs,
@@ -131,12 +164,21 @@ providing a transparent SSH interface.
 
 In order to use `clustermq` from your local machine, the package needs to be
 installed on both there and on the computing cluster. On the computing cluster,
-[set up your
-scheduler](https://github.com/mschubert/clustermq/wiki#setting-up-the-scheduler)
-and make sure `clustermq` runs there without problems. On your local machine,
-add the following options in your `~/.Rprofile`:
+[set up your scheduler](#setting-up-the-scheduler) and make sure `clustermq`
+runs there without problems. Note that the *remote scheduler* can not be
+`LOCAL` (default if no HPC scheduler found) or `SSH` for this to work.
 
-```r
+```{r eval=FALSE}
+# If this is set to 'LOCAL' or 'SSH' you will get the following error:
+#  Expected PROXY_READY, received ‘PROXY_ERROR: Remote SSH QSys is not allowed’
+options(
+    clustermq.scheduler = "multiprocess" # or multicore, LSF, SGE, Slurm etc.
+)
+```
+
+On your *local machine*, add the following options in your `~/.Rprofile`:
+
+```{r eval=FALSE}
 options(
     clustermq.scheduler = "ssh",
     clustermq.ssh.host = "user@host", # use your user and host, obviously
@@ -194,7 +236,7 @@ Q(fx, x=1:3, const=list(y=10), n_jobs=1)
 ```
 
 If a function relies on objects in its environment that are not passed as
-arguments, they can be exported using the `export` argument:
+arguments (including other functions), they can be exported using the `export` argument:
 
 ```{r}
 fx = function(x) x * 2 + y
@@ -272,6 +314,45 @@ load_mtcars_example()
 # options(clustermq.scheduler = "multicore")
 make(my_plan, parallelism = "clustermq", jobs = 2, verbose = 4)
 ```
+
+## Options
+
+The various configurable options are mentioned throughout the documentation,
+where applicable, however, we list all of the options here for reference.
+
+Options can be set by including a call to `options(<key> = <value>)` in your
+`.Rprofile`, or by calling `options(<key> = <value>)` in a script or
+interactively during a session.
+
+* `clustermq.scheduler` - One of the supported
+      [`clustermq` schedulers](#configuration); options are `"LOCAL"`,
+      `"multiprocess"`, `"multicore"`, `"lsf"`, `"sge"`, `"slurm"`, `"pbs"`,
+      `"Torque"`, or `"ssh"` (default is the HPC scheduler found in `$PATH`,
+      otherwise `"LOCAL"`)
+* `clustermq.host` - The name of the node or device for constructing the
+      `ZeroMQ` host address (default is `Sys.info()["nodename"]`)
+* `clustermq.ssh.host` - The user name and host for
+      [connecting to the HPC via SSH](#ssh-connector) (e.g. `user@host`); we
+      recommend setting up SSH keys for password-less login
+* `clustermq.ssh.log` - Path for a file (on the SSH host) that will be created
+      and populated with logging information regarding the SSH connection
+      (e.g. `"~/cmq_ssh.log"`); helpful for debugging purposes
+* `clustermq.ssh.timeout` - The amount of time to wait (in seconds) for a SSH
+      start-up connection before timing out (default is 5 seconds)
+* `clustermq.worker.timeout` - The amount of time to wait (in seconds) for
+      master-worker communication before timing out (default is 600 seconds)
+* `clustermq.error.timeout` - The amount of time to wait (in seconds), in case
+      of a worker error, for the remaining workers to finish their computations
+      and shut down cleanly (default is `min(timeout, 30)` seconds)
+* `clustermq.template` - Path to a [template file](#scheduler-templates) for
+      submitting HPC jobs; only necessary if using your own template, otherwise
+      the default template will be used (default depends on
+      `clustermq.scheduler`)
+* `clustermq.data.warning` - The threshold for the size of the common data (in
+      Mb) before `clustermq` throws a warning (default is 1000)
+* `clustermq.defaults` - A named-list of default values for the HPC template;
+      this takes precedence over defaults specified in the template file
+      (default is an empty list (i.e. `list()`))
 
 ## Troubleshooting
 
@@ -351,16 +432,19 @@ ssh -R 54709:localhost:6687 <user@host> R --vanilla
 ```
 
 If you get an `Command not found: R` error, make sure your `$PATH` is set up
-correctly in your `~/.bash_profile` and/or your `~/.bashrc` (depending on
-your cluster config you might need either).
+correctly in your `~/.bash_profile` and/or your `~/.bashrc` (depending on your
+cluster config you might need either). You may also need to modify your [SSH
+template](#ssh-template) to load R as a module or conda environment.
 
 If you get a SSH warning or error try again with `ssh -v` to enable verbose
-output.
-
-If the forward itself works, set the following option in your `~/.Rprofile`:
+output. If the forward itself works, run the following in your local R session
+(ideally also in command-line R, [not only in
+RStudio](https://github.com/mschubert/clustermq/issues/206)):
 
 ```{r eval=FALSE}
-options(clustermq.ssh.log = "~/ssh_proxy.log")
+options(clustermq.scheduler = "ssh",
+        clustermq.ssh.log = "~/ssh_proxy.log")
+Q(identity, x=1, n_jobs=1)
 ```
 
 This will create a log file *on the remote server* that will contain any errors
@@ -376,11 +460,12 @@ but the server log does not show any errors, then you can try increasing the
 timeout:
 
 ```{r eval=FALSE}
-options(clustermq.ssh.timeout = 10) # or a higher number
+options(clustermq.ssh.timeout = 30) # in seconds
 ```
 
-This can happens when your SSH startup template includes additional steps
-before starting R, such as activating a module or conda environment.
+This can happen when your SSH startup template includes additional steps before
+starting R, such as activating a module or conda environment, or having to
+confirm the connection via two-factor authentication.
 
 ## Environments
 
@@ -393,7 +478,7 @@ container.
 
 Examples for such environments or containers are:
 
-* [Bash module](http://modules.sourceforge.net/) environments
+* [Bash module](https://modules.sourceforge.net/) environments
 * [Conda](https://conda.io/) environments
 * [Docker](https://www.docker.com/)/[Singularity](https://singularity.lbl.gov/) containers
 
@@ -401,7 +486,7 @@ It should be possible to activate them in the job submission script (i.e., the
 template file). This is widely untested, but would look the following for the
 [LSF](#LSF) scheduler (analogous for others):
 
-```r
+```{sh eval=FALSE}
 #BSUB-J {{ job_name }}[1-{{ n_jobs }}]  # name of the job / array jobs
 #BSUB-o {{ log_file | /dev/null }}      # stdout + stderr
 #BSUB-M {{ memory | 4096 }}             # Memory requirements in Mbytes
@@ -419,13 +504,13 @@ CMQ_AUTH={{ auth }} R --no-save --no-restore -e 'clustermq:::worker("{{ master }
 This template still needs to be filled, so in the above example you need to
 pass either
 
-```r
+```{r eval=FALSE}
 Q(..., template=list(bashenv="my environment name"))
 ```
 
 or set it via an *.Rprofile* option:
 
-```r
+```{r eval=FALSE}
 options(
     clustermq.defaults = list(bashenv="my default env")
 )
@@ -480,7 +565,7 @@ chmod u+x ~/bin/qsub
 SINGULARITYENV_APPEND_PATH=~/bin
 ```
 
-## Scheduler templates
+## Scheduler templates {#scheduler-templates}
 
 ### LSF {#LSF}
 
@@ -497,7 +582,7 @@ The option `clustermq.template` should point to a LSF template file like the
 one below (only needed if you want to supply your own template rather than
 using the default).
 
-```{r eval=FALSE}
+```{sh eval=FALSE}
 #BSUB-J {{ job_name }}[1-{{ n_jobs }}]  # name of the job / array jobs
 #BSUB-n {{ cores | 1 }}                 # number of cores to use per job
 #BSUB-o {{ log_file | /dev/null }}      # stdout + stderr; %I for array index
@@ -524,7 +609,7 @@ In this file, `#BSUB-*` defines command-line arguments to the `bsub` program.
   function call. The way it is written, it will use 6 hours if no arguemnt is
   given.
 * For other options, see [the LSF
-  documentation](https://www.ibm.com/docs/en/SSETD4_9.1.2/lsf_command_ref/bsub.1.html)
+  documentation](https://www.ibm.com/docs/en/spectrum-lsf/10.1.0?topic=bsub-options)
   and add them via `#BSUB-*` (where `*` represents the argument)
 * Do not change the identifiers in curly braces (`{{ ... }}`), as they are used
   to fill in the right variables
@@ -547,7 +632,7 @@ The option `clustermq.template` should point to a SGE template file like the
 one below (only needed if you want to supply your own template rather than
 using the default).
 
-```{r eval=FALSE}
+```{sh eval=FALSE}
 #$ -N {{ job_name }}               # job name
 #$ -q default                      # submit to queue named "default"
 #$ -j y                            # combine stdout/error in one file
@@ -567,7 +652,7 @@ In this file, `#$-*` defines command-line arguments to the `qsub` program.
   likely not exist on your system, so choose the right name (or comment out
   this line with an additional `#`)
 * For other options, see [the SGE
-  documentation](http://gridscheduler.sourceforge.net/htmlman/manuals.html). Do
+  documentation](https://gridscheduler.sourceforge.net/htmlman/manuals.html). Do
   not change the identifiers in curly braces (`{{ ... }}`), as they are used to
   fill in the right variables.
 
@@ -589,7 +674,7 @@ The option `clustermq.template` should point to a SLURM template file like the
 one below (only needed if you want to supply your own template rather than
 using the default).
 
-```{r eval=FALSE}
+```{sh eval=FALSE}
 #!/bin/sh
 #SBATCH --job-name={{ job_name }}
 #SBATCH --partition=default
@@ -631,7 +716,7 @@ The option `clustermq.template` should point to a PBS template file like the
 one below (only needed if you want to supply your own template rather than
 using the default).
 
-```{r eval=FALSE}
+```{sh eval=FALSE}
 #PBS -N {{ job_name }}
 #PBS -J 1-{{ n_jobs }}
 #PBS -l select=1:ncpus={{ cores | 1 }}:mpiprocs={{ cores | 1 }}:mem={{ memory | 4096 }}MB
@@ -643,7 +728,6 @@ using the default).
 
 ulimit -v $(( 1024 * {{ memory | 4096 }} ))
 CMQ_AUTH={{ auth }} R --no-save --no-restore -e 'clustermq:::worker("{{ master }}")'
-
 ```
 
 In this file, `#PBS-*` defines command-line arguments to the `qsub` program.
@@ -672,7 +756,7 @@ The option `clustermq.template` should point to a Torque template file like the
 one below (only needed if you want to supply your own template rather than
 using the default).
 
-```{r eval=FALSE}
+```{sh eval=FALSE}
 #PBS -N {{ job_name }}
 #PBS -l nodes={{ n_jobs }}:ppn={{ cores | 1 }},walltime={{ walltime | 12:00:00 }}
 #PBS -o {{ log_file | /dev/null }}
@@ -694,3 +778,32 @@ In this file, `#PBS-*` defines command-line arguments to the `qsub` program.
 
 Once this is done, the package will use your settings and no longer warn you of
 the missing options.
+
+### SSH {#ssh-template}
+
+While SSH is not a scheduler, we can access remote schedulers via SSH. If you
+want to use it, first make sure that your real scheduler is running when
+manually connecting to the HPC environment.
+
+```{r eval=FALSE}
+options(clustermq.scheduler = "ssh",
+		clustermq.ssh.host = "myhost", # set this up in your local ~/.ssh/config
+        clustermq.ssh.log = "~/ssh_proxy.log", # log file on your HPC
+        clustermq.ssh.timeout = 30, # if changing the default connection timeout
+        clustermq.template = "/path/to/file/below" # if using your own template
+)
+```
+
+The default template is shown below. If `R` is not in your HPC `$PATH`, you may
+need to specify its path or [load the required bash modules/conda
+environments](https://github.com/mschubert/clustermq/issues/281).
+
+```{sh eval=FALSE}
+ssh -o "ExitOnForwardFailure yes" -f \
+    -R {{ ctl_port }}:localhost:{{ local_port }} \
+    -R {{ job_port }}:localhost:{{ fwd_port }} \
+    {{ ssh_host }} \
+    "R --no-save --no-restore -e \
+        'clustermq:::ssh_proxy(ctl={{ ctl_port }}, job={{ job_port }})' \
+        > {{ ssh_log | /dev/null }} 2>&1"
+```

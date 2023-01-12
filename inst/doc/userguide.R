@@ -20,6 +20,23 @@ library(clustermq)
 #  # install.packages('remotes')
 #  remotes::install_github('mschubert/clustermq', ref="develop")
 
+## ----eval=FALSE---------------------------------------------------------------
+#  options(clustermq.scheduler = "your scheduler here")
+
+## ----eval=FALSE---------------------------------------------------------------
+#  # If this is set to 'LOCAL' or 'SSH' you will get the following error:
+#  #  Expected PROXY_READY, received ‘PROXY_ERROR: Remote SSH QSys is not allowed’
+#  options(
+#      clustermq.scheduler = "multiprocess" # or multicore, LSF, SGE, Slurm etc.
+#  )
+
+## ----eval=FALSE---------------------------------------------------------------
+#  options(
+#      clustermq.scheduler = "ssh",
+#      clustermq.ssh.host = "user@host", # use your user and host, obviously
+#      clustermq.ssh.log = "~/cmq_ssh.log" # log for easier debugging
+#  )
+
 ## -----------------------------------------------------------------------------
 fx = function(x) x * 2
 Q(fx, x=1:3, n_jobs=1)
@@ -71,10 +88,20 @@ x = foreach(i=1:3) %dopar% sqrt(i) # this will be executed as jobs
 #  Q(..., template=list(log_file = <yourlog>))
 
 ## ----eval=FALSE---------------------------------------------------------------
-#  options(clustermq.ssh.log = "~/ssh_proxy.log")
+#  options(clustermq.scheduler = "ssh",
+#          clustermq.ssh.log = "~/ssh_proxy.log")
+#  Q(identity, x=1, n_jobs=1)
 
 ## ----eval=FALSE---------------------------------------------------------------
-#  options(clustermq.ssh.timeout = 10) # or a higher number
+#  options(clustermq.ssh.timeout = 30) # in seconds
+
+## ----eval=FALSE---------------------------------------------------------------
+#  Q(..., template=list(bashenv="my environment name"))
+
+## ----eval=FALSE---------------------------------------------------------------
+#  options(
+#      clustermq.defaults = list(bashenv="my default env")
+#  )
 
 ## ----eval=FALSE---------------------------------------------------------------
 #  options(
@@ -83,35 +110,10 @@ x = foreach(i=1:3) %dopar% sqrt(i) # this will be executed as jobs
 #  )
 
 ## ----eval=FALSE---------------------------------------------------------------
-#  #BSUB-J {{ job_name }}[1-{{ n_jobs }}]  # name of the job / array jobs
-#  #BSUB-n {{ cores | 1 }}                 # number of cores to use per job
-#  #BSUB-o {{ log_file | /dev/null }}      # stdout + stderr; %I for array index
-#  #BSUB-M {{ memory | 4096 }}             # Memory requirements in Mbytes
-#  #BSUB-R rusage[mem={{ memory | 4096 }}] # Memory requirements in Mbytes
-#  ##BSUB-q default                        # name of the queue (uncomment)
-#  ##BSUB-W {{ walltime | 6:00 }}          # walltime (uncomment)
-#  
-#  ulimit -v $(( 1024 * {{ memory | 4096 }} ))
-#  CMQ_AUTH={{ auth }} R --no-save --no-restore -e 'clustermq:::worker("{{ master }}")'
-
-## ----eval=FALSE---------------------------------------------------------------
 #  options(
 #      clustermq.scheduler = "sge",
 #      clustermq.template = "/path/to/file/below" # if using your own template
 #  )
-
-## ----eval=FALSE---------------------------------------------------------------
-#  #$ -N {{ job_name }}               # job name
-#  #$ -q default                      # submit to queue named "default"
-#  #$ -j y                            # combine stdout/error in one file
-#  #$ -o {{ log_file | /dev/null }}   # output file
-#  #$ -cwd                            # use pwd as work dir
-#  #$ -V                              # use environment variable
-#  #$ -t 1-{{ n_jobs }}               # submit jobs as array
-#  #$ -pe {{ cores | 1 }}             # number of cores to use per job
-#  
-#  ulimit -v $(( 1024 * {{ memory | 4096 }} ))
-#  CMQ_AUTH={{ auth }} R --no-save --no-restore -e 'clustermq:::worker("{{ master }}")'
 
 ## ----eval=FALSE---------------------------------------------------------------
 #  options(
@@ -120,37 +122,10 @@ x = foreach(i=1:3) %dopar% sqrt(i) # this will be executed as jobs
 #  )
 
 ## ----eval=FALSE---------------------------------------------------------------
-#  #!/bin/sh
-#  #SBATCH --job-name={{ job_name }}
-#  #SBATCH --partition=default
-#  #SBATCH --output={{ log_file | /dev/null }} # you can add .%a for array index
-#  #SBATCH --error={{ log_file | /dev/null }}
-#  #SBATCH --mem-per-cpu={{ memory | 4096 }}
-#  #SBATCH --array=1-{{ n_jobs }}
-#  #SBATCH --cpus-per-task={{ cores | 1 }}
-#  
-#  ulimit -v $(( 1024 * {{ memory | 4096 }} ))
-#  CMQ_AUTH={{ auth }} R --no-save --no-restore -e 'clustermq:::worker("{{ master }}")'
-
-## ----eval=FALSE---------------------------------------------------------------
 #  options(
 #      clustermq.scheduler = "pbs",
 #      clustermq.template = "/path/to/file/below" # if using your own template
 #  )
-
-## ----eval=FALSE---------------------------------------------------------------
-#  #PBS -N {{ job_name }}
-#  #PBS -J 1-{{ n_jobs }}
-#  #PBS -l select=1:ncpus={{ cores | 1 }}:mpiprocs={{ cores | 1 }}:mem={{ memory | 4096 }}MB
-#  #PBS -l walltime={{ walltime | 12:00:00 }}
-#  #PBS -o {{ log_file | /dev/null }}
-#  #PBS -j oe
-#  
-#  #PBS -q default
-#  
-#  ulimit -v $(( 1024 * {{ memory | 4096 }} ))
-#  CMQ_AUTH={{ auth }} R --no-save --no-restore -e 'clustermq:::worker("{{ master }}")'
-#  
 
 ## ----eval=FALSE---------------------------------------------------------------
 #  options(clustermq.scheduler = "Torque",
@@ -158,12 +133,10 @@ x = foreach(i=1:3) %dopar% sqrt(i) # this will be executed as jobs
 #  )
 
 ## ----eval=FALSE---------------------------------------------------------------
-#  #PBS -N {{ job_name }}
-#  #PBS -l nodes={{ n_jobs }}:ppn={{ cores | 1 }},walltime={{ walltime | 12:00:00 }}
-#  #PBS -o {{ log_file | /dev/null }}
-#  #PBS -q default
-#  #PBS -j oe
-#  
-#  ulimit -v $(( 1024 * {{ memory | 4096 }} ))
-#  CMQ_AUTH={{ auth }} R --no-save --no-restore -e 'clustermq:::worker("{{ master }}")'
+#  options(clustermq.scheduler = "ssh",
+#  		clustermq.ssh.host = "myhost", # set this up in your local ~/.ssh/config
+#          clustermq.ssh.log = "~/ssh_proxy.log", # log file on your HPC
+#          clustermq.ssh.timeout = 30, # if changing the default connection timeout
+#          clustermq.template = "/path/to/file/below" # if using your own template
+#  )
 

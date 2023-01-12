@@ -236,7 +236,7 @@ QSys = R6::R6Class("QSys",
             wt = Reduce(`+`, times) / length(times)
             rt = proc.time() - private$timer
 
-            if (class(wt) != "proc_time")
+            if (!inherits(wt, "proc_time"))
                 wt = rep(NA, 3)
             if (length(max_mem) != 1)
                 max_mem = NA
