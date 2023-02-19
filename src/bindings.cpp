@@ -107,7 +107,7 @@ zmq::message_t rcv_msg(SEXP socket, bool dont_wait=false) {
         flags = flags | zmq::recv_flags::dontwait;
 
     zmq::message_t message;
-    socket_->recv(message, flags);
+    auto res = socket_->recv(message, flags);
     return message;
 }
 

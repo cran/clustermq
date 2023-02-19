@@ -134,7 +134,7 @@ private:
 
         zmq::message_t message;
         auto & socket = find_socket(sid);
-        socket.recv(message, flags);
+        auto res = socket.recv(message, flags);
         return message;
     }
 };
