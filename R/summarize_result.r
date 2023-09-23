@@ -10,20 +10,20 @@
 summarize_result = function(result, n_errors, n_warnings,
                             cond_msgs, at=length(result), fail_on_error=TRUE) {
 
-    if (length(cond_msgs) > 0)
-        cond_msgs = utils::head(cond_msgs[order(names(cond_msgs))], 50)
+    cond_msgs$errors = cond_msgs$errors[order(as.integer(names(cond_msgs$errors)))]
+    cond_msgs$warnings = cond_msgs$warnings[order(as.integer(names(cond_msgs$warnings)))]
+    cond_msgs = utils::head(c(cond_msgs$errors, cond_msgs$warnings), 50)
     detail = paste(cond_msgs, collapse="\n")
 
     if (n_errors > 0) {
-        msg = sprintf("%i/%i jobs failed (%i warnings)", n_errors,
-                      at, n_warnings)
+        msg = sprintf("%i/%i jobs failed (%i warnings)", n_errors, at, n_warnings)
         if (fail_on_error)
-            stop(msg, ". Stopping.\n", detail)
+            stop(msg, ". Stopping.\n", detail, call.=FALSE)
         else
-            warning(msg, "\n", detail, immediate.=TRUE)
+            warning(msg, "\n", detail, immediate.=TRUE, call.=FALSE)
     } else if (n_warnings > 0) {
         msg = sprintf("%i warnings occurred in processing\n", n_warnings)
-        warning(msg, detail, immediate.=TRUE)
+        warning(msg, detail, immediate.=TRUE, call.=FALSE)
     }
     unname(result)
 }

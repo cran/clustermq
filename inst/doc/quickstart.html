@@ -495,7 +495,7 @@ using a <code>library()</code> call or referencing it with
 <span id="cb8-15"><a href="#cb8-15" tabindex="-1"></a><span class="co">#&gt; 5          5.0         3.6          1.4         0.2  setosa 18.00</span></span>
 <span id="cb8-16"><a href="#cb8-16" tabindex="-1"></a><span class="co">#&gt; 6          5.4         3.9          1.7         0.4  setosa 21.06</span></span></code></pre></div>
 <p><code>clustermq</code> can also be used as a parallel backend for <a href="https://cran.r-project.org/package=foreach"><code>foreach</code></a>.
-As this is also used by <a href="http://bioconductor.org/packages/release/bioc/html/BiocParallel.html"><code>BiocParallel</code></a>,
+As this is also used by <a href="https://bioconductor.org/packages/release/bioc/html/BiocParallel.html"><code>BiocParallel</code></a>,
 we can run those packages on the cluster as well:</p>
 <div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="fu">library</span>(foreach)</span>
 <span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a><span class="fu">register_dopar_cmq</span>(<span class="at">n_jobs=</span><span class="dv">2</span>, <span class="at">memory=</span><span class="dv">1024</span>) <span class="co"># accepts same arguments as `workers`</span></span>

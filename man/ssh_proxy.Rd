@@ -4,12 +4,11 @@
 \alias{ssh_proxy}
 \title{SSH proxy for different schedulers}
 \usage{
-ssh_proxy(ctl, job, qsys_id = qsys_default)
+ssh_proxy(fwd_port, qsys_id = qsys_default)
 }
 \arguments{
-\item{ctl}{The port to connect to the master for proxy control}
-
-\item{job}{The port to connect to the master for job control}
+\item{fwd_port}{The port of the master address to connect to
+(remote end of reverse tunnel)}
 
 \item{qsys_id}{Character string of QSys class to use}
 }

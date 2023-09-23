@@ -1,37 +1,11 @@
-#' Binds a ZeroMQ socket to an available port in given range
-#'
-#' @param socket   An ZeroMQ socket object
-#' @param range    Numbers to consider (e.g. 6000:8000)
-#' @param iface    Interface to listen on
-#' @param n_tries  Number of ports to try in range
-#' @return         The port the socket is bound to
-#' @keywords internal
-bind_avail = function(socket, range, iface="tcp://*", n_tries=100) {
-    ports = sample(range, n_tries)
-
-    for (i in 1:n_tries) {
-        addr = paste(iface, ports[i], sep=":")
-        success = tryCatch({
-            port_found = bind_socket(socket, addr)
-        }, error = function(e) NULL)
-        if (is.null(success))
-            break
-    }
-
-    if (!is.null(success))
-        stop("Could not bind after ", n_tries, " tries")
-
-    ports[i]
-}
-
 #' Construct the ZeroMQ host address
 #'
 #' @param node   Node or device name
 #' @param ports  Range of ports to consider
 #' @param n      How many addresses to return
-#' @param short  Whether to use unqualified host name (before first dot)
 #' @return       The possible addresses as character vector
 #' @keywords internal
+# @param short  Whether to use unqualified host name (before first dot)
 host = function(node=getOption("clustermq.host", Sys.info()["nodename"]),
                 ports=6000:9999, n=100) {
     utils::head(sample(sprintf("tcp://%s:%i", node, ports)), n)
@@ -83,19 +57,20 @@ vec_lookup = list(
     "chr" = NA_character_
 )
 
-#' Lookup table for return types to purrr functions
+#' Wraps an error in a condition object
 #'
 #' @keywords internal
-purrr_lookup = function(type) {
-    switch(type,
-        "list" = purrr::pmap,
-        "logical" = purrr::pmap_lgl,
-        "numeric" = purrr::pmap_dbl,
-        "integer" = purrr::pmap_int,
-        "character" = purrr::pmap_chr,
-        "lgl" = purrr::pmap_lgl,
-        "dbl" = purrr::pmap_dbl,
-        "int" = purrr::pmap_int,
-        "chr" = purrr::pmap_chr
-    )
+wrap_error = function(call) {
+    structure(class = c("worker_error", "condition"),
+              list(message=geterrmessage(), call=call));
+}
+
+#' Message format for logging
+#'
+#' @keywords internal
+msg_fmt = function(verbose=TRUE) {
+    if (verbose)
+        function(...) base::message(format(Sys.time(), "%Y-%m-%d %H:%M:%OS9 | "), ...)
+    else
+        function(...) invisible(NULL)
 }

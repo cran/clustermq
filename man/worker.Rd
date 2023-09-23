@@ -4,21 +4,16 @@
 \alias{worker}
 \title{R worker submitted as cluster job}
 \usage{
-worker(
-  master,
-  timeout = getOption("clustermq.worker.timeout", 600),
-  ...,
-  verbose = TRUE
-)
+worker(master, ..., verbose = TRUE, context = NULL)
 }
 \arguments{
 \item{master}{The master address (tcp://ip:port)}
 
-\item{timeout}{Time until worker shuts down without hearing from master}
-
 \item{...}{Catch-all to not break older template values (ignored)}
 
 \item{verbose}{Whether to print debug messages}
+
+\item{context}{ZeroMQ context (for internal testing)}
 }
 \description{
 Do not call this manually, the master will do that

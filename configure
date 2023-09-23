@@ -1,77 +1,54 @@
-# Anticonf (tm) script by Jeroen Ooms (2020)
-# This script will query 'pkg-config' for the required cflags and ldflags.
-# If pkg-config is unavailable or does not find the library, try setting
-# INCLUDE_DIR and LIB_DIR manually via e.g:
-# R CMD INSTALL --configure-vars='INCLUDE_DIR=/.../include LIB_DIR=/.../lib'
+#!/bin/sh
+CXX=$(${R_HOME}/bin/R CMD config CXX)
+CXXFLAGS=$(${R_HOME}/bin/R CMD config CXXFLAGS)
+CPPFLAGS=$(${R_HOME}/bin/R CMD config CPPFLAGS)
 
-# Library settings
-PKG_CONFIG_NAME="libzmq"
-PKG_DEB_NAME="libzmq3-dev"
-PKG_RPM_NAME="zeromq-devel"
-PKG_EPEL_NAME="zeromq3-devel"
-PKG_CSW_NAME="libzmq1_dev"
-PKG_BREW_NAME="zeromq"
-PKG_TEST_HEADER="<zmq.h>"
-PKG_LIBS="-lzmq"
+PKG_CFLAGS="-DZMQ_STATIC -DZMQ_BUILD_DRAFT_API=1 -fPIC -Ilibzmq/include -Icppzmq"
+PKG_LIBS="libzmq/src/.libs/libzmq.a"
 
-# Use pkg-config if available
-if [ `command -v pkg-config` ]; then
-  PKGCONFIG_CFLAGS=`pkg-config --cflags --silence-errors ${PKG_CONFIG_NAME}`
-  PKGCONFIG_LIBS=`pkg-config --libs ${PKG_CONFIG_NAME}`
+if [ ! -f src/libzmq/autogen.sh ]; then
+  # the tarball has the submodules, a fresh clone does not
+  git submodule update --init --recursive
 fi
 
-# Check for custom locations
-if [ "$INCLUDE_DIR" ] || [ "$LIB_DIR" ]; then
-  echo "Found INCLUDE_DIR and/or LIB_DIR!"
-  PKG_CFLAGS="-I$INCLUDE_DIR $PKG_CFLAGS"
-  PKG_LIBS="-L$LIB_DIR $PKG_LIBS"
-elif [ "$PKGCONFIG_CFLAGS" ] || [ "$PKGCONFIG_LIBS" ]; then
-  echo "Found pkg-config cflags and libs!"
-  PKG_CFLAGS=${PKGCONFIG_CFLAGS}
-  PKG_LIBS=${PKGCONFIG_LIBS}
-elif [ `uname` = "Darwin" ]; then
-  brew --version 2>/dev/null
-  if [ $? -eq 0 ]; then
-    BREWDIR=`brew --prefix`
-    PKG_CFLAGS="-I$BREWDIR/include"
-    PKG_LIBS="-L$BREWDIR/lib $PKG_LIBS"
-  else
-    curl -sfL "https://autobrew.github.io/scripts/$PKG_BREW_NAME" > autobrew
-    . ./autobrew
+if [ ! -f src/libzmq/src/.libs/libzmq.a ]; then
+  cd src/libzmq
+
+  if [ ! -f src/Makefile.am.orig ]; then
+    # remove code format helper and valgrind support that CRAN complains about
+    # sed -i does not work on macOS
+    mv Makefile.am Makefile.am.orig
+    sed '/WITH_CLANG_FORMAT/,/VALGRIND_SUPPRESSIONS_FILES/d' Makefile.am.orig > Makefile.am
   fi
+
+  if [ ! -f src/curve_client_tools.hpp.orig ]; then
+    # remove disabled gcc check that cran complains about
+    mv src/curve_client_tools.hpp src/curve_client_tools.hpp.orig
+    sed '/^#pragma/s|^|//|' src/curve_client_tools.hpp.orig > src/curve_client_tools.hpp
+  fi
+  if [ ! -f include/zmq_utils.h.orig ]; then
+    mv include/zmq_utils.h src/zmq_utils.h.orig
+    sed '/^#pragma/s|^|//|' include/zmq_utils.h.orig > include/zmq_utils.h
+  fi
+
+  if [ ! -f Makefile.in ]; then
+    ./autogen.sh || die
+  fi
+
+  CXX="$CXX" CXXFLAGS="$CXXFLAGS -fPIC" CPPFLAGS="$CPPFLAGS" ./configure \
+      --enable-static \
+      --disable-shared \
+      --disable-maintainer-mode \
+      --enable-drafts \
+      --disable-libbsd \
+      --disable-libunwind \
+      --disable-perf \
+      --disable-curve \
+      --disable-curve-keygen \
+      --disable-ws \
+      --disable-radix-tree
+  make || exit 1
+  cd -
 fi
 
-# For debugging
-echo "Using PKG_CFLAGS=$PKG_CFLAGS"
-echo "Using PKG_LIBS=$PKG_LIBS"
-
-# Find compiler
-CXX=`${R_HOME}/bin/R CMD config CXX`
-CXXFLAGS=`${R_HOME}/bin/R CMD config CXXFLAGS`
-CPPFLAGS=`${R_HOME}/bin/R CMD config CPPFLAGS`
-
-# Test for libzmq
-echo "#include $PKG_TEST_HEADER" | ${CXX} -E ${CPPFLAGS} ${PKG_CFLAGS} ${CXXFLAGS} -xc++ - >/dev/null 2>configure.log
-
-if [ $? -ne 0 ]; then
-  echo "------------------------------[ ANTICONF ]------------------------------"
-  echo "Configuration failed because $PKG_CONFIG_NAME was not found. Try installing:"
-  echo " * deb: $PKG_DEB_NAME (Debian, Ubuntu, etc)"
-  echo " * rpm: $PKG_RPM_NAME (Fedora, CentOS 7)"
-  echo " * rpm: $PKG_EPEL_NAME (RHEL 6, CentOS 6, from EPEL)"
-  echo " * csw: $PKG_CSW_NAME (Solaris)"
-  echo "If $PKG_CONFIG_NAME is already installed, check that 'pkg-config' is in your"
-  echo "PATH and PKG_CONFIG_PATH contains a $PKG_CONFIG_NAME.pc file. If pkg-config"
-  echo "is unavailable you can set INCLUDE_DIR and LIB_DIR manually via:"
-  echo "R CMD INSTALL --configure-vars='INCLUDE_DIR=... LIB_DIR=...'"
-  echo "---------------------------[ ERROR MESSAGE ]-----------------------------"
-  cat configure.log
-  echo "-------------------------------------------------------------------------"
-  exit 1
-fi
-
-# Write to Makevars
 sed -e "s|@cflags@|$PKG_CFLAGS|" -e "s|@libs@|$PKG_LIBS|" src/Makevars.in > src/Makevars
-
-# Success
-exit 0

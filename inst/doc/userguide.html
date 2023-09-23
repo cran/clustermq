@@ -607,7 +607,7 @@ execution, where we can use <code>clustermq</code>:</p>
 <span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a>clustermq<span class="sc">::</span><span class="fu">register_dopar_cmq</span>(<span class="at">n_jobs=</span><span class="dv">2</span>, <span class="at">memory=</span><span class="dv">1024</span>) <span class="co"># this accepts same arguments as `Q`</span></span>
 <span id="cb15-3"><a href="#cb15-3" tabindex="-1"></a>x <span class="ot">=</span> <span class="fu">foreach</span>(<span class="at">i=</span><span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>) <span class="sc">%dopar%</span> <span class="fu">sqrt</span>(i) <span class="co"># this will be executed as jobs</span></span>
 <span id="cb15-4"><a href="#cb15-4" tabindex="-1"></a><span class="co">#&gt; Running sequentially (&#39;LOCAL&#39;) ...</span></span></code></pre></div>
-<p>As <a href="http://bioconductor.org/packages/release/bioc/html/BiocParallel.html">BiocParallel</a>
+<p>As <a href="https://bioconductor.org/packages/release/bioc/html/BiocParallel.html">BiocParallel</a>
 supports <code>foreach</code> too, this means we can run all packages
 that use <code>BiocParallel</code> on the cluster as well via
 <code>DoparParam</code>.</p>

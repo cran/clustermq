@@ -34,7 +34,7 @@ work_chunk = function(df, fun, const=list(), rettype="list",
             ),
             warning = function(w) {
                 wmsg = paste0("(#", chr_id, ") ", conditionMessage(w))
-                context$warnings[[chr_id]] = wmsg
+                context$warnings[[chr_id]] = c(context$warnings[[chr_id]], wmsg)
                 invokeRestart("muffleWarning")
             },
             error = function(e) {
@@ -55,7 +55,7 @@ work_chunk = function(df, fun, const=list(), rettype="list",
     if (!is.null(common_seed))
         df$` seed ` = as.integer(df$` id ` %% .Machine$integer.max) - common_seed
 
-    re = stats::setNames(purrr_lookup(rettype)(df, fwrap), df$` id `)
+    re = stats::setNames(.mapply(fwrap, df, NULL), df$` id `)
     if (rettype != "list")
         re = unlist(re)
     list(result = re, warnings = context$warnings, errors = context$errors)
