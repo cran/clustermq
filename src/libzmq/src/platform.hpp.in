@@ -32,7 +32,7 @@
 /* Define to 1 if you have the <errno.h> header file. */
 #undef HAVE_ERRNO_H
 
-/* fork is available */
+/* Define to 1 if you have the `fork' function. */
 #undef HAVE_FORK
 
 /* Define to 1 if you have the `freeifaddrs' function. */
@@ -294,9 +294,6 @@
 /* Whether O_CLOEXEC is defined and functioning. */
 #undef ZMQ_HAVE_O_CLOEXEC
 
-/* Build with zmq_ppoll */
-#undef ZMQ_HAVE_PPOLL
-
 /* Whether pthread_setname_np() has 1 argument */
 #undef ZMQ_HAVE_PTHREAD_SETNAME_1
 
@@ -386,13 +383,6 @@
 
 /* Use 'select' I/O thread polling system */
 #undef ZMQ_IOTHREAD_POLLER_USE_SELECT
-
-/* Automatically close libsodium randombytes. Not threadsafe without
-   getrandom() */
-#undef ZMQ_LIBSODIUM_RANDOMBYTES_CLOSE
-
-/* kevent udata type is intptr_t */
-#undef ZMQ_NETBSD_KEVENT_UDATA_INTPTR_T
 
 /* Use 'poll' zmq_poll(er)_* API polling system */
 #undef ZMQ_POLL_BASED_ON_POLL

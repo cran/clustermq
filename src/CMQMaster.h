@@ -14,7 +14,9 @@ public:
     std::string listen(Rcpp::CharacterVector addrs) {
         sock = zmq::socket_t(*ctx, ZMQ_ROUTER);
         sock.set(zmq::sockopt::router_mandatory, 1);
+        #ifdef ZMQ_BUILD_DRAFT_API
         sock.set(zmq::sockopt::router_notify, ZMQ_NOTIFY_DISCONNECT);
+        #endif
 
         int i;
         for (i=0; i<addrs.length(); i++) {
@@ -24,13 +26,14 @@ public:
                 return sock.get(zmq::sockopt::last_endpoint);
             } catch(zmq::error_t const &e) {
                 if (errno != EADDRINUSE)
-                    Rf_error(e.what());
+                    Rcpp::stop(std::string("Binding port failed (") + e.what() + ")");
             }
         }
-        Rf_error("Could not bind port to any address in provided pool");
+        Rcpp::stop("Could not bind port to any address in provided pool");
     }
 
     void close(int timeout=0) {
+        peers.clear();
         env.clear();
 
         if (sock.handle() != nullptr) {
@@ -44,25 +47,33 @@ public:
     }
 
     SEXP recv(int timeout=-1) {
-//        if (peers.size() == 0)
-//            Rf_error("Trying to receive data without workers");
-
         int data_offset;
         std::vector<zmq::message_t> msgs;
 
         do {
-            timeout = poll(timeout);
+            int w_active = pending_workers;
+            for (const auto &kv: peers) {
+                if (kv.second.status == wlife_t::active || kv.second.status == wlife_t::proxy_cmd)
+                    w_active++;
+            }
+            if (w_active <= 0)
+                Rcpp::stop("Trying to receive data without workers");
 
             msgs.clear();
+            timeout = poll(timeout);
             auto n = recv_multipart(sock, std::back_inserter(msgs));
             data_offset = register_peer(msgs);
-        } while(data_offset >= msgs.size() && peers.size() != 0);
+        } while(data_offset >= msgs.size());
 
         return msg2r(msgs[data_offset], true);
     }
 
     void send(SEXP cmd) {
+        if (peers.find(cur) == peers.end())
+            Rcpp::stop("Trying to send to worker that does not exist");
         auto &w = peers[cur];
+        if (w.status != wlife_t::active)
+            Rcpp::stop("Trying to send to worker that is not active");
         bool is_proxied = ! w.via.empty();
         std::set<std::string> new_env;
         std::set_difference(env_names.begin(), env_names.end(), w.env.begin(), w.env.end(),
@@ -103,7 +114,11 @@ public:
         mp.send(sock);
     }
     void send_shutdown() {
+        if (peers.find(cur) == peers.end())
+            Rcpp::stop("Trying to send to worker that does not exist");
         auto &w = peers[cur];
+        if (w.status != wlife_t::active)
+            Rcpp::stop("Trying to send to worker that is not active");
 
         zmq::multipart_t mp;
         if (!w.via.empty())
@@ -156,15 +171,18 @@ public:
                 Rcpp::_["size"] = Rcpp::wrap(sizes));
     }
 
+    void add_pending_workers(int n) {
+        pending_workers += n;
+    }
+
     Rcpp::List list_workers() {
-        std::vector<std::string> names;
+        std::vector<std::string> names, status;
         names.reserve(peers.size());
-        std::vector<int> status;
         status.reserve(peers.size());
         Rcpp::List wtime, mem;
         for (const auto &kv: peers) {
             names.push_back(kv.first);
-            status.push_back(kv.second.status);
+            status.push_back(std::string(wlife_t2str(kv.second.status)));
             wtime.push_back(kv.second.time);
             mem.push_back(kv.second.mem);
         }
@@ -172,7 +190,8 @@ public:
             Rcpp::_["worker"] = Rcpp::wrap(names),
             Rcpp::_["status"] = Rcpp::wrap(status),
             Rcpp::_["time"] = wtime,
-            Rcpp::_["mem"] = mem
+            Rcpp::_["mem"] = mem,
+            Rcpp::_["pending"] = pending_workers
         );
     }
 
@@ -188,6 +207,7 @@ private:
 
     zmq::context_t *ctx {nullptr};
     int has_proxy {0};
+    int pending_workers {0};
     zmq::socket_t sock;
     std::string cur;
     std::unordered_map<std::string, worker_t> peers;
@@ -209,7 +229,7 @@ private:
                 rc = zmq::poll(pitems, time_left);
             } catch (zmq::error_t const &e) {
                 if (errno != EINTR || pending_interrupt())
-                    Rf_error(e.what());
+                    Rcpp::stop(e.what());
             }
 
             if (timeout != -1) {
@@ -238,13 +258,17 @@ private:
             ++cur_i;
 
         cur = msgs[cur_i].to_string();
+        int prev_size = peers.size();
         auto &w = peers[cur];
+        pending_workers -= peers.size() - prev_size;
+//        if (pending_workers < 0)
+//            Rcpp::stop("More workers registered than expected");
         w.call = R_NilValue;
         if (cur_i == 1)
             w.via = msgs[0].to_string();
 
         if (msgs[++cur_i].size() != 0)
-            Rf_error("No frame delimiter found at expected position");
+            Rcpp::stop("No frame delimiter found at expected position");
 
         // handle status frame if present, else it's a disconnect notification
         if (msgs.size() > ++cur_i)
@@ -257,18 +281,20 @@ private:
                         if (it->second.status == wlife_t::shutdown)
                             it = peers.erase(it);
                         else
-                            Rf_error("Proxy disconnect with active worker(s)");
+                            Rcpp::stop("Proxy disconnect with active worker(s)");
                     }
                 }
                 peers.erase(cur);
-            } else if (w.status == wlife_t::shutdown)
+            } else if (w.status == wlife_t::shutdown) {
                 peers.erase(cur);
-            else
-                Rf_error("Unexpected worker disconnect");
+            } else
+                Rcpp::stop("Unexpected worker disconnect");
         }
 
-        w.time = msg2r(msgs[++cur_i], true);
-        w.mem = msg2r(msgs[++cur_i], true);
+        if (msgs.size() > cur_i+2) {
+            w.time = msg2r(msgs[++cur_i], true);
+            w.mem = msg2r(msgs[++cur_i], true);
+        }
         return ++cur_i;
     }
 };

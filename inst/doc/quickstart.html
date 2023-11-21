@@ -49,7 +49,7 @@ overflow: visible;
 </style>
 <style type="text/css" data-origin="pandoc">
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span { line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -354,19 +354,21 @@ computing cluster with a minimal interface provided by the
 <code>Q</code> function:</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="co"># load the library and create a simple function</span></span>
 <span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">library</span>(clustermq)</span>
-<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>fx <span class="ot">=</span> <span class="cf">function</span>(x) x <span class="sc">*</span> <span class="dv">2</span></span>
-<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a></span>
-<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="co"># queue the function call on your scheduler</span></span>
-<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a><span class="fu">Q</span>(fx, <span class="at">x=</span><span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>, <span class="at">n_jobs=</span><span class="dv">1</span>)</span>
-<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a><span class="co">#&gt; Running sequentially (&#39;LOCAL&#39;) ...</span></span>
-<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a><span class="co">#&gt; [[1]]</span></span>
-<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a><span class="co">#&gt; [1] 2</span></span>
-<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a><span class="co">#&gt; [[2]]</span></span>
-<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a><span class="co">#&gt; [1] 4</span></span>
-<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a><span class="co">#&gt; </span></span>
-<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a><span class="co">#&gt; [[3]]</span></span>
-<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a><span class="co">#&gt; [1] 6</span></span></code></pre></div>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="co">#&gt; * Worker disconnect monitor is disabled</span></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="co">#&gt; --- see: https://mschubert.github.io/clustermq/articles/userguide.html#installation</span></span>
+<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>fx <span class="ot">=</span> <span class="cf">function</span>(x) x <span class="sc">*</span> <span class="dv">2</span></span>
+<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a><span class="co"># queue the function call on your scheduler</span></span>
+<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a><span class="fu">Q</span>(fx, <span class="at">x=</span><span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>, <span class="at">n_jobs=</span><span class="dv">1</span>)</span>
+<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a><span class="co">#&gt; Running sequentially (&#39;LOCAL&#39;) ...</span></span>
+<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a><span class="co">#&gt; [[1]]</span></span>
+<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a><span class="co">#&gt; [1] 2</span></span>
+<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a><span class="co">#&gt; [[2]]</span></span>
+<span id="cb1-14"><a href="#cb1-14" tabindex="-1"></a><span class="co">#&gt; [1] 4</span></span>
+<span id="cb1-15"><a href="#cb1-15" tabindex="-1"></a><span class="co">#&gt; </span></span>
+<span id="cb1-16"><a href="#cb1-16" tabindex="-1"></a><span class="co">#&gt; [[3]]</span></span>
+<span id="cb1-17"><a href="#cb1-17" tabindex="-1"></a><span class="co">#&gt; [1] 6</span></span></code></pre></div>
 <p>Computations are done <a href="https://zeromq.org/">entirely on the
 network</a> and without any temporary files on network-mounted storage,
 so there is no strain on the file system apart from starting up R once
@@ -376,23 +378,22 @@ is especially useful if not all calls return after the same time, or one
 worker has a high load.</p>
 <div id="installation" class="section level2">
 <h2>Installation</h2>
-<p>First, we need the <a href="https://github.com/zeromq/libzmq">ZeroMQ</a> system library. This
-is probably already installed on your system. If not, your package
-manager will provide it:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="co"># You can skip this step on Windows and macOS, the package binary has it</span></span>
-<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="co"># On a computing cluster, we recommend to use Conda or Linuxbrew</span></span>
-<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="ex">brew</span> install zeromq <span class="co"># Linuxbrew, Homebrew on macOS</span></span>
-<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a><span class="ex">conda</span> install zeromq <span class="co"># Conda, Miniconda</span></span>
-<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a><span class="fu">sudo</span> apt-get install libzmq3-dev <span class="co"># Ubuntu</span></span>
-<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a><span class="fu">sudo</span> yum install zeromq-devel <span class="co"># Fedora</span></span>
-<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a><span class="ex">pacman</span> <span class="at">-S</span> zeromq <span class="co"># Arch Linux</span></span></code></pre></div>
-<p>Then install the <code>clustermq</code> package in R from CRAN:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">&#39;clustermq&#39;</span>)</span></code></pre></div>
+<p>Install the <code>clustermq</code> package in R from CRAN (including
+the bundled <a href="https://github.com/zeromq/libzmq">ZeroMQ</a> system
+library):</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="fu">install.packages</span>(<span class="st">&#39;clustermq&#39;</span>)</span></code></pre></div>
 <p>Alternatively you can use the <code>remotes</code> package to install
-directly from Github:</p>
+directly from Github. Note that this version needs
+<code>autoconf</code>/<code>automake</code> for compilation:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="co"># install.packages(&#39;remotes&#39;)</span></span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>remotes<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">&#39;mschubert/clustermq&#39;</span>)</span></code></pre></div>
+<p>In the <a href="https://github.com/mschubert/clustermq/tree/develop"><code>develop</code></a>
+branch, we will introduce code changes and new features. These may
+contain bugs, poor documentation, or other inconveniences. This branch
+may not install at times. However, <a href="https://github.com/mschubert/clustermq/issues/new">feedback is
+very welcome</a>.</p>
 <div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="co"># install.packages(&#39;remotes&#39;)</span></span>
-<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>remotes<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">&#39;mschubert/clustermq&#39;</span>)</span>
-<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a><span class="co"># remotes::install_github(&#39;mschubert/clustermq&#39;, ref=&quot;develop&quot;) # dev version</span></span></code></pre></div>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>remotes<span class="sc">::</span><span class="fu">install_github</span>(<span class="st">&#39;mschubert/clustermq&#39;</span>, <span class="at">ref=</span><span class="st">&quot;develop&quot;</span>)</span></code></pre></div>
 <p>You should be good to go!</p>
 <p>By default, <code>clustermq</code> will look for <code>sbatch</code>
 (SLURM), <code>bsub</code> (LSF), or <code>qsub</code> (SGE) in your

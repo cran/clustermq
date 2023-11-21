@@ -24,16 +24,17 @@ Pool = R6::R6Class("Pool",
             cat(sprintf("<clustermq> worker pool with %i member(s)\n", self$workers$n()))
         },
 
-        list = function() {
+        info = function() {
             info = private$master$list_workers()
             times = do.call(rbind, info$time)[,1:3]
             mem = function(field) sapply(info$mem, function(m) sum(m[,field] * c(56,1)))
-            data.frame(worker=info$worker, status=info$status, times,
-                       mem.used=mem("used"), mem.max=mem("max used"))
+            do.call(data.frame, c(info[c("worker", "status")], as.data.frame(times),
+                                  list(mem.used=mem("used"), mem.max=mem("max used"))))
         },
 
         add = function(qsys, n, ...) {
             self$workers = qsys$new(addr=private$addr, master=private$master, n_jobs=n, ...)
+            private$master$add_pending_workers(n)
         },
 
         env = function(...) {
@@ -78,9 +79,6 @@ Pool = R6::R6Class("Pool",
             rd = self$recv()
             list(result=rd, warnings=c(), errors=c(), token=private$token)
         },
-        finalize = function() { # -> will move private
-            private$master$close(0L)
-        },
         ### END pre-0.9 compatibility functions (deprecated)
 
         send = function(cmd, ...) {
@@ -105,7 +103,7 @@ Pool = R6::R6Class("Pool",
 
             times = private$master$list_workers()$time
             times = times[sapply(times, length) != 0]
-            max_mem = max(c(self$list()[["mem.max"]]+2e8, 0), na.rm=TRUE) # add 200 Mb
+            max_mem = max(c(self$info()[["mem.max"]]+2e8, 0), na.rm=TRUE) # add 200 Mb
             max_mem_str = format(structure(max_mem, class="object_size"), units="auto")
 
             wt = Reduce(`+`, times) / length(times)
@@ -127,8 +125,14 @@ Pool = R6::R6Class("Pool",
     ),
 
     active = list(
-        workers_total = function() self$workers$n(),
-        workers_running = function() length(private$master$list_workers()$worker),
+        workers_total = function() {
+            ls_w = private$master$list_workers()
+            length(ls_w$worker) + ls_w$pending
+        },
+        workers_running = function() {
+            ls_w = private$master$list_workers()
+            sum(ls_w$status == "active")
+        },
         reusable = function() private$reuse
     ),
 
@@ -138,7 +142,11 @@ Pool = R6::R6Class("Pool",
         master = NULL,
         addr = NULL,
         timer = NULL,
-        reuse = NULL
+        reuse = NULL,
+
+        finalize = function() {
+            private$master$close(0L)
+        }
     ),
 
     cloneable = FALSE

@@ -9,14 +9,6 @@ options(clustermq.scheduler = "local")
 library(clustermq)
 
 ## ----eval=FALSE---------------------------------------------------------------
-#  # from CRAN
-#  install.packages('clustermq')
-#  
-#  # from Github
-#  # install.packages('remotes')
-#  remotes::install_github('mschubert/clustermq')
-
-## ----eval=FALSE---------------------------------------------------------------
 #  # install.packages('remotes')
 #  remotes::install_github('mschubert/clustermq', ref="develop")
 

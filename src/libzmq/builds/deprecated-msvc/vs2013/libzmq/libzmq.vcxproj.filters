@@ -265,6 +265,9 @@
     <ClCompile Include="..\..\..\..\src\timers.cpp">
       <Filter>src</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\src\tweetnacl.c">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\..\include\zmq.h">
@@ -568,6 +571,9 @@
       <Filter>src\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\src\timers.hpp">
+      <Filter>src\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\src\tweetnacl.h">
       <Filter>src\include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\..\src\zmq_draft.h">

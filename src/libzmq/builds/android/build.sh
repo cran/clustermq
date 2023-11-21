@@ -38,6 +38,7 @@ export CI_CONFIG_QUIET="${CI_CONFIG_QUIET:-no}"
 # Select CURVE implementation:
 # - ""               # Do not use any CURVE implementation.
 # - "libsodium"      # Use LIBSODIUM implementation.
+# - "tweetnacl"      # Use internal TWEETNACL implementation.
 export CURVE="${CURVE:-}"
 
 # By default, dependencies will be cloned to /tmp/tmp-deps.
@@ -122,6 +123,9 @@ elif [ "${CURVE}" == "libsodium" ]; then
             android_build_library "LIBSODIUM" "${LIBSODIUM_ROOT}"
         ) || exit 1
     }
+elif [ $CURVE == "tweetnacl" ]; then
+    # Default
+    CURVE=""
 fi
 
 ##

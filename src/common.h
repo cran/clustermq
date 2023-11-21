@@ -9,6 +9,17 @@
 #include "zmq.hpp"
 #include "zmq_addon.hpp"
 
+#if ! ZMQ_VERSION >= ZMQ_MAKE_VERSION(4, 3, 0) || \
+    ! CPPZMQ_VERSION >= ZMQ_MAKE_VERSION(4, 10, 0)
+#define XSTR(x) STR(x)
+#define STR(x) #x
+#pragma message "libzmq version is: " XSTR(ZMQ_VERSION_MAJOR) "." \
+    XSTR(ZMQ_VERSION_MINOR) "." XSTR(ZMQ_VERSION_PATCH)
+#pragma message "cppzmq version is: " XSTR(CPPZMQ_VERSION_MAJOR) "." \
+    XSTR(CPPZMQ_VERSION_MINOR) "." XSTR(CPPZMQ_VERSION_PATCH)
+#error clustermq needs libzmq>=4.3.0 and cppzmq>=4.10.0
+#endif
+
 enum wlife_t {
     active,
     shutdown,
@@ -16,6 +27,7 @@ enum wlife_t {
     proxy_cmd,
     proxy_error
 };
+const char* wlife_t2str(wlife_t status);
 typedef std::chrono::high_resolution_clock Time;
 typedef std::chrono::milliseconds ms;
 extern Rcpp::Function R_serialize;

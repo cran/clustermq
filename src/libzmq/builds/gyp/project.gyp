@@ -245,6 +245,8 @@
         '../../src/tipc_listener.hpp',
         '../../src/trie.cpp',
         '../../src/trie.hpp',
+        '../../src/tweetnacl.c',
+        '../../src/tweetnacl.h',
         '../../src/udp_address.cpp',
         '../../src/udp_address.hpp',
         '../../src/udp_engine.cpp',

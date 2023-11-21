@@ -36,7 +36,7 @@ public:
         to_master.set(zmq::sockopt::routing_id, "proxy");
 
         if (zmq_socket_monitor(to_master, "inproc://monitor", ZMQ_EVENT_DISCONNECTED) < 0)
-            Rf_error("failed to create socket monitor");
+            Rcpp::stop("failed to create socket monitor");
         mon = zmq::socket_t(*ctx, ZMQ_PAIR);
         mon.connect("inproc://monitor");
 
@@ -59,7 +59,9 @@ public:
     std::string listen(Rcpp::CharacterVector addrs) {
         to_worker = zmq::socket_t(*ctx, ZMQ_ROUTER);
         to_worker.set(zmq::sockopt::router_mandatory, 1);
+        #ifdef ZMQ_BUILD_DRAFT_API
         to_worker.set(zmq::sockopt::router_notify, ZMQ_NOTIFY_DISCONNECT);
+        #endif
 
         int i;
         for (i=0; i<addrs.length(); i++) {
@@ -69,10 +71,10 @@ public:
                 return to_worker.get(zmq::sockopt::last_endpoint);
             } catch(zmq::error_t const &e) {
                 if (errno != EADDRINUSE)
-                    Rf_error(e.what());
+                    Rcpp::stop(e.what());
             }
         }
-        Rf_error("Could not bind port to any address in provided pool");
+        Rcpp::stop("Could not bind port to any address in provided pool");
     }
 
     bool process_one() {
@@ -91,7 +93,7 @@ public:
                 rc = zmq::poll(pitems, time_left);
             } catch (zmq::error_t const &e) {
                 if (errno != EINTR || pending_interrupt())
-                    Rf_error(e.what());
+                    Rcpp::stop(e.what());
             }
         } while (rc == 0);
 
