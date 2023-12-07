@@ -6,14 +6,29 @@ knitr::opts_chunk$set(
     comment = "#>"
 )
 options(clustermq.scheduler = "local")
-library(clustermq)
+suppressPackageStartupMessages(library(clustermq))
 
 ## ----eval=FALSE---------------------------------------------------------------
+#  # Recommended:
+#  #   If your system has `libzmq` installed but you want to enable the worker crash
+#  #   monitor, set the following environment variable to enable compilation of the
+#  #   bundled `libzmq` library with the required feature (`-DZMQ_BUILD_DRAFT_API=1`):
+#  # Sys.setenv(CLUSTERMQ_USE_SYSTEM_LIBZMQ=0)
+#  install.packages('clustermq')
+
+## ----eval=FALSE---------------------------------------------------------------
+#  # Sys.setenv(CLUSTERMQ_USE_SYSTEM_LIBZMQ=0)
+#  # install.packages('remotes')
+#  remotes::install_github('mschubert/clustermq')
+
+## ----eval=FALSE---------------------------------------------------------------
+#  # Sys.setenv(CLUSTERMQ_USE_SYSTEM_LIBZMQ=0)
 #  # install.packages('remotes')
 #  remotes::install_github('mschubert/clustermq', ref="develop")
 
 ## ----eval=FALSE---------------------------------------------------------------
 #  options(clustermq.scheduler = "your scheduler here")
+#  # this may require additional setup, for details see below
 
 ## ----eval=FALSE---------------------------------------------------------------
 #  # If this is set to 'LOCAL' or 'SSH' you will get the following error:
@@ -65,13 +80,6 @@ x = foreach(i=1:3) %dopar% sqrt(i) # this will be executed as jobs
 #  library(BiocParallel)
 #  register(DoparParam()) # after register_dopar_cmq(...)
 #  bplapply(1:3, sqrt)
-
-## ----eval=FALSE---------------------------------------------------------------
-#  library(drake)
-#  load_mtcars_example()
-#  # clean(destroy = TRUE)
-#  # options(clustermq.scheduler = "multicore")
-#  make(my_plan, parallelism = "clustermq", jobs = 2, verbose = 4)
 
 ## ----eval=FALSE---------------------------------------------------------------
 #  Q(..., log_worker=TRUE)

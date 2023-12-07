@@ -36,6 +36,11 @@ master = function(pool, iter, rettype="list", fail_on_error=TRUE,
     penv = pool$env(work_chunk=work_chunk)
     obj_size = structure(sum(penv$size), class="object_size")
     obj_size_fmt = format(obj_size, big.mark=",", units="auto")
+    if (is.infinite(timeout)) {
+        timeout = -1L
+    } else {
+        timeout = timeout * 1000 # Rcpp API uses msec
+    }
 
     #TODO: warn before serialization, create pool+env & then submit
     if (obj_size/1e6 > getOption("clustermq.data.warning", 500))
@@ -57,7 +62,7 @@ master = function(pool, iter, rettype="list", fail_on_error=TRUE,
 
     # main event loop
     while((!shutdown && submit_index[1] <= n_calls) || jobs_running > 0) {
-        msg = pool$recv()
+        msg = pool$recv(timeout)
         if (inherits(msg, "worker_error"))
             stop("Worker Error: ", msg)
 
@@ -81,7 +86,7 @@ master = function(pool, iter, rettype="list", fail_on_error=TRUE,
                 cond_msgs$errors = c(cond_msgs$errors, msg$errors)
         }
 
-        if (shutdown || (!is.null(msg$n_calls) && msg$n_calls >= max_calls_worker)) {
+        if (shutdown || with(pool$info(), calls[current]) >= max_calls_worker) {
             pool$send_shutdown()
             next
         }

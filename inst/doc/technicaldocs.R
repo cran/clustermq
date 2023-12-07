@@ -6,7 +6,7 @@ knitr::opts_chunk$set(
     comment = "#>"
 )
 options(clustermq.scheduler = "local")
-library(clustermq)
+suppressPackageStartupMessages(library(clustermq))
 
 ## ----eval=FALSE---------------------------------------------------------------
 #  # start up a pool of three workers using the default scheduler

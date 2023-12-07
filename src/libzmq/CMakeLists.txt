@@ -142,6 +142,7 @@ endif()
 # Will be used to add flags to pkg-config useful when apps want to statically link
 set(pkg_config_libs_private "")
 set(pkg_config_names_private "")
+set(pkg_config_defines "")
 
 option(WITH_OPENPGM "Build with support for OpenPGM" OFF)
 option(WITH_NORM "Build with support for NORM" OFF)
@@ -162,6 +163,7 @@ if(ENABLE_DRAFTS)
   message(STATUS "Building draft classes and methods")
   option(ENABLE_WS "Enable WebSocket transport" ON)
   option(ENABLE_RADIX_TREE "Use radix tree implementation to manage subscriptions" ON)
+  set(pkg_config_defines "-DZMQ_BUILD_DRAFT_API=1")
 else()
   message(STATUS "Not building draft classes and methods")
   option(ENABLE_WS "Enable WebSocket transport" OFF)
@@ -253,13 +255,13 @@ if(NOT MSVC)
   check_cxx_symbol_exists(strlcpy string.h ZMQ_HAVE_STRLCPY)
 endif()
 
-# Select curve encryption library, defaults to tweetnacl To use libsodium instead, use --with-libsodium(must be
+# Select curve encryption library, defaults to disabled To use libsodium instead, use --with-libsodium(must be
 # installed) To disable curve, use --disable-curve
 
-option(WITH_LIBSODIUM "Use libsodium instead of built-in tweetnacl" ON)
+option(WITH_LIBSODIUM "Use libsodium" OFF)
 option(WITH_LIBSODIUM_STATIC "Use static libsodium library" OFF)
 option(ENABLE_LIBSODIUM_RANDOMBYTES_CLOSE "Automatically close libsodium randombytes. Not threadsafe without getrandom()" ON)
-option(ENABLE_CURVE "Enable CURVE security" ON)
+option(ENABLE_CURVE "Enable CURVE security" OFF)
 
 if(ENABLE_CURVE)
   if(WITH_LIBSODIUM)
@@ -278,16 +280,10 @@ if(ENABLE_CURVE)
       endif()
     else()
       message(
-        WARNING
-          "libsodium not installed, instead using builtin tweetnacl, you may want to install libsodium and run cmake again"
+        ERROR
+          "libsodium not installed, you may want to install libsodium and run cmake again"
       )
     endif()
-  endif()
-  if(NOT ZMQ_HAVE_CURVE)
-    message(STATUS "Using tweetnacl for CURVE security")
-    list(APPEND sources ${CMAKE_CURRENT_SOURCE_DIR}/src/tweetnacl.c)
-    set(ZMQ_USE_TWEETNACL 1)
-    set(ZMQ_HAVE_CURVE 1)
   endif()
 else()
   message(STATUS "CURVE security is disabled")
@@ -402,9 +398,7 @@ if(NOT MSVC)
   endif()
 
   if(POLLER STREQUAL "")
-    set(CMAKE_EXTRA_INCLUDE_FILES sys/devpoll.h)
-    check_type_size("struct pollfd" DEVPOLL)
-    set(CMAKE_EXTRA_INCLUDE_FILES)
+    check_include_files("sys/devpoll.h" HAVE_DEVPOLL)
     if(HAVE_DEVPOLL)
       set(POLLER "devpoll")
     endif()
@@ -736,20 +730,24 @@ if(NOT ANDROID)
 endif()
 
 # -----------------------------------------------------------------------------
-if(NOT CMAKE_CROSSCOMPILING AND NOT MSVC)
-  zmq_check_sock_cloexec()
-  zmq_check_o_cloexec()
-  zmq_check_so_bindtodevice()
-  zmq_check_so_keepalive()
-  zmq_check_so_priority()
-  zmq_check_tcp_keepcnt()
-  zmq_check_tcp_keepidle()
-  zmq_check_tcp_keepintvl()
-  zmq_check_tcp_keepalive()
-  zmq_check_tcp_tipc()
+if (NOT MSVC)
+  # Compilation checks
   zmq_check_pthread_setname()
   zmq_check_pthread_setaffinity()
-  zmq_check_getrandom()
+  # Execution checks
+  if(NOT CMAKE_CROSSCOMPILING)
+    zmq_check_sock_cloexec()
+    zmq_check_o_cloexec()
+    zmq_check_so_bindtodevice()
+    zmq_check_so_keepalive()
+    zmq_check_so_priority()
+    zmq_check_tcp_keepcnt()
+    zmq_check_tcp_keepidle()
+    zmq_check_tcp_keepintvl()
+    zmq_check_tcp_keepalive()
+    zmq_check_tcp_tipc()
+    zmq_check_getrandom()
+  endif()
 endif()
 
 if(CMAKE_SYSTEM_NAME MATCHES "Linux"
@@ -1180,13 +1178,14 @@ endif()
 
 set(public_headers include/zmq.h include/zmq_utils.h)
 
-set(readme-docs AUTHORS COPYING COPYING.LESSER NEWS)
+set(readme-docs AUTHORS LICENSE NEWS)
 
 # -----------------------------------------------------------------------------
 # optional modules
 
 if(WITH_OPENPGM)
-  add_definitions(-DZMQ_HAVE_OPENPGM)
+  message(STATUS "Building with OpenPGM")
+  set(ZMQ_HAVE_OPENPGM 1)
   include_directories(${OPENPGM_INCLUDE_DIRS})
   link_directories(${OPENPGM_LIBRARY_DIRS})
   set(OPTIONAL_LIBRARIES ${OPENPGM_LIBRARIES})
@@ -1203,7 +1202,8 @@ if(WITH_NORM)
 endif()
 
 if(WITH_VMCI)
-  add_definitions(-DZMQ_HAVE_VMCI)
+message(STATUS "Building with VMCI")
+  set(ZMQ_HAVE_VMCI 1)
   include_directories(${VMCI_INCLUDE_DIRS})
   list(APPEND cxx-sources vmci_address.cpp vmci_connecter.cpp vmci_listener.cpp vmci.cpp)
 endif()
@@ -1380,6 +1380,9 @@ else()
   if(NOT MINGW)
     add_library(objects OBJECT ${sources})
     set_property(TARGET objects PROPERTY POSITION_INDEPENDENT_CODE ON)
+    if(GNUTLS_FOUND)
+      target_include_directories(objects PRIVATE "${GNUTLS_INCLUDE_DIR}")
+    endif()
   endif()
 
   if(BUILD_SHARED)
@@ -1465,8 +1468,14 @@ endforeach()
 
 if(BUILD_SHARED)
   target_link_libraries(libzmq ${CMAKE_THREAD_LIBS_INIT})
+
+  if(QNX)
+    target_link_libraries(libzmq -lsocket)
+  endif()
+
   if(GNUTLS_FOUND)
     target_link_libraries(libzmq ${GNUTLS_LIBRARIES})
+    target_include_directories(libzmq PRIVATE "${GNUTLS_INCLUDE_DIR}")
   endif()
 
   if(NSS3_FOUND)
@@ -1506,12 +1515,17 @@ if(BUILD_SHARED)
   if(norm_FOUND)
       target_link_libraries(libzmq norm::norm)
   endif()
+
+  if(OPENPGM_FOUND)
+      target_link_libraries(libzmq ${OPENPGM_LIBRARIES})
+  endif()
 endif()
 
 if(BUILD_STATIC)
   target_link_libraries(libzmq-static ${CMAKE_THREAD_LIBS_INIT})
   if(GNUTLS_FOUND)
     target_link_libraries(libzmq-static ${GNUTLS_LIBRARIES})
+    target_include_directories(libzmq-static PRIVATE "${GNUTLS_INCLUDE_DIR}")
   endif()
 
   if(LIBBSD_FOUND)
@@ -1555,6 +1569,10 @@ if(BUILD_STATIC)
   if(norm_FOUND)
       target_link_libraries(libzmq-static norm::norm)
   endif()
+
+  if(OPENPGM_FOUND)
+      target_link_libraries(libzmq-static ${OPENPGM_LIBRARIES})
+  endif()
 endif()
 
 if(BUILD_SHARED)
@@ -1580,6 +1598,7 @@ if(BUILD_SHARED)
 
       if(GNUTLS_FOUND)
         target_link_libraries(${perf-tool} ${GNUTLS_LIBRARIES})
+        target_include_directories(${perf-tool} PRIVATE "${GNUTLS_INCLUDE_DIR}")
       endif()
 
       if(LIBBSD_FOUND)
@@ -1774,7 +1793,7 @@ if(MSVC AND ENABLE_CPACK)
   set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "ZeroMQ lightweight messaging kernel")
   set(CPACK_PACKAGE_VENDOR "Miru")
   set(CPACK_NSIS_CONTACT "Steven McCoy <Steven.McCoy@miru.hk>")
-  set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_BINARY_DIR}\\\\COPYING.txt")
+  set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_BINARY_DIR}\\\\LICENSE.txt")
   # set(CPACK_RESOURCE_FILE_README "${CMAKE_CURRENT_BINARY_DIR}\\\\README.txt") set(CPACK_RESOURCE_FILE_WELCOME
   # "${CMAKE_CURRENT_BINARY_DIR}\\\\WELCOME.txt") There is a bug in NSI that does not handle full unix paths properly.
   # Make sure there is at least one set of four(4) backslashes.

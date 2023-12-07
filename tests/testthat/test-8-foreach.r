@@ -1,5 +1,7 @@
 context("foreach")
 
+skip_if_not_installed("foreach")
+
 foreach = foreach::foreach
 `%dopar%` = foreach::`%dopar%`
 `%do%` = foreach::`%do%`
@@ -74,6 +76,12 @@ test_that("NULL objects are exported", {
 })
 
 test_that("external worker", {
+    skip_on_os("windows")
+
+    old_sched = getOption("clustermq.scheduler")
+    on.exit(options(clustermq.scheduler = old_sched))
+    options(clustermq.scheduler = "multicore")
+
     register_dopar_cmq(n_jobs=1)
     res = foreach(i=1:3) %dopar% sqrt(i)
     cmp = foreach(i=1:3) %do% sqrt(i)

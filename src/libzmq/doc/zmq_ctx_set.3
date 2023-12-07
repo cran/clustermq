@@ -2,12 +2,12 @@
 .\"     Title: zmq_ctx_set
 .\"    Author: [see the "AUTHORS" section]
 .\" Generator: DocBook XSL Stylesheets vsnapshot <http://docbook.sf.net/>
-.\"      Date: 04/17/2021
+.\"      Date: 09/10/2023
 .\"    Manual: 0MQ Manual
-.\"    Source: 0MQ 4.3.4
+.\"    Source: 0MQ 4.3.5
 .\"  Language: English
 .\"
-.TH "ZMQ_CTX_SET" "3" "04/17/2021" "0MQ 4\&.3\&.4" "0MQ Manual"
+.TH "ZMQ_CTX_SET" "3" "09/10/2023" "0MQ 4\&.3\&.5" "0MQ Manual"
 .\" -----------------------------------------------------------------
 .\" * Define some portability stuff
 .\" -----------------------------------------------------------------
@@ -84,7 +84,7 @@ T}
 .sp 1
 .SS "ZMQ_THREAD_PRIORITY: Set scheduling priority for I/O threads"
 .sp
-The \fIZMQ_THREAD_PRIORITY\fR argument sets scheduling priority for internal context\(cqs thread pool\&. This option is not available on windows\&. Supported values for this option depend on chosen scheduling policy\&. On Linux, when the scheduler policy is SCHED_OTHER, SCHED_IDLE or SCHED_BATCH, the OS scheduler will not use the thread priority but rather the thread "nice value"; in such cases the system call "nice" will be used to set the nice value to \-20 (max priority) instead of adjusting the thread priority (which must be zero for those scheduling policies)\&. Details can be found in sched\&.h file, or at \m[blue]\fBhttp://man7\&.org/linux/man\-pages/man2/sched_setscheduler\&.2\&.html\fR\m[]\&. This option only applies before creating any sockets on the context\&.
+The \fIZMQ_THREAD_PRIORITY\fR argument sets scheduling priority for internal context\(cqs thread pool\&. This option is not available on windows\&. Supported values for this option depend on chosen scheduling policy\&. On Linux, when the scheduler policy is SCHED_OTHER, SCHED_IDLE or SCHED_BATCH, the OS scheduler will not use the thread priority but rather the thread "nice value"; in such cases, if \fIZMQ_THREAD_PRIORITY\fR is set to a strictly positive value, the system call "nice" will be used to set the nice value to \-20 (max priority) instead of adjusting the thread priority (which must be zero for those scheduling policies)\&. Details can be found in sched\&.h file, or at \m[blue]\fBhttp://man7\&.org/linux/man\-pages/man2/sched_setscheduler\&.2\&.html\fR\m[]\&. This option only applies before creating any sockets on the context\&.
 .TS
 tab(:);
 lt lt.

@@ -6,7 +6,7 @@ public:
     CMQMaster(): ctx(new zmq::context_t(3)) {}
     ~CMQMaster() { close(); }
 
-    SEXP context() {
+    SEXP context() const {
         Rcpp::XPtr<zmq::context_t> p(ctx, true);
         return p;
     }
@@ -94,21 +94,21 @@ public:
         for (auto &str : new_env) {
             w.env.insert(str);
             if (is_proxied) {
-                if (via_env->find(str) != via_env->end())
+                if (via_env->find(str) != via_env->end()) {
+//                    std::cout << "+from_proxy " << str << "\n";
                     proxy_add_env.push_back(str);
-                else
+                    continue;
+                } else {
+//                    std::cout << "+from_master " << str << "\n";
                     via_env->insert(str);
+                }
             }
             mp.push_back(zmq::message_t(str));
-            zmq::message_t msg;
-            msg.copy(env[str]);
-            mp.push_back(std::move(msg));
+            mp.push_back(zmq::message_t(env[str].data(), env[str].size()));
         }
 
-        if (is_proxied) {
-            SEXP from_proxy = Rcpp::wrap(proxy_add_env);
-            mp.push_back(r2msg(from_proxy));
-        }
+        if (is_proxied)
+            mp.push_back(r2msg(Rcpp::wrap(proxy_add_env)));
 
         w.call = cmd;
         mp.send(sock);
@@ -158,7 +158,7 @@ public:
     void add_pkg(Rcpp::CharacterVector pkg) {
         add_env("package:" + Rcpp::as<std::string>(pkg), pkg);
     }
-    Rcpp::DataFrame list_env() {
+    Rcpp::DataFrame list_env() const {
         std::vector<std::string> names;
         names.reserve(env.size());
         std::vector<int> sizes;
@@ -175,20 +175,32 @@ public:
         pending_workers += n;
     }
 
-    Rcpp::List list_workers() {
+    Rcpp::List list_workers() const {
         std::vector<std::string> names, status;
+        std::vector<int> calls;
         names.reserve(peers.size());
         status.reserve(peers.size());
+        calls.reserve(peers.size());
         Rcpp::List wtime, mem;
+        std::string cur_hex;
         for (const auto &kv: peers) {
-            names.push_back(kv.first);
+            std::stringstream os;
+            os << std::hex << std::setw(2) << std::setfill('0');
+            for (const auto &ch: kv.first)
+                os << static_cast<short>(ch);
+            names.push_back(os.str());
+            if (kv.first == cur)
+                cur_hex = os.str();
             status.push_back(std::string(wlife_t2str(kv.second.status)));
+            calls.push_back(kv.second.n_calls);
             wtime.push_back(kv.second.time);
             mem.push_back(kv.second.mem);
         }
         return Rcpp::List::create(
             Rcpp::_["worker"] = Rcpp::wrap(names),
             Rcpp::_["status"] = Rcpp::wrap(status),
+            Rcpp::_["current"] = cur_hex,
+            Rcpp::_["calls"] = calls,
             Rcpp::_["time"] = wtime,
             Rcpp::_["mem"] = mem,
             Rcpp::_["pending"] = pending_workers
@@ -203,10 +215,10 @@ private:
         SEXP mem {Rcpp::List()};
         wlife_t status;
         std::string via;
+        int n_calls {-1};
     };
 
     zmq::context_t *ctx {nullptr};
-    int has_proxy {0};
     int pending_workers {0};
     zmq::socket_t sock;
     std::string cur;
@@ -271,9 +283,10 @@ private:
             Rcpp::stop("No frame delimiter found at expected position");
 
         // handle status frame if present, else it's a disconnect notification
-        if (msgs.size() > ++cur_i)
+        if (msgs.size() > ++cur_i) {
             w.status = msg2wlife_t(msgs[cur_i]);
-        else {
+            w.n_calls++;
+        } else {
             if (w.status == wlife_t::proxy_cmd) {
                 auto it = peers.begin();
                 while (it != peers.end()) {

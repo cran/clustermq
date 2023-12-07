@@ -62,7 +62,7 @@ test_that("using the proxy without pool and forward", {
     addr = m$listen("tcp://127.0.0.1:*")
     p = parallel::mcparallel(ssh_proxy(sub(".*:", "", addr)))
 
-    m$proxy_submit_cmd(list(n_jobs=1), 1000L)
+    m$proxy_submit_cmd(list(n_jobs=1), 5000L)
     expect_null(m$recv(1000L)) # worker 1 up
     m$send(5 + 2)
     expect_equal(m$recv(500L), 7) # collect results
@@ -84,7 +84,7 @@ test_that("using the proxy without pool and forward, 2 workers", {
     addr = m$listen("tcp://127.0.0.1:*")
     p = parallel::mcparallel(ssh_proxy(sub(".*:", "", addr)))
 
-    m$proxy_submit_cmd(list(n_jobs=2), 1000L)
+    m$proxy_submit_cmd(list(n_jobs=2), 5000L)
     expect_null(m$recv(1000L)) # worker 1 up
     m$send({ Sys.sleep(0.5); 5 + 2 })
     expect_null(m$recv(500L)) # worker 2 up
@@ -112,9 +112,13 @@ test_that("full SSH connection", {
     sched = getOption("clustermq.scheduler", qsys_default)
     skip_if(is.null(sched) || toupper(sched) != "MULTICORE",
             message="options(clustermq.scheduler') must be 'MULTICORE'")
-
     options(clustermq.template = "SSH", clustermq.ssh.host="127.0.0.1")
+
     w = workers(n_jobs=1, qsys_id="ssh", reuse=FALSE)
     result = Q(identity, 42, n_jobs=1, timeout=10L, workers=w)
     expect_equal(result, list(42))
+
+    w = workers(n_jobs=2, qsys_id="ssh", reuse=FALSE)
+    result = clustermq::Q(Sys.sleep, time=c(1,2), n_jobs=2)
+    expect_equal(result, list(NULL, NULL))
 })

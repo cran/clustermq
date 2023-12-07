@@ -64,6 +64,7 @@ set(tests
   test_srcfd
   test_stream_timeout
   test_xpub_manual
+  test_xpub_topic
   test_xpub_welcome_msg
   test_xpub_verbose
   test_base85
@@ -114,6 +115,7 @@ if(NOT WIN32)
     test_proxy
     test_proxy_hwm
     test_proxy_single_socket
+    test_proxy_steerable
     test_proxy_terminate
     test_getsockopt_memset
     test_filter_ipc
@@ -260,7 +262,7 @@ endif()
 foreach(test ${tests})
   # target_sources not supported before CMake 3.1
   if(ZMQ_HAVE_CURVE AND ${test} MATCHES test_security_curve)
-    add_executable(${test} ${test}.cpp "../src/tweetnacl.c" "../src/err.cpp" "../src/random.cpp" "../src/clock.cpp")
+    add_executable(${test} ${test}.cpp "../src/err.cpp" "../src/random.cpp" "../src/clock.cpp")
   else()
     add_executable(${test} ${test}.cpp)
   endif()
@@ -306,6 +308,10 @@ foreach(test ${tests})
 
   set_tests_properties(${test} PROPERTIES TIMEOUT 10)
   set_tests_properties(${test} PROPERTIES SKIP_RETURN_CODE 77)
+
+  if(QNX)
+    install(TARGETS ${test} RUNTIME DESTINATION bin/)
+  endif()
 endforeach()
 
 # override timeout for these tests
@@ -318,11 +324,6 @@ endif()
 if(NOT CMAKE_SYSTEM_NAME MATCHES "Linux")
   if(ZMQ_HAVE_CURVE)
     set_tests_properties(test_security_curve PROPERTIES TIMEOUT 60)
-  endif()
-
-  # add additional required flags ZMQ_USE_TWEETNACL will already be defined when not using sodium
-  if(ZMQ_HAVE_CURVE AND NOT ZMQ_USE_TWEETNACL)
-    target_compile_definitions(test_security_curve PRIVATE "-DZMQ_USE_TWEETNACL")
   endif()
 endif()
 

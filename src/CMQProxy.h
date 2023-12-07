@@ -110,25 +110,20 @@ public:
 
             zmq::multipart_t mp;
             for (int i=0; i<msgs.size(); i++) {
-                zmq::message_t msg;
-                msg.copy(msgs[i]);
-                mp.push_back(std::move(msg));
+                mp.push_back(zmq::message_t(msgs[i].data(), msgs[i].size()));
                 if (i >= 4) {
-                    std::string name = msg.to_string();
-                    zmq::message_t store, fwd;
-                    store.copy(msgs[++i]);
-                    fwd.copy(store);
-                    mp.push_back(std::move(fwd));
-                    env[name] = std::move(store);
+                    auto name = msgs[i++].to_string();
+                    mp.push_back(zmq::message_t(msgs[i].data(), msgs[i].size()));
+                    env[name] = zmq::message_t(msgs[i].data(), msgs[i].size());
                 }
             }
 
+//            std::cout << "adding from proxy env: (" << add_from_proxy.size() << ")";
             for (auto &name : add_from_proxy) {
-                zmq::message_t add;
-                add.copy(env[name]);
-                mp.push_back(std::move(add));
+                mp.push_back(zmq::message_t(name));
+                mp.push_back(zmq::message_t(env[name].data(), env[name].size()));
             }
-
+//            std::cout << "\nMESSAGE SIZE to worker: " << mp.size() << "\n\n";
             mp.send(to_worker);
         }
 
@@ -137,11 +132,8 @@ public:
             std::vector<zmq::message_t> msgs;
             auto n = recv_multipart(to_worker, std::back_inserter(msgs));
             zmq::multipart_t mp;
-            for (int i=0; i<msgs.size(); i++) {
-                zmq::message_t msg;
-                msg.move(msgs[i]);
-                mp.push_back(std::move(msg));
-            }
+            for (int i=0; i<msgs.size(); i++)
+                mp.push_back(std::move(msgs[i]));
             mp.send(to_master);
         }
 
