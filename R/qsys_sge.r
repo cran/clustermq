@@ -1,3 +1,4 @@
+
 #' SGE scheduler functions
 #'
 #' Derives from QSys to provide SGE-specific functions
@@ -17,27 +18,23 @@ SGE = R6::R6Class("SGE",
                 opts$log_file = normalizePath(opts$log_file, mustWork=FALSE)
             else if (log_worker)
                 opts$log_file = sprintf("%s-%s.log", private$job_name, private$array_idx)
-            filled = fill_template(private$template, opts,
-                                   required=c("master", "n_jobs"))
+            filled = fill_template(private$template, opts, required=c("master", "n_jobs"))
 
             if (verbose)
                 message("Submitting ", n_jobs, " worker jobs (ID: ", private$job_name, ") ...")
 
             private$qsub_stdout = system2("qsub", input=filled, stdout=TRUE)
             status = attr(private$qsub_stdout, "status")
-            success = (is.null(status) || (status == 0))
-
-            if (!success) {
-                print(filled)
-                stop("Job submission failed with error code ", success)
-            }
-
+            if (!is.null(status) && status != 0)
+                private$template_error("SGE", status, filled)
             private$job_id = private$job_name
+            private$master$add_pending_workers(n_jobs)
             private$is_cleaned_up = FALSE
         },
 
-        cleanup = function() {
-            private$is_cleaned_up = TRUE
+        cleanup = function(success, timeout) {
+            private$is_cleaned_up = success
+            private$finalize()
         }
     ),
 
@@ -45,15 +42,14 @@ SGE = R6::R6Class("SGE",
         qsub_stdout = NULL,
         job_name = NULL,
         job_id   = NULL,
-        array_idx = "\\$TASK_ID",
-        is_cleaned_up = NULL,
+        array_idx = "$TASK_ID",
 
         finalize = function(quiet = TRUE) { # self$workers_running == 0
             if (!private$is_cleaned_up) {
                 system(paste("qdel", private$job_id),
                        ignore.stdout=quiet, ignore.stderr=quiet, wait=FALSE)
-                private$is_cleaned_up = TRUE
             }
+            private$is_cleaned_up = TRUE
         }
     )
 )

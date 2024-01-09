@@ -34,11 +34,12 @@ suppressPackageStartupMessages(library(clustermq))
 #  w$env(...)
 #  
 #  while (we have new work to send || jobs pending) {
-#      res = w$recv()
+#      res = w$recv() # the result of the call, or NULL for a new worker
+#      w$current()$call_ref # matches answer to request, -1 otherwise
 #      # handle result
 #  
 #      if (more work)
-#          w$send(expression, ...)
+#          call_ref = w$send(expression, ...) # call_ref tracks request identity
 #      else
 #          w$send_shutdown()
 #  }

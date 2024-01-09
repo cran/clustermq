@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>Frequently asked questions</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Frequently asked questions</h1>
+
+
+
+<style type="text/css">
+img {
+border: 0px !important;
+margin: 2em 2em 2em 2em !important;
+}
+code {
+border: 0px !important;
+}
+</style>
+<div id="install" class="section level2">
+<h2>Installation errors</h2>
+<p>To compile this package a fully C++11 compliant compiler is required.
+This is <a href="https://www.tidyverse.org/blog/2023/03/cran-checks-compiled-code/">implicit
+for CRAN packages</a> since <code>R=3.6.2</code> and is hence not listed
+in <em>SystemRequirements</em>. If you encounter an error saying that
+that no matching function call to
+<code>zmq::message_t::message_t(std::string&amp;)</code> exists, your
+compiler does not (fully) support this and the automated check failed
+for some reason.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="ex">In</span> file included from CMQMaster.cpp:2:0:</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="ex">CMQMaster.h:</span> In member function ‘void CMQMaster::proxy_submit_cmd<span class="er">(</span><span class="ex">SEXP,</span> int<span class="kw">)</span><span class="ex">’:</span></span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="ex">CMQMaster.h:146:40:</span> error: no matching function for call to ‘zmq::message_t::message_t<span class="er">(</span><span class="ex">std::string</span><span class="kw">&amp;)</span><span class="ex">’</span></span>
+<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>         <span class="ex">mp.push_back</span><span class="er">(</span><span class="ex">zmq::message_t</span><span class="er">(</span><span class="ex">cur</span><span class="kw">));</span></span></code></pre></div>
+<p>This happens for instance for old versions of the <code>gcc</code>
+compiler (default on most Linux distributions). You can check your
+version in the terminal using:</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="co"># the minimum required gcc version is 5.5 for full C++11 support (3.3 for clang)</span></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="fu">cc</span> <span class="at">--version</span></span></code></pre></div>
+<p>In this case, it is <em>very</em> likely that your HPC system already
+has a newer compiler installed that you need to add to your
+<code>$PATH</code> or load as a module. Once this is set, you can
+install the package from R <em>that was started in a terminal that has
+this module/path active</em>.</p>
+</div>
+<div id="stuck" class="section level2">
+<h2>Session gets stuck at “Running calculations”</h2>
+<p>Your R session may be stuck at something like the following:</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a><span class="sc">&gt;</span> clustermq<span class="sc">::</span><span class="fu">Q</span>(identity, <span class="at">x=</span><span class="dv">42</span>, <span class="at">n_jobs=</span><span class="dv">1</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>Submitting <span class="dv">1</span> worker <span class="fu">jobs</span> (ID<span class="sc">:</span> cmq8480) ...</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>Running <span class="dv">1</span> <span class="fu">calculations</span> (<span class="dv">5</span> objs<span class="sc">/</span><span class="fl">19.4</span> Kb common; <span class="dv">1</span> calls<span class="sc">/</span>chunk) ...</span></code></pre></div>
+<p>You will see this every time your jobs are queued but not yet
+started. Depending on how busy your HPC is, this may take a long time.
+You can check the queueing status of your jobs in the terminal with
+<em>e.g.</em> <code>qstat</code> (SGE), <code>bjobs</code> (LSF), or
+<code>sinfo</code> (SLURM).</p>
+<p>If your jobs are already finished, this likely means that the
+<code>clustermq</code> workers can not connect to the main session. You
+can confirm this by passing <a href="https://mschubert.github.io/clustermq/articles/userguide.html#debugging-workers"><code>log_worker=TRUE</code></a>
+to <code>Q</code> and inspect the logs created in your current working
+directory. If they state something like:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="op">&gt;</span> clustermq:::worker<span class="kw">(</span><span class="st">&quot;tcp://my.headnode:9091&quot;</span><span class="kw">)</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a><span class="ex">2023-12-11</span> 10:22:58.485529 <span class="kw">|</span> <span class="ex">Master:</span> tcp://my.headnode:9091</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a><span class="ex">2023-12-11</span> 10:22:58.488892 <span class="kw">|</span> <span class="ex">connecting</span> to: tcp://my.headnode:9091:</span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a><span class="ex">Error:</span> Connection failed after 10016 ms</span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a><span class="ex">Execution</span> halted</span></code></pre></div>
+<p>the submitted job is indeed unable to establish a network connection
+with the head node. This can happen if your HPC does not allow incoming
+connections, but more likely happens because there are multiple network
+interfaces, only some of which have access to the head node.</p>
+<p>You can list the available network interfaces using the
+<code>ifconfig</code> command in the terminal. Find the interface that
+shares a subnetwork with the head node and add the <a href="https://mschubert.github.io/clustermq/articles/userguide.html#options">R
+option</a> <code>clustermq.host=&lt;interface&gt;</code>. If this is
+unclear, contact your system administrators to see which interface to
+use.</p>
+</div>
+<div id="ssh" class="section level2">
+<h2>SSH not working</h2>
+<p>Before trying remote schedulers via SSH, make sure that the scheduler
+works when you first connect to the cluster and run a job from
+there.</p>
+<p>If the terminal is stuck at</p>
+<pre><code>Connecting &lt;user@host&gt; via SSH ...</code></pre>
+<p>make sure that each step of your SSH connection works by typing the
+following commands in your <strong>local</strong> terminal and make sure
+that you don’t get errors or warnings in each step:</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="co"># test your ssh login that you set up in ~/.ssh/config</span></span>
+<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a><span class="co"># if this fails you have not set up SSH correctly</span></span>
+<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a><span class="fu">ssh</span> <span class="op">&lt;</span>user@host<span class="op">&gt;</span></span>
+<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a></span>
+<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a><span class="co"># test port forwarding from 54709 remote to 6687 local (ports are random)</span></span>
+<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a><span class="co"># if the fails you will not be able to use clustermq via SSH</span></span>
+<span id="cb6-7"><a href="#cb6-7" tabindex="-1"></a><span class="fu">ssh</span> <span class="at">-R</span> 54709:localhost:6687 <span class="op">&lt;</span>user@host<span class="op">&gt;</span> R <span class="at">--vanilla</span></span></code></pre></div>
+<p>If you get an <code>Command not found: R</code> error, make sure your
+<code>$PATH</code> is set up correctly in your
+<code>~/.bash_profile</code> and/or your <code>~/.bashrc</code>
+(depending on your cluster config you might need either). You may also
+need to modify your <a href="https://mschubert.github.io/clustermq/articles/userguide.html#ssh-template">SSH
+template</a> to load R as a module or conda environment.</p>
+<p>If you get a SSH warning or error try again with <code>ssh -v</code>
+to enable verbose output. If the forward itself works, run the following
+in your local R session (ideally also in command-line R, <a href="https://github.com/mschubert/clustermq/issues/206">not only in
+RStudio</a>):</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="fu">options</span>(<span class="at">clustermq.scheduler =</span> <span class="st">&quot;ssh&quot;</span>,</span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>        <span class="at">clustermq.ssh.log =</span> <span class="st">&quot;~/ssh_proxy.log&quot;</span>)</span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a><span class="fu">Q</span>(identity, <span class="at">x=</span><span class="dv">1</span>, <span class="at">n_jobs=</span><span class="dv">1</span>)</span></code></pre></div>
+<p>This will create a log file <em>on the remote server</em> that will
+contain any errors that might have occurred during
+<code>ssh_proxy</code> startup.</p>
+<p>If the <code>ssh_proxy</code> startup fails on your local machine
+with the error</p>
+<pre><code>Remote R process did not respond after 5 seconds. Check your SSH server log.</code></pre>
+<p>but the server log does not show any errors, then you can try
+increasing the timeout:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="fu">options</span>(<span class="at">clustermq.ssh.timeout =</span> <span class="dv">30</span>) <span class="co"># in seconds</span></span></code></pre></div>
+<p>This can happen when your SSH startup template includes additional
+steps before starting R, such as activating a module or conda
+environment, or having to confirm the connection via two-factor
+authentication.</p>
+</div>
+<div id="master-in-container" class="section level2">
+<h2>Running the master inside containers</h2>
+<p>If your master process is inside a container, accessing the HPC
+scheduler is more difficult. Containers, including singularity and
+docker, isolate the processes inside the container from the host. The
+<em>R</em> process will not be able to submit a job because the
+scheduler cannot be found.</p>
+<p>Note that the HPC node running the master process must be allowed to
+submit jobs. Not all HPC systems allow compute nodes to submit jobs. If
+that is the case, you may need to run the master process on the login
+node, and discuss the issue with your system administrator.</p>
+<p>If your container is binary compatible with the host, you may be able
+to bind in the scheduler executable to the container.</p>
+<p>For example, PBS might look something like:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="co">#PBS directives ...</span></span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a></span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a><span class="ex">module</span> load singularity</span>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a></span>
+<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a><span class="va">SINGULARITYENV_APPEND_PATH</span><span class="op">=</span>/opt/pbs/bin</span>
+<span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a><span class="ex">singularity</span> exec <span class="at">--bind</span> /opt/pbs/bin r_image.sif Rscript master_script.R</span></code></pre></div>
+<p>A working example of binding SLURM into a CentOS 7 container image
+from a CentOS 7 host is available at <a href="https://groups.google.com/a/lbl.gov/d/msg/singularity/syLcsIWWzdo/NZvF2Ud2AAAJ" class="uri">https://groups.google.com/a/lbl.gov/d/msg/singularity/syLcsIWWzdo/NZvF2Ud2AAAJ</a></p>
+<p>Alternatively, you can create a script that uses SSH to execute the
+scheduler on the login node. For this, you will need an SSH client in
+the container, <a href="https://www.digitalocean.com/community/tutorials/how-to-configure-ssh-key-based-authentication-on-a-linux-server">keys
+set up for password-less login</a>, and create a script to call the
+scheduler on the login node via ssh (e.g. <code>~/bin/qsub</code> for
+SGE/PBS/Torque, <code>bsub</code> for LSF and <code>sbatch</code> for
+Slurm):</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a><span class="fu">ssh</span> <span class="at">-i</span> ~/.ssh/<span class="op">&lt;</span>your key file<span class="op">&gt;</span> <span class="va">${PBS_O_HOST</span><span class="op">:-</span><span class="st">&quot;no_host_not_in_a_pbs_job&quot;</span><span class="va">}</span> qsub <span class="st">&quot;</span><span class="va">$@</span><span class="st">&quot;</span></span></code></pre></div>
+<p>Make sure the script is executable, and bind/copy it into the
+container somewhere on <code>$PATH</code>. Home directories are bound in
+by default in singularity.</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="fu">chmod</span> u+x ~/bin/qsub</span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a><span class="va">SINGULARITYENV_APPEND_PATH</span><span class="op">=</span>~/bin</span></code></pre></div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

@@ -23,30 +23,29 @@ LSF = R6::R6Class("LSF",
             if (verbose)
                 message("Submitting ", n_jobs, " worker jobs (ID: ", private$job_id, ") ...")
 
-            success = system("bsub", input=filled, ignore.stdout=TRUE)
-            if (success != 0) {
-                print(filled)
-                stop("Job submission failed with error code ", success)
-            }
+            status = system("bsub", input=filled, ignore.stdout=TRUE)
+            if (status != 0)
+                private$template_error("LSF", status, filled)
+            private$master$add_pending_workers(n_jobs)
             private$is_cleaned_up = FALSE
         },
 
-        cleanup = function() {
-            private$is_cleaned_up = TRUE
+        cleanup = function(success, timeout) {
+            private$is_cleaned_up = success
+            private$finalize()
         }
     ),
 
     private = list(
         job_id = NULL,
-        is_cleaned_up = NULL,
 
         finalize = function(quiet=self$workers_running == 0) {
             quiet = FALSE #TODO:
             if (!private$is_cleaned_up) {
                 system(paste("bkill -J", private$job_id),
                        ignore.stdout=quiet, ignore.stderr=quiet, wait=FALSE)
-                private$is_cleaned_up = TRUE
             }
+            private$is_cleaned_up = TRUE
         }
     )
 )

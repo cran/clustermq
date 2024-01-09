@@ -24,13 +24,16 @@ QSys = R6::R6Class("QSys",
                 if (!file.exists(template))
                     template = system.file(paste0(template, ".tmpl"),
                                            package="clustermq", mustWork=TRUE)
-                if (file.exists(template))
+                if (file.exists(template)) {
+                    private$template_file = template
                     private$template = readChar(template, file.info(template)$size)
-                else
+                } else
                     stop("Template file does not exist: ", sQuote(template))
             }
             private$defaults = getOption("clustermq.defaults", list())
         },
+
+        cleanup = function(success, timeout) TRUE,
 
         n = function() private$workers_total
     ),
@@ -40,8 +43,10 @@ QSys = R6::R6Class("QSys",
         addr = NULL,
         port = NULL,
         template = NULL,
+        template_file = NULL,
         workers_total = NULL,
         defaults = list(),
+        is_cleaned_up = NULL,
 
         fill_options = function(...) {
             values = utils::modifyList(private$defaults, list(...))
@@ -59,6 +64,13 @@ QSys = R6::R6Class("QSys",
                 values$job_name = paste0("cmq", private$port)
             private$workers_total = values$n_jobs
             values
+        },
+
+        template_error = function(scheduler, status, filled) {
+            message("\nThe filled ", scheduler, " template ", sQuote(private$template_file),
+                    " was:\n", '"""', "\n", filled, '"""', "\n")
+            message("see: https://mschubert.github.io/clustermq/articles/userguide.html#scheduler-setup\n")
+            stop("Job submission failed with error code ", status, call.=FALSE)
         }
     ),
 

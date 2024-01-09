@@ -30,12 +30,15 @@ MULTICORE = R6::R6Class("MULTICORE",
                 p = parallel::mcparallel(quote(wrapper(private$addr, log_i)))
                 private$children[[as.character(p$pid)]] = p
             }
+            private$master$add_pending_workers(n_jobs)
             private$workers_total = n_jobs
+            private$is_cleaned_up = FALSE
         },
 
-        cleanup = function(quiet=FALSE, timeout=3) {
-            private$collect_children(wait=TRUE, timeout=timeout)
-            invisible(length(private$children) == 0)
+        cleanup = function(success, timeout=5L) {
+            private$is_cleaned_up = success
+            private$collect_children(wait=FALSE, timeout=timeout)
+            private$finalize()
         }
     ),
 
@@ -50,7 +53,7 @@ MULTICORE = R6::R6Class("MULTICORE",
         children = list(),
 
         finalize = function(quiet=FALSE) {
-            if (length(private$children) > 0) {
+            if (!private$is_cleaned_up) {
                 private$collect_children(wait=FALSE, timeout=0)
                 running = names(private$children)
                 if (length(running) > 0) {
@@ -62,6 +65,7 @@ MULTICORE = R6::R6Class("MULTICORE",
                 }
                 private$children = list()
             }
+            private$is_cleaned_up = TRUE
         }
     )
 )

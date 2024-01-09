@@ -14,21 +14,13 @@ suppressPackageStartupMessages(library(clustermq))
 #  #   monitor, set the following environment variable to enable compilation of the
 #  #   bundled `libzmq` library with the required feature (`-DZMQ_BUILD_DRAFT_API=1`):
 #  # Sys.setenv(CLUSTERMQ_USE_SYSTEM_LIBZMQ=0)
-#  install.packages('clustermq')
+#  install.packages("clustermq")
 
 ## ----eval=FALSE---------------------------------------------------------------
 #  # Sys.setenv(CLUSTERMQ_USE_SYSTEM_LIBZMQ=0)
 #  # install.packages('remotes')
-#  remotes::install_github('mschubert/clustermq')
-
-## ----eval=FALSE---------------------------------------------------------------
-#  # Sys.setenv(CLUSTERMQ_USE_SYSTEM_LIBZMQ=0)
-#  # install.packages('remotes')
-#  remotes::install_github('mschubert/clustermq', ref="develop")
-
-## ----eval=FALSE---------------------------------------------------------------
-#  options(clustermq.scheduler = "your scheduler here")
-#  # this may require additional setup, for details see below
+#  remotes::install_github("mschubert/clustermq")
+#  # remotes::install_github("mschubert/clustermq@develop") # dev version
 
 ## ----eval=FALSE---------------------------------------------------------------
 #  # If this is set to 'LOCAL' or 'SSH' you will get the following error:
@@ -57,12 +49,14 @@ fx = function(x) x * 2 + y
 Q(fx, x=1:3, export=list(y=10), n_jobs=1)
 
 ## -----------------------------------------------------------------------------
-fx = function(x) {
-    x %>%
-        mutate(area = Sepal.Length * Sepal.Width) %>%
-        head()
-}
-Q(fx, x=list(iris), pkgs="dplyr", n_jobs=1)
+f1 = function(x) splitIndices(x, 3)
+Q(f1, x=3, n_jobs=1, pkgs="parallel")
+
+f2 = function(x) parallel::splitIndices(x, 3)
+Q(f2, x=8, n_jobs=1)
+
+# Q(f1, x=5, n_jobs=1)
+# (Error #1) could not find function "splitIndices"
 
 ## -----------------------------------------------------------------------------
 library(foreach)
@@ -86,14 +80,6 @@ x = foreach(i=1:3) %dopar% sqrt(i) # this will be executed as jobs
 
 ## ----eval=FALSE---------------------------------------------------------------
 #  Q(..., template=list(log_file = <yourlog>))
-
-## ----eval=FALSE---------------------------------------------------------------
-#  options(clustermq.scheduler = "ssh",
-#          clustermq.ssh.log = "~/ssh_proxy.log")
-#  Q(identity, x=1, n_jobs=1)
-
-## ----eval=FALSE---------------------------------------------------------------
-#  options(clustermq.ssh.timeout = 30) # in seconds
 
 ## ----eval=FALSE---------------------------------------------------------------
 #  Q(..., template=list(bashenv="my environment name"))
@@ -135,8 +121,8 @@ x = foreach(i=1:3) %dopar% sqrt(i) # this will be executed as jobs
 ## ----eval=FALSE---------------------------------------------------------------
 #  options(clustermq.scheduler = "ssh",
 #  		clustermq.ssh.host = "myhost", # set this up in your local ~/.ssh/config
-#          clustermq.ssh.log = "~/ssh_proxy.log", # log file on your HPC
-#          clustermq.ssh.timeout = 30, # if changing the default connection timeout
+#          clustermq.ssh.log = "~/ssh_proxy.log",     # log file on your HPC
+#          clustermq.ssh.timeout = 30,    # if changing the default connection timeout
 #          clustermq.template = "/path/to/file/below" # if using your own template
 #  )
 

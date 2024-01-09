@@ -23,6 +23,7 @@
 enum wlife_t {
     active,
     shutdown,
+    finished,
     error,
     proxy_cmd,
     proxy_error
@@ -35,9 +36,10 @@ extern Rcpp::Function R_unserialize;
 
 void check_interrupt_fn(void *dummy);
 int pending_interrupt();
-zmq::message_t int2msg(int val);
+zmq::message_t int2msg(const int val);
 zmq::message_t r2msg(SEXP data);
-SEXP msg2r(zmq::message_t &msg, bool unserialize);
-wlife_t msg2wlife_t(zmq::message_t &msg);
+SEXP msg2r(const zmq::message_t &&msg, const bool unserialize);
+wlife_t msg2wlife_t(const zmq::message_t &msg);
+std::string z85_encode_routing_id(const std::string rid);
 
 #endif // _COMMON_H_

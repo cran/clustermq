@@ -5,6 +5,8 @@ loadModule("cmq_master", TRUE) # CMQMaster C++ class
 #' Provides the basic functions needed to communicate between machines
 #' This should abstract most functions of rZMQ so the scheduler
 #' implementations can rely on the higher level functionality
+#'
+#' @keywords internal
 Pool = R6::R6Class("Pool",
     public = list(
         initialize = function(addr=sample(host()), reuse=TRUE) {
@@ -33,19 +35,18 @@ Pool = R6::R6Class("Pool",
                                   info["calls"], as.data.frame(times),
                                   list(mem.used=mem("used"), mem.max=mem("max used"))))
         },
+        current = function() {
+            private$master$current()
+        },
 
         add = function(qsys, n, ...) {
             self$workers = qsys$new(addr=private$addr, master=private$master, n_jobs=n, ...)
-            private$master$add_pending_workers(n)
         },
 
         env = function(...) {
             args = list(...)
-            for (name in names(args)) {
-#                if (inherits(args[[name]], "function"))
-#                    environment(args[[fname]]) = .GlobalEnv
+            for (name in names(args))
                 private$master$add_env(name, args[[name]])
-            }
             invisible(private$master$list_env())
         },
 
@@ -86,7 +87,7 @@ Pool = R6::R6Class("Pool",
         send = function(cmd, ...) {
             pcall = quote(substitute(cmd))
             cmd = as.expression(do.call(substitute, list(eval(pcall), env=list(...))))
-            private$master$send(cmd)
+            invisible(private$master$send(cmd))
         },
         send_shutdown = function() {
             private$master$send_shutdown()
@@ -99,19 +100,20 @@ Pool = R6::R6Class("Pool",
             private$master$recv(timeout)
         },
 
-        cleanup = function(timeout=5000) {
-            private$master$close(timeout)
-            # ^^ replace with: (1) try close connections, and (2) close socket
+        cleanup = function(timeout=5) {
+            success = private$master$close(as.integer(timeout*1000))
+            success = self$workers$cleanup(success, timeout) # timeout left?
 
-            times = private$master$list_workers()$time
-            times = times[sapply(times, length) != 0]
-            max_mem = max(c(self$info()[["mem.max"]]+2e8, 0), na.rm=TRUE) # add 200 Mb
+            info = self$info()
+            max_mem = max(c(info$mem.max+2e8, 0), na.rm=TRUE) # add 200 Mb
             max_mem_str = format(structure(max_mem, class="object_size"), units="auto")
 
-            wt = Reduce(`+`, times) / length(times)
-            rt = proc.time() - private$timer
-            if (! inherits(wt, "proc_time"))
+            if (nrow(info) > 0) {
+                wt = lapply(info[c("user.self", "sys.self", "elapsed")], mean, na.rm=TRUE)
+            } else {
                 wt = rep(NA, 3)
+            }
+            rt = proc.time() - private$timer
             rt3_fmt = difftime(as.POSIXct(rt[[3]], origin="1970-01-01"),
                                as.POSIXct(0, origin="1970-01-01"), units="auto")
             rt3_str = sprintf("%.1f %s", rt3_fmt, attr(rt3_fmt, "units"))
@@ -120,21 +122,15 @@ Pool = R6::R6Class("Pool",
             message(sprintf(fmt, rt3_str, 100*(rt[[1]]+rt[[2]])/rt[[3]],
                             100*(wt[[1]]+wt[[2]])/wt[[3]], max_mem_str))
 
-            invisible(TRUE)
+            invisible(success)
         },
 
         workers = NULL
     ),
 
     active = list(
-        workers_total = function() {
-            ls_w = private$master$list_workers()
-            length(ls_w$worker) + ls_w$pending
-        },
-        workers_running = function() {
-            ls_w = private$master$list_workers()
-            sum(ls_w$status == "active")
-        },
+        workers_total = function() private$master$workers_total(),
+        workers_running = function() private$master$workers_running(),
         reusable = function() private$reuse
     ),
 

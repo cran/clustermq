@@ -1,9 +1,17 @@
+# clustermq 0.9.3
+
+* Fix a bug where `BiocParallel` did not export required objects (#302)
+* Fix a bug where already finished workers were killed (#307)
+* Fix a bug where worker results and stats could be garbage collected (#324)
+* There is now an FAQ vignette with answers to frequently asked questions
+* Worker API: `send()` now reports a call identifier that `current()` tracks
+
 # clustermq 0.9.2
 
 * Fix a bug where SSH proxy would not cache data properly (#320)
 * Fix a bug where `max_calls_worker` was not respected (#322)
 * Local parallelism (`multicore`, `multiprocess`) again uses local IP (#321)
-* Pool `info()` now also returns current worker and number of calls
+* Worker API: `info()` now also returns current worker and number of calls
 
 # clustermq 0.9.1
 
@@ -15,7 +23,7 @@
 * Fix a bug where ZeroMQ's `-Werror` flag led to compilation issues on M1 Mac
 * Fix a bug where SSH tests could error with timeout on high load
 * Worker API: `CMQMaster` now needs to know `add_pending_workers(n)`
-* Worker API: status report `info` now displays properly
+* Worker API: status report `info()` now displays properly
 
 # clustermq 0.9.0
 

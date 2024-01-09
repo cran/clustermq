@@ -88,12 +88,18 @@ test_that("external worker", {
     expect_equal(res, cmp)
 })
 
-#test_that("foreach works via BiocParallel", {
-#    skip_if_not_installed("BiocParallel")
-#
-#    BiocParallel::register(BiocParallel::DoparParam())
-#    res = BiocParallel::bplapply(1:3, sqrt)
-#    cmp = foreach(i=1:3) %do% sqrt(i)
-#
-#    expect_equal(res, cmp)
-#})
+test_that("foreach works via BiocParallel", {
+    skip_on_os("windows")
+    skip_if_not_installed("BiocParallel")
+
+    old_sched = getOption("clustermq.scheduler")
+    on.exit(options(clustermq.scheduler = old_sched))
+    options(clustermq.scheduler = "multicore")
+
+    register_dopar_cmq(n_jobs=1)
+    BiocParallel::register(BiocParallel::DoparParam())
+    res = BiocParallel::bplapply(1:3, sqrt)
+    cmp = foreach(i=1:3) %do% sqrt(i)
+
+    expect_equal(res, cmp)
+})
