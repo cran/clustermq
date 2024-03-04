@@ -1,7 +1,7 @@
-aaea3c8ae8a942c3b6c61744b32863ac *DESCRIPTION
+117a59c9057069b675e694b622f3e61e *DESCRIPTION
 3b83ef96387f14655fc854ddc3c6bd57 *LICENSE
 7e9dccd55eb3a3345cce0d9a66498fdc *NAMESPACE
-68ea1c10be21767e6183bbb41f22bb90 *NEWS.md
+4c84c2b9beddf11d06621d099ead6105 *NEWS.md
 811e77484673ab279f90e088e460279f *R/Q.r
 4b9144a42df8e048fa2f59278ec0c85b *R/Q_rows.r
 16160aa72260539c84e8d42118d05085 *R/RcppExports.R
@@ -10,7 +10,7 @@ aaea3c8ae8a942c3b6c61744b32863ac *DESCRIPTION
 14d51578a892daf4bd578a3d3001e5f9 *R/clustermq-package.r
 34432c459137cb48d6bca2fc96b8aa45 *R/foreach.r
 b255bfd008f53ab6abce1d9fcbdf6cec *R/master.r
-809f8ed6a21fda95b11e8d0b99fb6635 *R/pool.r
+2c1a1a76e255f9f8429c474a61286b1e *R/pool.r
 3c36f1cec30303016d4e3727ffb8c0bf *R/qsys.r
 afe4e3ecb885edd3e3782df64831c978 *R/qsys_local.r
 7e0cb774ff034250a290123b1e5f69ec *R/qsys_lsf.r
@@ -27,7 +27,7 @@ b1cf25da0f2e8110aab43ff6c36cccc6 *R/worker.r
 fdb503f6f4e35155876ffb3df6225d8a *R/workers.r
 fb26a53b81866e40c5f46104f1401e36 *R/zzz.r
 93b642c49e684fb5d525ad3d2e7e81cb *README.md
-1d22c2f3172b93e71daf28a93221cca1 *build/vignette.rds
+4eb1a2ab7cebcc81f5c265f775bb3c0a *build/vignette.rds
 ea01957d2f619a399d161e66bb75714f *cleanup
 6fd0568bf486d13bbebb6b7cadd611f6 *configure
 4ed952888d1ec714b75f3470a54244db *inst/CITATION
@@ -76,7 +76,7 @@ e67eb286d26c7a1b7dc7a7342939956e *man/ssh_proxy.Rd
 04daeacf31204a6032ad52f8edbda57e *man/workers.Rd
 be4aecce51d7447fcec9bc4f33510087 *man/wrap_error.Rd
 b1c215e1daf7b384fdb32069873c3d22 *src/CMQMaster.cpp
-cf0fdafc142f43d6f20f559fc232fcb0 *src/CMQMaster.h
+a4d3a4b18cda4888d1714b675f6c9275 *src/CMQMaster.h
 24655b8acd792d3163a7cae525fc7a5b *src/CMQProxy.cpp
 50b3e827f4924b5d53833bb4af3608eb *src/CMQProxy.h
 2d3a52194a804a1481a630270c0653f6 *src/CMQWorker.cpp
