@@ -60,7 +60,7 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
 { counter-reset: source-line 0; }
@@ -354,9 +354,9 @@ border: 0px !important;
 <p>To compile this package a fully C++11 compliant compiler is required.
 This is <a href="https://www.tidyverse.org/blog/2023/03/cran-checks-compiled-code/">implicit
 for CRAN packages</a> since <code>R=3.6.2</code> and is hence not listed
-in <em>SystemRequirements</em>. If you encounter an error saying that
-that no matching function call to
-<code>zmq::message_t::message_t(std::string&amp;)</code> exists, your
+in <em>SystemRequirements</em>.</p>
+<p>If you encounter an error saying that that no matching function call
+to <code>zmq::message_t::message_t(std::string&amp;)</code> exists, your
 compiler does not (fully) support this and the automated check failed
 for some reason.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="ex">In</span> file included from CMQMaster.cpp:2:0:</span>
@@ -397,14 +397,20 @@ directory. If they state something like:</p>
 <span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a><span class="ex">Execution</span> halted</span></code></pre></div>
 <p>the submitted job is indeed unable to establish a network connection
 with the head node. This can happen if your HPC does not allow incoming
-connections, but more likely happens because there are multiple network
-interfaces, only some of which have access to the head node.</p>
-<p>You can list the available network interfaces using the
+connections at all, but more likely happens because (1) only certain
+ports are allowed, or (2) there are multiple network interfaces, only
+some of which have access to the head node.</p>
+<ol style="list-style-type: decimal">
+<li>If the head node only allows incoming connections on certain ports,
+set the <a href="https://mschubert.github.io/clustermq/articles/userguide.html#options">R
+option</a> <code>clustermq.ports=&lt;port range&gt;</code>.</li>
+<li>You can list the available network interfaces using the
 <code>ifconfig</code> command in the terminal. Find the interface that
 shares a subnetwork with the head node and add the <a href="https://mschubert.github.io/clustermq/articles/userguide.html#options">R
 option</a> <code>clustermq.host=&lt;interface&gt;</code>. If this is
 unclear, contact your system administrators to see which interface to
-use.</p>
+use.</li>
+</ol>
 </div>
 <div id="ssh" class="section level2">
 <h2>SSH not working</h2>

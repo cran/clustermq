@@ -10,9 +10,10 @@ suppressPackageStartupMessages(library(clustermq))
 
 ## ----eval=FALSE---------------------------------------------------------------
 #  # Recommended:
-#  #   If your system has `libzmq` installed but you want to enable the worker crash
-#  #   monitor, set the following environment variable to enable compilation of the
-#  #   bundled `libzmq` library with the required feature (`-DZMQ_BUILD_DRAFT_API=1`):
+#  #   If your system has `libzmq` installed but you want to enable the worker
+#  #   crash monitor, set the environment variable below to use the bundled
+#  #   `libzmq` library with the required feature (`-DZMQ_BUILD_DRAFT_API=1`):
+#  
 #  # Sys.setenv(CLUSTERMQ_USE_SYSTEM_LIBZMQ=0)
 #  install.packages("clustermq")
 
@@ -60,19 +61,26 @@ Q(f2, x=8, n_jobs=1)
 
 ## -----------------------------------------------------------------------------
 library(foreach)
-x = foreach(i=1:3) %do% sqrt(i)
+foreach(i=1:3) %do% sqrt(i)
 
 ## -----------------------------------------------------------------------------
-x = foreach(i=1:3) %dopar% sqrt(i)
+foreach(i=1:3) %dopar% sqrt(i)
 
 ## -----------------------------------------------------------------------------
 # set up the scheduler first, otherwise this will run sequentially
-clustermq::register_dopar_cmq(n_jobs=2, memory=1024) # this accepts same arguments as `Q`
-x = foreach(i=1:3) %dopar% sqrt(i) # this will be executed as jobs
+
+# this accepts same arguments as `Q`
+clustermq::register_dopar_cmq(n_jobs=2, memory=1024)
+
+# this will be executed as jobs
+foreach(i=1:3) %dopar% sqrt(i)
 
 ## ----eval=FALSE---------------------------------------------------------------
 #  library(BiocParallel)
-#  register(DoparParam()) # after register_dopar_cmq(...)
+#  
+#  # the number of jobs is ignored here since we're using the LOCAL scheduler
+#  clustermq::register_dopar_cmq(n_jobs=2, memory=1024)
+#  register(DoparParam())
 #  bplapply(1:3, sqrt)
 
 ## ----eval=FALSE---------------------------------------------------------------
@@ -114,15 +122,17 @@ x = foreach(i=1:3) %dopar% sqrt(i) # this will be executed as jobs
 #  )
 
 ## ----eval=FALSE---------------------------------------------------------------
-#  options(clustermq.scheduler = "Torque",
-#          clustermq.template = "/path/to/file/below" # if using your own template
+#  options(
+#      clustermq.scheduler = "Torque",
+#      clustermq.template = "/path/to/file/below" # if using your own template
 #  )
 
 ## ----eval=FALSE---------------------------------------------------------------
-#  options(clustermq.scheduler = "ssh",
-#  		clustermq.ssh.host = "myhost", # set this up in your local ~/.ssh/config
-#          clustermq.ssh.log = "~/ssh_proxy.log",     # log file on your HPC
-#          clustermq.ssh.timeout = 30,    # if changing the default connection timeout
-#          clustermq.template = "/path/to/file/below" # if using your own template
+#  options(
+#      clustermq.scheduler = "ssh",
+#      clustermq.ssh.host = "myhost", # set this up in your local ~/.ssh/config
+#      clustermq.ssh.log = "~/ssh_proxy.log",     # log file on your HPC
+#      clustermq.ssh.timeout = 30,    # if changing default connection timeout
+#      clustermq.template = "/path/to/file/below" # if using your own template
 #  )
 
