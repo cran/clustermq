@@ -1,3 +1,9 @@
+# clustermq 0.9.6
+
+* Large common data size is now reported correctly (#336)
+* Template filling will no longer convert large numbers to scientific format
+* Common data will no longer be duplicated when sending to workers
+
 # clustermq 0.9.5
 
 * Fix a bug where an outdated system `libzmq` led to compilation errors (#327)
