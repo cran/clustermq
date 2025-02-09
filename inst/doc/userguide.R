@@ -51,20 +51,17 @@ Q(fx, x=1:3, export=list(y=10), n_jobs=1)
 
 ## -----------------------------------------------------------------------------
 f1 = function(x) splitIndices(x, 3)
+# Q(f1, x=5, n_jobs=1)
+# (Error #1) could not find function "splitIndices"
+
 Q(f1, x=3, n_jobs=1, pkgs="parallel")
 
 f2 = function(x) parallel::splitIndices(x, 3)
 Q(f2, x=8, n_jobs=1)
 
-# Q(f1, x=5, n_jobs=1)
-# (Error #1) could not find function "splitIndices"
-
 ## -----------------------------------------------------------------------------
 library(foreach)
 foreach(i=1:3) %do% sqrt(i)
-
-## -----------------------------------------------------------------------------
-foreach(i=1:3) %dopar% sqrt(i)
 
 ## -----------------------------------------------------------------------------
 # set up the scheduler first, otherwise this will run sequentially

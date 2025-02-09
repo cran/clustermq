@@ -1,3 +1,8 @@
+# clustermq 0.9.7
+
+* Fix a bug where `BiocGenerics` could break template filling (#337)
+* Remove deprecated automatic array splitting in `Q`
+
 # clustermq 0.9.6
 
 * Large common data size is now reported correctly (#336)

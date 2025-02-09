@@ -1,15 +1,18 @@
 ClusterMQ: send R function calls as cluster jobs
 ================================================
 
-[![CRAN version](http://www.r-pkg.org/badges/version/clustermq)](https://cran.r-project.org/package=clustermq)
-[![Build Status](https://github.com/mschubert/clustermq/workflows/R-check/badge.svg?branch=master)](https://github.com/mschubert/clustermq/actions)
-[![CRAN downloads](http://cranlogs.r-pkg.org/badges/clustermq)](https://cran.r-project.org/package=clustermq)
+[![CRAN version](https://www.r-pkg.org/badges/version/clustermq)](https://cran.r-project.org/package=clustermq)
+[![Build Status](https://github.com/mschubert/clustermq/actions/workflows/check-standard.yaml/badge.svg)](https://github.com/mschubert/clustermq/actions)
+[![CRAN downloads](https://cranlogs.r-pkg.org/badges/clustermq)](https://cran.r-project.org/package=clustermq)
 [![DOI](https://zenodo.org/badge/DOI/10.1093/bioinformatics/btz284.svg)](https://doi.org/10.1093/bioinformatics/btz284)
 
 This package will allow you to send function calls as jobs on a computing
 cluster with a minimal interface provided by the `Q` function:
 
 ```r
+# install the package if you haven't done so yet
+install.packages('clustermq')
+
 # load the library and create a simple function
 library(clustermq)
 fx = function(x) x * 2
@@ -31,30 +34,6 @@ Browse the vignettes here:
 * [User Guide](https://mschubert.github.io/clustermq/articles/userguide.html)
 * [Technical Documentation](https://mschubert.github.io/clustermq/articles/technicaldocs.html)
 * [FAQ](https://mschubert.github.io/clustermq/articles/faq.html)
-
-Installation
-------------
-
-Install the `clustermq` package in R from CRAN (including the bundled
-[ZeroMQ](https://github.com/zeromq/libzmq) system library):
-
-```r
-install.packages('clustermq')
-```
-
-Alternatively you can use the `remotes` package to install directly from
-Github. Note that this version needs `autoconf`/`automake` and `CMake` for
-compilation:
-
-```r
-# install.packages('remotes')
-remotes::install_github('mschubert/clustermq')
-# remotes::install_github('mschubert/clustermq@develop') # dev version
-```
-
-> [!TIP]
-> For installation problems, see the
-> [FAQ](https://mschubert.github.io/clustermq/articles/faq.html)
 
 Schedulers
 ----------
@@ -101,26 +80,23 @@ of using `const` and `export` would be:
 # adding a constant argument
 fx = function(x, y) x * 2 + y
 Q(fx, x=1:3, const=list(y=10), n_jobs=1)
-```
 
-```r
 # exporting an object to workers
 fx = function(x) x * 2 + y
 Q(fx, x=1:3, export=list(y=10), n_jobs=1)
 ```
 
-`clustermq` can also be used as a parallel backend for
-[`foreach`](https://cran.r-project.org/package=foreach). As this is also
-used by [`BiocParallel`](https://bioconductor.org/packages/release/bioc/html/BiocParallel.html),
-we can run those packages on the cluster as well:
+We can also use `clustermq` as a parallel backend in
+[`foreach`](https://cran.r-project.org/package=foreach) or
+[`BiocParallel`](https://bioconductor.org/packages/release/bioc/html/BiocParallel.html):
 
 ```r
+# using foreach
 library(foreach)
 register_dopar_cmq(n_jobs=2, memory=1024) # see `?workers` for arguments
 foreach(i=1:3) %dopar% sqrt(i) # this will be executed as jobs
-```
 
-```r
+# using BiocParallel
 library(BiocParallel)
 register(DoparParam()) # after register_dopar_cmq(...)
 bplapply(1:3, sqrt)
