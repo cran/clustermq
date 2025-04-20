@@ -1,4 +1,4 @@
-#include <catch2/catch.hpp>
+#include <catch2/catch_all.hpp>
 #include <zmq.hpp>
 #ifdef ZMQ_CPP11
 #include <future>
@@ -363,6 +363,10 @@ TEST_CASE("socket check integral options", "[socket]")
 #ifdef ZMQ_ROUTER_MANDATORY
     check_integral_opt<int>(zmq::sockopt::router_mandatory, router,
                             "router_mandatory", true);
+#endif
+#ifdef ZMQ_ROUTER_RAW
+    check_integral_opt<int>(zmq::sockopt::router_raw, router, "router_raw", 
+                            true);
 #endif
 #ifdef ZMQ_ROUTER_NOTIFY
     check_integral_opt<int>(zmq::sockopt::router_notify, router, "router_notify");

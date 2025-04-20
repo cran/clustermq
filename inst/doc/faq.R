@@ -5,7 +5,7 @@ knitr::opts_chunk$set(
     collapse = TRUE,
     comment = "#>"
 )
-options(clustermq.scheduler = "local")
+options(clustermq.scheduler = "local", rmarkdown.html_vignette.check_title = FALSE)
 suppressPackageStartupMessages(library(clustermq))
 
 ## ----eval=FALSE---------------------------------------------------------------

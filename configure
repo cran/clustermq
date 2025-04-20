@@ -4,6 +4,9 @@ CXX=$(${R_HOME}/bin/R CMD config CXX)
 CXXFLAGS=$(${R_HOME}/bin/R CMD config CXXFLAGS)
 CPPFLAGS=$(${R_HOME}/bin/R CMD config CPPFLAGS)
 
+# remove code that causes R-check warnings
+./src/util/patch_libzmq.sh
+
 if [ -z "$CLUSTERMQ_USE_SYSTEM_LIBZMQ" ]; then
   if $($CC -o test_libzmq src/util/test_libzmq.c $(pkg-config --cflags --libs libzmq) >/dev/null 2>&1); then
     echo "* system has libzmq -> linking system library"
@@ -30,29 +33,7 @@ rm -f test_cpp11
 if [ "$CLUSTERMQ_USE_SYSTEM_LIBZMQ" -eq "0" ]; then
   PKG_CFLAGS="-DZMQ_STATIC -DZMQ_BUILD_DRAFT_API=1 -fPIC -Ilibzmq/include -Icppzmq"
   PKG_LIBS="libzmq/src/.libs/libzmq.a"
-
-  ./src/util/patch_libzmq.sh
-
-  if [ ! -f src/libzmq/src/.libs/libzmq.a ]; then
-    cd src/libzmq
-
-    CXX="$CXX" CXXFLAGS="$CXXFLAGS -fPIC" CPPFLAGS="$CPPFLAGS" ./configure \
-        --enable-drafts \
-        --enable-static \
-        --disable-shared \
-        --disable-maintainer-mode \
-        --disable-Werror \
-        --disable-libbsd \
-        --disable-libunwind \
-        --disable-perf \
-        --disable-curve \
-        --disable-curve-keygen \
-        --disable-ws \
-        --disable-radix-tree \
-        --without-docs
-    make || exit 1
-    cd -
-  fi
+  ./src/util/build_libzmq.sh
 else
   PKG_CFLAGS="$(pkg-config --cflags libzmq) -fPIC -Icppzmq"
   PKG_LIBS="$(pkg-config --libs libzmq)"
