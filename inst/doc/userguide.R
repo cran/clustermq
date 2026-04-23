@@ -13,13 +13,13 @@ suppressPackageStartupMessages(library(clustermq))
 # #   If your system has `libzmq` installed but you want to enable the worker
 # #   crash monitor, set the environment variable below to use the bundled
 # #   `libzmq` library with the required feature (`-DZMQ_BUILD_DRAFT_API=1`):
-# 
-# # Sys.setenv(CLUSTERMQ_USE_SYSTEM_LIBZMQ=0)
+# Sys.setenv(CLUSTERMQ_AUTO_LIBZMQ=1)
 # install.packages("clustermq")
 
 ## ----eval=FALSE---------------------------------------------------------------
-# # Sys.setenv(CLUSTERMQ_USE_SYSTEM_LIBZMQ=0)
-# # install.packages('remotes')
+# if (!requireNamespace("remotes", quietly=TRUE))
+#     install.packages("remotes")
+# Sys.setenv(CLUSTERMQ_AUTO_LIBZMQ=1)
 # remotes::install_github("mschubert/clustermq")
 # # remotes::install_github("mschubert/clustermq@develop") # dev version
 
@@ -98,6 +98,18 @@ bplapply(1:3, sqrt)
 ## ----eval=FALSE---------------------------------------------------------------
 # options(
 #     clustermq.scheduler = "lsf",
+#     clustermq.template = "/path/to/file/below" # if using your own template
+# )
+
+## ----eval=FALSE---------------------------------------------------------------
+# options(
+#     clustermq.scheduler = "gcs",
+#     clustermq.template = "/path/to/file/below" # if using your own template
+# )
+
+## ----eval=FALSE---------------------------------------------------------------
+# options(
+#     clustermq.scheduler = "ocs",
 #     clustermq.template = "/path/to/file/below" # if using your own template
 # )
 

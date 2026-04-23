@@ -11,13 +11,12 @@ cluster with a minimal interface provided by the `Q` function:
 
 ```r
 # install the package if you haven't done so yet
+Sys.setenv(CLUSTERMQ_AUTO_LIBZMQ=1)
 install.packages('clustermq')
 
-# load the library and create a simple function
+# queue a function call on your scheduler
 library(clustermq)
 fx = function(x) x * 2
-
-# queue the function call on your scheduler
 Q(fx, x=1:3, n_jobs=1)
 # list(2,4,6)
 ```
@@ -51,6 +50,7 @@ schedulers](https://mschubert.github.io/clustermq/articles/userguide.html#config
 * [SLURM](https://mschubert.github.io/clustermq/articles/userguide.html#slurm) - *should work without setup*
 * [LSF](https://mschubert.github.io/clustermq/articles/userguide.html#lsf) - *should work without setup*
 * [SGE](https://mschubert.github.io/clustermq/articles/userguide.html#sge) - *may require configuration*
+* [GCS](https://mschubert.github.io/clustermq/articles/userguide.html#gcs)/[OCS](https://mschubert.github.io/clustermq/articles/userguide.html#ocs) - *needs* `options(clustermq.scheduler="GCS"/"OCS")`
 * [PBS](https://mschubert.github.io/clustermq/articles/userguide.html#pbs)/[Torque](https://mschubert.github.io/clustermq/articles/userguide.html#torque) - *needs* `options(clustermq.scheduler="PBS"/"Torque")`
 * via [SSH](https://mschubert.github.io/clustermq/articles/userguide.html#ssh-connector) -
 *needs* `options(clustermq.scheduler="ssh", clustermq.ssh.host=<yourhost>)`
@@ -121,7 +121,7 @@ In short, use `clustermq` if you want:
 * access cluster functions from your local Rstudio via SSH
 * fast processing of many function calls without network storage I/O
 
-Use [`batchtools`](https://github.com/mllg/batchtools) if you:
+Use [`batchtools`](https://github.com/mlr-org/batchtools) if you:
 
 * want to use a mature and well-tested package
 * don't mind that arguments to every call are written to/read from disc

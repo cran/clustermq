@@ -29,8 +29,7 @@ work_chunk = function(df, fun, const=list(), rettype="list",
         result = withCallingHandlers(
             withRestarts(
                 do.call(fun, c(list(...), const)),
-                muffleStop = function(e) if (rettype == "list")
-                    structure(e, class="error")
+                muffleStop = function(e) if (rettype == "list") structure(e, class="error")
             ),
             warning = function(w) {
                 wmsg = paste0("(#", chr_id, ") ", conditionMessage(w))
@@ -39,6 +38,13 @@ work_chunk = function(df, fun, const=list(), rettype="list",
             },
             error = function(e) {
                 emsg = paste0("(Error #", chr_id, ") ", conditionMessage(e))
+                if (!is.na(` seed `)) {
+                    cur_state = sample(1:100)
+                    set.seed(` seed `)
+                    prev_state = sample(1:100)
+                    if (! all(cur_state == prev_state))
+                        emsg = paste0(emsg, " [seed: ", ` seed `, "]")
+                }
                 context$errors[[chr_id]] = emsg
                 invokeRestart("muffleStop", emsg)
             }
@@ -53,7 +59,7 @@ work_chunk = function(df, fun, const=list(), rettype="list",
         df$` id ` = seq_along(df[[1]])
 
     if (!is.null(common_seed))
-        df$` seed ` = as.integer(df$` id ` %% .Machine$integer.max) - common_seed
+        df$` seed ` = as.integer((df$` id ` + common_seed - 1) %% .Machine$integer.max)
 
     re = stats::setNames(.mapply(fwrap, df, NULL), df$` id `)
     if (rettype != "list")

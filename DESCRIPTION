@@ -1,7 +1,7 @@
 Package: clustermq
-Title: Evaluate Function Calls on HPC Schedulers (LSF, SGE, SLURM,
-        PBS/Torque)
-Version: 0.9.9
+Title: Evaluate Function Calls on HPC Schedulers (SLURM, LSF, SGE, GCS,
+        OCS, PBS, Torque)
+Version: 0.10.0
 Authors@R: c(
     person('Michael', 'Schubert', email='mschu.dev@gmail.com',
            role = c('aut', 'cre', 'cph'),
@@ -25,12 +25,12 @@ Encoding: UTF-8
 Suggests: BiocParallel, callr, devtools, foreach, iterators, knitr,
         parallel, rmarkdown, roxygen2 (>= 5.0.0), testthat, tools
 VignetteBuilder: knitr
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.3
 NeedsCompilation: yes
-Packaged: 2025-04-20 12:27:02 UTC; mschu
-Author: Michael Schubert [aut, cre, cph]
-    (<https://orcid.org/0000-0002-6862-5221>),
+Packaged: 2026-04-23 10:33:12 UTC; mschu
+Author: Michael Schubert [aut, cre, cph] (ORCID:
+    <https://orcid.org/0000-0002-6862-5221>),
   ZeroMQ authors [aut, cph] (source files in 'src/libzmq' and
     'src/cppzmq')
 Repository: CRAN
-Date/Publication: 2025-04-20 13:30:02 UTC
+Date/Publication: 2026-04-23 11:30:02 UTC

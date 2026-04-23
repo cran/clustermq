@@ -19,7 +19,7 @@ suppressPackageStartupMessages(library(clustermq))
 # msg = w$recv() # this will block until a worker is ready
 
 ## ----eval=FALSE---------------------------------------------------------------
-# w$send(expression, ...)
+# w$send_eval(expression, ...)
 
 ## ----eval=FALSE---------------------------------------------------------------
 # w$send(clustermq:::work_chunk(chunk, fun, const, rettype, common_seed),
@@ -35,11 +35,10 @@ suppressPackageStartupMessages(library(clustermq))
 # 
 # while (we have new work to send || jobs pending) {
 #     res = w$recv() # the result of the call, or NULL for a new worker
-#     w$current()$call_ref # matches answer to request, -1 otherwise
 #     # handle result
 # 
 #     if (more work)
-#         call_ref = w$send(expression, ...) # call_ref tracks request identity
+#         call_ref = w$send_eval(expression, ...) # call_ref tracks request identity
 #     else
 #         w$send_shutdown()
 # }
